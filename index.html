@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Saya</title>
+
+    <!-- Menghubungkan CSS -->
+    <link rel="stylesheet" href="portofolio.css">
+</head>
+<body>
+
+    <h1>Halo Dunia</h1>
+
+    <!-- Menghubungkan JavaScript -->
+    <script src="portofolio.js"></script>
+</body>
+</html>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Portfolio | Personal Website</title>
+
+    <link rel="stylesheet" href="portofolio.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <a href="#home" class="logo">My<span>Portfolio.</span></a>
+
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <button class="menu-toggle" id="menuToggle"
+                    aria-label="Buka menu navigasi"
+                    aria-expanded="false">☰</button>
+        </nav>
+    </header>
+
+    <!-- ===== SLIDE 1 : COVER ===== -->
+    <section id="home" class="hero">
+        <span class="doodle squiggle s-a"></span>
+        <span class="doodle squiggle s-b"></span>
+        <span class="doodle spark sp-a"></span>
+        <span class="doodle spark sp-b"></span>
+
+        <div class="slide-head">
+            <span>Graphic Designer Portfolio</span>
+            <span>M Ghazi Fawwwaz El Aqiel</span>
+        </div>
+
+        <div class="hero-content">
+            <p class="greeting">HELLO, WELCOME TO MY WEBSITE</p>
+
+            <h1 class="cover-title">
+                Portfolio
+                <span class="script">Graphic Design</span>
+            </h1>
+
+            <h2>Student | Designer | Developer</h2>
+
+            <p class="description">
+                I enjoy learning technology, creating designs,
+                and developing creative projects.
+                Welcome to my personal portfolio.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#projects" class="btn primary">View My Work</a>
+                <a href="#contact" class="btn secondary">Contact Me</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SLIDE 2 : HELLO I'M ===== -->
+    <section id="about" class="section about">
+        <span class="doodle squiggle s-c"></span>
+
+        <div class="slide-head">
+            <span>Ghazi</span>
+            <span>Portfolio</span>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-text">
+                <p class="section-label">GET TO KNOW ME</p>
+                <h2 class="slide-title">Hello I'm <span class="script">Ghazi</span></h2>
+
+                <div class="about-content">
+                    <p>
+                        Hello! My name is M Ghazi Fawwwaz El Aqiel. I am a student in idn 
+                        boarding school who i interested about a design graphic and web development.
+                        
+
+                        I enjoy exploring new ideas, learning new skills,
+                        and turning creative concepts into real projects.
+                        This website is where I showcase my work and progress.
+                    </p>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <span class="arrow-doodle"></span>
+                <!-- Pakai foto PNG transparan (tanpa background) agar outline putihnya muncul -->
+                <img src="images/profile.png" alt="Profile picture">
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SLIDE 3 : SKILLS & TOOLS ===== -->
+    <section id="skills" class="section skills">
+        <div class="slide-head">
+            <span>Your Name</span>
+            <span>Portfolio</span>
+        </div>
+
+        <p class="section-label">WHAT I CAN DO</p>
+        <h2 class="slide-title">Skills &amp; Tools <span class="script">My Skills</span></h2>
+
+        <div class="paper-card">
+            <div class="paper-col">
+                <h3>Designing Skills</h3>
+
+                <ul class="skills-container">
+                    <li class="skill-card">
+                        <h4>HTML &amp; CSS</h4>
+                        <p>Building website structures and designing layouts.</p>
+                    </li>
+                    <li class="skill-card">
+                        <h4>JavaScript</h4>
+                        <p>Creating interactive website features.</p>
+                    </li>
+                    <li class="skill-card">
+                        <h4>UI/UX Design</h4>
+                        <p>Designing user interfaces and user experiences.</p>
+                    </li>
+                    <li class="skill-card">
+                        <h4>Graphic Design</h4>
+                        <p>Creating posters, digital graphics, and visual content.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="paper-col">
+                <h3>Softwares</h3>
+
+                <div class="software-grid">
+                    <div class="sw sw-ps" title="Photoshop">Ps</div>
+                    <div class="sw sw-ai" title="Illustrator">Ai</div>
+                    <div class="sw sw-pr" title="Premiere Pro">Pr</div>
+                    <div class="sw sw-fg" title="Figma">Fg</div>
+                    <div class="sw sw-js" title="JavaScript">JS</div>
+                    <div class="sw sw-code" title="HTML & CSS">&lt;/&gt;</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SLIDE 4+ : PROJECTS ===== -->
+    <section id="projects" class="section projects">
+        <p class="section-label">MY RECENT WORK</p>
+        <h2 class="slide-title">Featured Projects</h2>
+
+        <!-- Tip: ganti <div class="tile"> isinya dengan <img src="images/namafile.jpg" alt="..."> -->
+
+        <!-- Social Media -->
+        <div class="showcase">
+            <div class="slide-head"><span>Your Name</span><span>Portfolio</span></div>
+            <h3 class="showcase-title">Social Media <span class="script">Designs</span></h3>
+            <div class="collage">
+                <div class="tile w2 h4"><span>Poster 01</span></div>
+                <div class="tile w2 h2"><span>Post 02</span></div>
+                <div class="tile w2 h2"><span>Post 03</span></div>
+                <div class="tile w2 h2"><span>Story 04</span></div>
+                <div class="tile w2 h2"><span>Post 05</span></div>
+            </div>
+        </div>
+
+        <!-- Print Media -->
+        <div class="showcase">
+            <div class="slide-head"><span>Your Name</span><span>Portfolio</span></div>
+            <h3 class="showcase-title">Print Media <span class="script">Designs</span></h3>
+            <div class="collage">
+                <div class="tile w3 h2"><span>Brochure</span></div>
+                <div class="tile w3 h2"><span>Flyer</span></div>
+                <div class="tile w2 h2"><span>Poster</span></div>
+                <div class="tile w2 h2"><span>Banner</span></div>
+                <div class="tile w2 h2"><span>Card</span></div>
+            </div>
+        </div>
+
+        <!-- Illustrations -->
+        <div class="showcase">
+            <div class="slide-head"><span>Your Name</span><span>Portfolio</span></div>
+            <h3 class="showcase-title">Illustrations <span class="script">Designs</span></h3>
+            <div class="collage">
+                <div class="tile w3 h2"><span>Illustration 01</span></div>
+                <div class="tile w1 h2"><span>02</span></div>
+                <div class="tile w2 h4"><span>Illustration 03</span></div>
+                <div class="tile w3 h2"><span>Illustration 04</span></div>
+                <div class="tile w1 h2"><span>05</span></div>
+            </div>
+        </div>
+
+        <!-- Branding -->
+        <div class="showcase">
+            <div class="slide-head"><span>Your Name</span><span>Portfolio</span></div>
+            <h3 class="showcase-title">Branding <span class="script">Designs</span></h3>
+            <div class="collage">
+                <div class="tile w2 h2"><span>Logo</span></div>
+                <div class="tile w2 h2"><span>Packaging</span></div>
+                <div class="tile w2 h2"><span>Stationery</span></div>
+                <div class="tile w2 h2"><span>Merchandise</span></div>
+                <div class="tile w2 h2"><span>Brand Guide</span></div>
+                <div class="tile w2 h2"><span>Signage</span></div>
+            </div>
+        </div>
+
+        <!-- Web & UI -->
+        <div class="showcase">
+            <div class="slide-head"><span>Your Name</span><span>Portfolio</span></div>
+            <h3 class="showcase-title">Web &amp; UI <span class="script">Projects</span></h3>
+
+            <div class="projects-container">
+                <div class="project-card">
+                    <div class="project-image">Project 01</div>
+                    <div class="project-info">
+                        <h4>Portfolio Website</h4>
+                        <p>A personal website built with HTML, CSS, and JavaScript.</p>
+                        <span>HTML · CSS · JavaScript</span>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image">Project 02</div>
+                    <div class="project-info">
+                        <h4>UI/UX Design</h4>
+                        <p>A modern application interface designed in Figma.</p>
+                        <span>Figma · UI/UX</span>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-image">Project 03</div>
+                    <div class="project-info">
+                        <h4>AquaSense</h4>
+                        <p>A dashboard concept for monitoring water quality sensors.</p>
+                        <span>JavaScript · IoT · Firebase</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== LAST SLIDE : THANK YOU ===== -->
+    <section id="contact" class="section contact">
+        <span class="doodle squiggle s-d"></span>
+        <span class="doodle spark sp-c"></span>
+
+        <p class="section-label">LET'S CONNECT</p>
+        <h2 class="thanks-title">
+            Thank You
+            <span class="script">For Attention</span>
+        </h2>
+
+        <p class="contact-text">
+            Interested in my work or want to collaborate?
+            Feel free to reach out.
+        </p>
+
+        <a href="mailto:yourname@email.com" class="btn primary">
+            Send Me an Email
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© <span id="year"></span> Your Name. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="portofolio.js"></script>
+</body>
+</html>
