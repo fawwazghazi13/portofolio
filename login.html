@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- Tampilan Login -->
+    <div id="login-section" style="text-align:center; padding: 4rem;">
+        <h2>Admin Login</h2>
+        <p>Login untuk mengelola konten portofolio.</p>
+        <button id="google-login-btn" style="padding:1rem 2rem; font-size:1rem; cursor:pointer;">
+            Login dengan Google
+        </button>
+        <p id="login-error" style="color:red;"></p>
+    </div>
+
+    <!-- Panel Admin (muncul setelah login) -->
+    <div id="admin-panel" style="display:none; max-width:800px; margin:2rem auto; padding:1rem;">
+        <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+            <h1>Admin Dashboard</h1>
+            <button id="logout-btn">Logout</button>
+        </header>
+
+        <section>
+            <h2>Edit Teks "About"</h2>
+            <form id="form-about">
+                <textarea id="about-text" rows="6" style="width:100%; padding:1rem; font-size:1rem;"></textarea>
+                <button type="submit" style="margin-top:1rem; padding:0.8rem 2rem;">Simpan About</button>
+            </form>
+        </section>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
