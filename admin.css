@@ -553,4 +553,18 @@ body {
         flex-direction: column;
         gap: 0;
     }
+    
+    /* ============ FIX BUG: Sembunyikan Login jika Dashboard Aktif ============ */
+/* Jika elemen dashboard sedang tampil (display: grid), maka sembunyikan login screen */
+body:has(.dashboard[style*="grid"]) #login-screen {
+    display: none !important;
+}
+
+/* Pastikan dashboard menutupi seluruh layar */
+.dashboard {
+    min-height: 100vh;
+    background: var(--bg);
+    position: relative;
+    z-index: 10;
+}
 }
