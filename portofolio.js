@@ -50,7 +50,7 @@ async function loadPortfolioContent() {
             }
         }
 
-        // --- PROJECTS (Memunculkan gambar dari Admin Panel) ---
+        // --- PROJECTS (Memunculkan Gambar dalam bentuk Kolase/Frame) ---
         const projSnap = await getDoc(doc(db, 'portfolio', 'projects'));
         if (projSnap.exists()) {
             const items = projSnap.data().items || [];
@@ -70,16 +70,16 @@ async function loadPortfolioContent() {
     }
 }
 
-// ===== FUNGSI UNTUK MENAMPILKAN PROJECTS DI WEB PUBLIK =====
+// ===== FUNGSI MENAMPILKAN PROJECT SEBAGAI KOLASE (FRAME) =====
 function renderPublicProjects(items) {
     const projectsSection = document.querySelector('#projects');
     if (!projectsSection) return;
 
-    // Hapus kotak-kotak warna-warni bawaan HTML yang lama
+    // Hapus kotak-kotak lama bawaan HTML
     const oldShowcases = projectsSection.querySelectorAll('.showcase');
     oldShowcases.forEach(el => el.remove());
 
-    // Kelompokkan project berdasarkan kategorinya
+    // Kelompokkan per kategori
     const grouped = {};
     items.forEach(p => {
         if (!grouped[p.category]) grouped[p.category] = [];
@@ -91,27 +91,33 @@ function renderPublicProjects(items) {
         branding: 'Branding', web: 'Web & UI'
     };
 
-    // Buat HTML baru untuk setiap kategori project
     for (const cat in grouped) {
         const showcase = document.createElement('div');
-        showcase.className = 'showcase reveal visible'; // Tambah class reveal agar tidak hilang oleh animasi scroll
+        showcase.className = 'showcase reveal visible';
+
+        let tilesHtml = '';
+        
+        grouped[cat].forEach((p, index) => {
+            // Ini adalah "pola" ukuran frame (w = lebar, h = tinggi). 
+            // Kita buat pola yang bervariasi agar terlihat seperti kolase (collage).
+            const sizePattern = ['w2 h4', 'w2 h2', 'w2 h2', 'w3 h2', 'w3 h2', 'w2 h2'];
+            const sizeClass = sizePattern[index % sizePattern.length];
+
+            // Menggunakan class "tile" bawaan CSS-mu. 
+            // CSS-mu sudah otomatis mengatur "object-fit: cover" agar gambar pas di frame.
+            tilesHtml += `
+                <div class="tile ${sizeClass}" title="${p.description || ''}">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : ''}
+                    <span>${p.title}</span>
+                </div>
+            `;
+        });
 
         showcase.innerHTML = `
             <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
             <h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3>
-            <div class="projects-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                ${grouped[cat].map(p => `
-                    <div class="project-card" style="background:#1a1a1a; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);">
-                        <!-- Jika gambar ada, tampilkan gambarnya. Jika kosong, beri background abu-abu -->
-                        <div class="project-image" style="height: 200px; background-image: url('${p.imageUrl}'); background-size: cover; background-position: center; background-color: #222;">
-                        </div>
-                        <div class="project-info" style="padding: 20px;">
-                            <h4 style="font-family:var(--font-heading); font-size:1.3rem; margin-bottom:5px;">${p.title}</h4>
-                            <p style="color:var(--muted); font-size:0.9rem; margin-bottom:15px;">${p.description}</p>
-                            <span style="font-size:0.75rem; color:var(--accent); border:1px solid var(--accent); padding:4px 10px; border-radius:50px;">${p.tags}</span>
-                        </div>
-                    </div>
-                `).join('')}
+            <div class="collage">
+                ${tilesHtml}
             </div>
         `;
         projectsSection.appendChild(showcase);
@@ -126,24 +132,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelector('.nav-links');
     const links = document.querySelectorAll('.nav-links a');
 
-    // --- Menu mobile ---
     function setMenu(open) {
         navLinks.classList.toggle('active', open);
         menuToggle.setAttribute('aria-expanded', String(open));
         menuToggle.textContent = open ? '✕' : '☰';
     }
 
-    menuToggle.addEventListener('click', () => {
-        setMenu(!navLinks.classList.contains('active'));
-    });
-
+    menuToggle.addEventListener('click', () => setMenu(!navLinks.classList.contains('active')));
     links.forEach(link => link.addEventListener('click', () => setMenu(false)));
 
-    // --- Tahun otomatis di footer ---
     const year = document.getElementById('year');
     if (year) year.textContent = new Date().getFullYear();
 
-    // --- Animasi muncul saat scroll ---
     const targets = document.querySelectorAll(
         '.section-label, .slide-title, .about-content, .hero-image, .paper-card, ' +
         '.showcase, .project-card, .thanks-title, .contact-text, .contact .btn'
@@ -151,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const tiles = document.querySelectorAll('.tile');
 
     targets.forEach(el => el.classList.add('reveal'));
-
     tiles.forEach((tile, i) => {
         tile.classList.add('reveal');
         tile.style.transitionDelay = (i % 6) * 80 + 'ms';
@@ -173,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
         all.forEach(el => el.classList.add('visible'));
     }
 
-    // --- Highlight menu ---
     const sections = document.querySelectorAll('section[id]');
     const navObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
