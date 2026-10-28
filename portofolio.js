@@ -50,7 +50,7 @@ async function loadPortfolioContent() {
             }
         }
 
-        // --- PROJECTS (Memunculkan Gambar dalam bentuk Kolase/Frame) ---
+        // --- PROJECTS ---
         const projSnap = await getDoc(doc(db, 'portfolio', 'projects'));
         if (projSnap.exists()) {
             const items = projSnap.data().items || [];
@@ -70,7 +70,7 @@ async function loadPortfolioContent() {
     }
 }
 
-// ===== FUNGSI MENAMPILKAN PROJECT SEBAGAI KOLASE (FRAME) =====
+// ===== 2. FUNGSI MENAMPILKAN PROJECT SEBAGAI KOLASE (FRAME) =====
 function renderPublicProjects(items) {
     const projectsSection = document.querySelector('#projects');
     if (!projectsSection) return;
@@ -97,16 +97,10 @@ function renderPublicProjects(items) {
 
         let tilesHtml = '';
         
-        grouped[cat].forEach((p, index) => {
-            // Ini adalah "pola" ukuran frame (w = lebar, h = tinggi). 
-            // Kita buat pola yang bervariasi agar terlihat seperti kolase (collage).
-            const sizePattern = ['w2 h4', 'w2 h2', 'w2 h2', 'w3 h2', 'w3 h2', 'w2 h2'];
-            const sizeClass = sizePattern[index % sizePattern.length];
-
-            // Menggunakan class "tile" bawaan CSS-mu. 
-            // CSS-mu sudah otomatis mengatur "object-fit: cover" agar gambar pas di frame.
+        grouped[cat].forEach((p) => {
+            // Menggunakan class 'project-tile-custom' yang ada di CSS
             tilesHtml += `
-                <div class="tile ${sizeClass}" title="${p.description || ''}">
+                <div class="tile project-tile-custom" title="${p.description || ''}">
                     ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : ''}
                     <span>${p.title}</span>
                 </div>
@@ -116,7 +110,7 @@ function renderPublicProjects(items) {
         showcase.innerHTML = `
             <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
             <h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3>
-            <div class="collage">
+            <div class="collage" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; grid-auto-rows: auto;">
                 ${tilesHtml}
             </div>
         `;
@@ -126,24 +120,29 @@ function renderPublicProjects(items) {
 
 document.addEventListener('DOMContentLoaded', loadPortfolioContent);
 
-// ===== 2. KODE ASLI KAMU (MENU & ANIMASI) =====
+// ===== 3. KODE ASLI KAMU (MENU & ANIMASI) =====
 document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.querySelector('.nav-links');
     const links = document.querySelectorAll('.nav-links a');
 
+    // --- Menu mobile ---
     function setMenu(open) {
         navLinks.classList.toggle('active', open);
         menuToggle.setAttribute('aria-expanded', String(open));
         menuToggle.textContent = open ? '✕' : '☰';
     }
 
-    menuToggle.addEventListener('click', () => setMenu(!navLinks.classList.contains('active')));
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => setMenu(!navLinks.classList.contains('active')));
+    }
     links.forEach(link => link.addEventListener('click', () => setMenu(false)));
 
+    // --- Tahun otomatis di footer ---
     const year = document.getElementById('year');
     if (year) year.textContent = new Date().getFullYear();
 
+    // --- Animasi muncul saat scroll ---
     const targets = document.querySelectorAll(
         '.section-label, .slide-title, .about-content, .hero-image, .paper-card, ' +
         '.showcase, .project-card, .thanks-title, .contact-text, .contact .btn'
@@ -172,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         all.forEach(el => el.classList.add('visible'));
     }
 
+    // --- Highlight menu ---
     const sections = document.querySelectorAll('section[id]');
     const navObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
