@@ -1,5 +1,5 @@
 // ===========================================================
-// ADMIN PANEL SCRIPT
+// ADMIN PANEL SCRIPT (DENGAN FITUR HAPUS INSTAN)
 // ===========================================================
 
 import { auth, db } from './firebase-config.js';
@@ -10,32 +10,26 @@ import {
     doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ---- DOM refs ----
 const loginScreen = document.getElementById('login-screen');
 const dashboard   = document.getElementById('dashboard');
 const loginError  = document.getElementById('login-error');
 const userEmail   = document.getElementById('user-email');
 const toastEl     = document.getElementById('toast');
 
-// ---- Helper: Toast notification ----
 let toastTimeout;
 function showToast(message, type = 'success') {
     clearTimeout(toastTimeout);
     toastEl.textContent = message;
     toastEl.className = 'toast ' + type + ' show';
-    toastTimeout = setTimeout(() => {
-        toastEl.classList.remove('show');
-    }, 3000);
+    toastTimeout = setTimeout(() => { toastEl.classList.remove('show'); }, 3000);
 }
 
-// ---- Helper: escape HTML ----
 function esc(str) {
     const div = document.createElement('div');
     div.textContent = str || '';
     return div.innerHTML;
 }
 
-// ---- Helper: set loading state ----
 function setBtnLoading(btn, loading, originalText) {
     if (loading) {
         btn.dataset.originalText = btn.textContent;
@@ -48,7 +42,7 @@ function setBtnLoading(btn, loading, originalText) {
 }
 
 // ===========================================================
-// AUTH (LOGIN & LOGOUT)
+// AUTH
 // ===========================================================
 document.getElementById('google-login-btn').addEventListener('click', async () => {
     loginError.textContent = '';
@@ -57,7 +51,6 @@ document.getElementById('google-login-btn').addEventListener('click', async () =
         await signInWithPopup(auth, provider);
     } catch (err) {
         loginError.textContent = 'Login gagal: ' + err.message;
-        console.error(err);
     }
 });
 
@@ -65,7 +58,6 @@ document.getElementById('logout-btn').addEventListener('click', () => signOut(au
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        console.log('✅ Logged in as:', user.email, '| UID:', user.uid);
         loginScreen.style.display = 'none';
         dashboard.style.display = 'grid';
         userEmail.textContent = user.email;
@@ -83,11 +75,8 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
         btn.classList.add('active');
-        const tabId = 'tab-' + btn.dataset.tab;
-        document.getElementById(tabId).classList.add('active');
-
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
         const label = btn.textContent.trim().replace(/^[^\s]+\s/, '');
         document.getElementById('page-title').textContent = label;
     });
@@ -97,17 +86,11 @@ document.querySelectorAll('.nav-item').forEach(btn => {
 // LOAD ALL DATA
 // ===========================================================
 async function loadAllData() {
-    await Promise.all([
-        loadProfile(),
-        loadSkills(),
-        loadSoftware(),
-        loadProjects(),
-        loadContact()
-    ]);
+    await Promise.all([loadProfile(), loadSkills(), loadSoftware(), loadProjects(), loadContact()]);
 }
 
 // ===========================================================
-// PROFILE & ABOUT
+// PROFILE
 // ===========================================================
 async function loadProfile() {
     try {
@@ -122,9 +105,7 @@ async function loadProfile() {
             document.getElementById('profile-image').value       = d.profileImage || '';
             updateImagePreview('profile-image', 'profile-image-preview');
         }
-    } catch (err) {
-        showToast('Gagal memuat profile: ' + err.message, 'error');
-    }
+    } catch (err) { showToast('Gagal memuat profile', 'error'); }
 }
 
 document.getElementById('profile-image').addEventListener('input', () => {
@@ -138,8 +119,7 @@ function updateImagePreview(inputId, previewId) {
     if (!url) return;
     const img = document.createElement('img');
     img.src = url;
-    img.alt = 'Preview';
-    img.onerror = () => { preview.innerHTML = '<span style="color:var(--danger);font-size:0.8rem;">Gambar tidak ditemukan</span>'; };
+    img.onerror = () => { preview.innerHTML = '<span style="color:var(--danger);font-size:0.8rem;">URL Gambar tidak valid</span>'; };
     preview.appendChild(img);
 }
 
@@ -158,64 +138,52 @@ document.getElementById('form-profile').addEventListener('submit', async (e) => 
             updatedAt:    new Date()
         }, { merge: true });
         showToast('✅ Profile berhasil disimpan!');
-    } catch (err) {
-        showToast('Gagal: ' + err.message, 'error');
-    } finally {
-        setBtnLoading(btn, false);
-    }
+    } catch (err) { showToast('Gagal: ' + err.message, 'error'); } 
+    finally { setBtnLoading(btn, false); }
 });
 
 // ===========================================================
 // SKILLS
 // ===========================================================
 let skillsItems = [];
-
 async function loadSkills() {
-    try {
-        const snap = await getDoc(doc(db, 'portfolio', 'skills'));
-        skillsItems = snap.exists() ? (snap.data().items || []) : [];
-        renderSkills();
-    } catch (err) {
-        showToast('Gagal memuat skills: ' + err.message, 'error');
-    }
+    const snap = await getDoc(doc(db, 'portfolio', 'skills'));
+    skillsItems = snap.exists() ? (snap.data().items || []) : [];
+    renderSkills();
 }
 
 function renderSkills() {
     const container = document.getElementById('skills-list');
     container.innerHTML = '';
-
     if (skillsItems.length === 0) {
-        container.innerHTML = '<div class="empty-state">Belum ada skill. Klik "+ Tambah Skill" untuk menambahkan.</div>';
+        container.innerHTML = '<div class="empty-state">Belum ada skill.</div>';
         return;
     }
-
     skillsItems.forEach((item, i) => {
         const card = document.createElement('div');
         card.className = 'list-card';
         card.innerHTML = `
             <div class="list-card-header">
                 <span class="list-card-title">Skill #${i + 1}</span>
-                <button type="button" class="btn-icon" data-remove-skill="${i}" title="Hapus">✕</button>
+                <button type="button" class="btn-icon" data-remove-skill="${i}">✕</button>
             </div>
             <div class="form-group">
                 <label>Judul Skill</label>
-                <input type="text" class="skill-title" value="${esc(item.title)}" placeholder="Contoh: HTML & CSS">
+                <input type="text" class="skill-title" value="${esc(item.title)}">
             </div>
             <div class="form-group">
                 <label>Deskripsi</label>
-                <textarea class="skill-desc" rows="2" placeholder="Contoh: Building website structures...">${esc(item.description)}</textarea>
+                <textarea class="skill-desc" rows="2">${esc(item.description)}</textarea>
             </div>
         `;
         container.appendChild(card);
     });
-
+    
+    // Hapus skill
     container.querySelectorAll('[data-remove-skill]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const i = parseInt(e.currentTarget.dataset.removeSkill);
-            if (confirm('Hapus skill ini?')) {
-                skillsItems.splice(i, 1);
-                renderSkills();
-            }
+            if (confirm('Hapus skill ini?')) { skillsItems.splice(i, 1); renderSkills(); }
         });
     });
 }
@@ -231,65 +199,49 @@ document.getElementById('save-skills-btn').addEventListener('click', async (e) =
     const items = [];
     cards.forEach(card => {
         const title = card.querySelector('.skill-title').value.trim();
-        const description = card.querySelector('.skill-desc').value.trim();
-        if (title) items.push({ title, description });
+        if (title) items.push({ title, description: card.querySelector('.skill-desc').value.trim() });
     });
-
     setBtnLoading(btn, true);
     try {
-        await setDoc(doc(db, 'portfolio', 'skills'), {
-            items,
-            updatedAt: new Date()
-        });
-        skillsItems = items;
-        showToast('✅ Skills berhasil disimpan!');
-    } catch (err) {
-        showToast('Gagal: ' + err.message, 'error');
-    } finally {
-        setBtnLoading(btn, false);
-    }
+        await setDoc(doc(db, 'portfolio', 'skills'), { items, updatedAt: new Date() });
+        skillsItems = items; showToast('✅ Skills disimpan!');
+    } catch (err) { showToast('Gagal: ' + err.message, 'error'); } 
+    finally { setBtnLoading(btn, false); }
 });
 
 // ===========================================================
 // SOFTWARE
 // ===========================================================
 let softwareItems = [];
-
 async function loadSoftware() {
-    try {
-        const snap = await getDoc(doc(db, 'portfolio', 'software'));
-        softwareItems = snap.exists() ? (snap.data().items || []) : [];
-        renderSoftware();
-    } catch (err) {
-        showToast('Gagal memuat software: ' + err.message, 'error');
-    }
+    const snap = await getDoc(doc(db, 'portfolio', 'software'));
+    softwareItems = snap.exists() ? (snap.data().items || []) : [];
+    renderSoftware();
 }
 
 function renderSoftware() {
     const container = document.getElementById('software-list');
     container.innerHTML = '';
-
     if (softwareItems.length === 0) {
-        container.innerHTML = '<div class="empty-state">Belum ada software. Klik "+ Tambah Software" untuk menambahkan.</div>';
+        container.innerHTML = '<div class="empty-state">Belum ada software.</div>';
         return;
     }
-
     softwareItems.forEach((item, i) => {
         const card = document.createElement('div');
         card.className = 'list-card';
         card.innerHTML = `
             <div class="list-card-header">
                 <span class="list-card-title">Software #${i + 1}</span>
-                <button type="button" class="btn-icon" data-remove-sw="${i}" title="Hapus">✕</button>
+                <button type="button" class="btn-icon" data-remove-sw="${i}">✕</button>
             </div>
             <div class="form-row">
                 <div class="form-group" style="max-width:120px;">
                     <label>Label</label>
-                    <input type="text" class="sw-label" maxlength="4" value="${esc(item.label)}" placeholder="Ps">
+                    <input type="text" class="sw-label" value="${esc(item.label)}">
                 </div>
                 <div class="form-group">
                     <label>Nama</label>
-                    <input type="text" class="sw-name" value="${esc(item.name)}" placeholder="Photoshop">
+                    <input type="text" class="sw-name" value="${esc(item.name)}">
                 </div>
                 <div class="form-group" style="max-width:120px;">
                     <label>Warna</label>
@@ -299,14 +251,12 @@ function renderSoftware() {
         `;
         container.appendChild(card);
     });
-
+    
+    // Hapus software
     container.querySelectorAll('[data-remove-sw]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const i = parseInt(e.currentTarget.dataset.removeSw);
-            if (confirm('Hapus software ini?')) {
-                softwareItems.splice(i, 1);
-                renderSoftware();
-            }
+            if (confirm('Hapus software ini?')) { softwareItems.splice(i, 1); renderSoftware(); }
         });
     });
 }
@@ -323,30 +273,20 @@ document.getElementById('save-software-btn').addEventListener('click', async (e)
     cards.forEach(card => {
         const label = card.querySelector('.sw-label').value.trim();
         const name  = card.querySelector('.sw-name').value.trim();
-        const color = card.querySelector('.sw-color').value;
-        if (label && name) items.push({ label, name, color });
+        if (label && name) items.push({ label, name, color: card.querySelector('.sw-color').value });
     });
-
     setBtnLoading(btn, true);
     try {
-        await setDoc(doc(db, 'portfolio', 'software'), {
-            items,
-            updatedAt: new Date()
-        });
-        softwareItems = items;
-        showToast('✅ Software berhasil disimpan!');
-    } catch (err) {
-        showToast('Gagal: ' + err.message, 'error');
-    } finally {
-        setBtnLoading(btn, false);
-    }
+        await setDoc(doc(db, 'portfolio', 'software'), { items, updatedAt: new Date() });
+        softwareItems = items; showToast('✅ Software disimpan!');
+    } catch (err) { showToast('Gagal: ' + err.message, 'error'); } 
+    finally { setBtnLoading(btn, false); }
 });
 
 // ===========================================================
-// PROJECTS
+// PROJECTS (DENGAN FITUR HAPUS INSTAN)
 // ===========================================================
 let projectItems = [];
-
 const CATEGORIES = [
     { value: 'social',       label: 'Social Media' },
     { value: 'print',        label: 'Print Media' },
@@ -356,24 +296,18 @@ const CATEGORIES = [
 ];
 
 async function loadProjects() {
-    try {
-        const snap = await getDoc(doc(db, 'portfolio', 'projects'));
-        projectItems = snap.exists() ? (snap.data().items || []) : [];
-        renderProjects();
-    } catch (err) {
-        showToast('Gagal memuat projects: ' + err.message, 'error');
-    }
+    const snap = await getDoc(doc(db, 'portfolio', 'projects'));
+    projectItems = snap.exists() ? (snap.data().items || []) : [];
+    renderProjects();
 }
 
 function renderProjects() {
     const container = document.getElementById('projects-list');
     container.innerHTML = '';
-
     if (projectItems.length === 0) {
-        container.innerHTML = '<div class="empty-state">Belum ada project. Klik "+ Tambah Project" untuk menambahkan.</div>';
+        container.innerHTML = '<div class="empty-state">Belum ada project.</div>';
         return;
     }
-
     projectItems.forEach((item, i) => {
         const catOptions = CATEGORIES.map(c =>
             `<option value="${c.value}" ${c.value === item.category ? 'selected' : ''}>${c.label}</option>`
@@ -384,7 +318,7 @@ function renderProjects() {
         card.innerHTML = `
             <div class="list-card-header">
                 <span class="list-card-title">Project #${i + 1}</span>
-                <button type="button" class="btn-icon" data-remove-proj="${i}" title="Hapus">✕</button>
+                <button type="button" class="btn-icon" data-remove-proj="${i}" title="Hapus Permanen">✕</button>
             </div>
             <div class="form-row">
                 <div class="form-group" style="max-width:200px;">
@@ -392,21 +326,21 @@ function renderProjects() {
                     <select class="proj-category">${catOptions}</select>
                 </div>
                 <div class="form-group">
-                    <label>Judul</label>
+                    <label>Judul (Wajib diisi)</label>
                     <input type="text" class="proj-title" value="${esc(item.title)}" placeholder="Judul project">
                 </div>
             </div>
             <div class="form-group">
                 <label>Deskripsi</label>
-                <textarea class="proj-desc" rows="2" placeholder="Deskripsi singkat">${esc(item.description)}</textarea>
+                <textarea class="proj-desc" rows="2">${esc(item.description)}</textarea>
             </div>
             <div class="form-group">
                 <label>Tags (pisahkan dengan koma)</label>
                 <input type="text" class="proj-tags" value="${esc(item.tags)}" placeholder="HTML, CSS, JavaScript">
             </div>
             <div class="form-group">
-                <label>URL Gambar (opsional)</label>
-                <input type="text" class="proj-image" value="${esc(item.imageUrl)}" placeholder="https://... atau images/gambar.jpg">
+                <label>URL Gambar (Link dari internet)</label>
+                <input type="text" class="proj-image" value="${esc(item.imageUrl)}" placeholder="https://contoh.com/gambar.jpg">
                 <div class="img-preview proj-preview"></div>
             </div>
         `;
@@ -418,12 +352,39 @@ function renderProjects() {
         imgInput.addEventListener('input', () => renderProjPreview(imgInput.value, preview));
     });
 
+    // FITUR HAPUS INSTAN UNTUK PROJECT
     container.querySelectorAll('[data-remove-proj]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             const i = parseInt(e.currentTarget.dataset.removeProj);
-            if (confirm('Hapus project ini?')) {
+            if (confirm('⚠️ Yakin ingin menghapus project ini secara permanen? Data akan langsung hilang dari web publik.')) {
+                // 1. Hapus dari array lokal
                 projectItems.splice(i, 1);
+                // 2. Render ulang tampilan
                 renderProjects();
+
+                // 3. Simpan langsung ke Firebase
+                try {
+                    const cards = document.querySelectorAll('#projects-list .list-card');
+                    const updatedItems = [];
+                    cards.forEach(card => {
+                        const title = card.querySelector('.proj-title').value.trim();
+                        if (title) {
+                            updatedItems.push({
+                                category:    card.querySelector('.proj-category').value,
+                                title,
+                                description: card.querySelector('.proj-desc').value.trim(),
+                                tags:        card.querySelector('.proj-tags').value.trim(),
+                                imageUrl:    card.querySelector('.proj-image').value.trim()
+                            });
+                        }
+                    });
+                    
+                    await setDoc(doc(db, 'portfolio', 'projects'), { items: updatedItems, updatedAt: new Date() });
+                    projectItems = updatedItems;
+                    showToast('🗑️ Project berhasil dihapus permanen!');
+                } catch (err) {
+                    showToast('Gagal menghapus: ' + err.message, 'error');
+                }
             }
         });
     });
@@ -431,21 +392,15 @@ function renderProjects() {
 
 function renderProjPreview(url, container) {
     container.innerHTML = '';
-    if (!url.trim()) return;
+    if (!url || !url.trim()) return;
     const img = document.createElement('img');
     img.src = url.trim();
-    img.onerror = () => { container.innerHTML = '<span style="color:var(--danger);font-size:0.8rem;">Gambar tidak ditemukan</span>'; };
+    img.onerror = () => { container.innerHTML = '<span style="color:var(--danger);font-size:0.8rem;">URL Gambar tidak valid</span>'; };
     container.appendChild(img);
 }
 
 document.getElementById('add-project-btn').addEventListener('click', () => {
-    projectItems.push({
-        category: 'web',
-        title: '',
-        description: '',
-        tags: '',
-        imageUrl: ''
-    });
+    projectItems.push({ category: 'web', title: '', description: '', tags: '', imageUrl: '' });
     renderProjects();
 });
 
@@ -453,9 +408,12 @@ document.getElementById('save-projects-btn').addEventListener('click', async (e)
     const btn = e.currentTarget;
     const cards = document.querySelectorAll('#projects-list .list-card');
     const items = [];
+    let adaYangKosong = false;
+
     cards.forEach(card => {
         const title = card.querySelector('.proj-title').value.trim();
-        if (!title) return;
+        if (!title) { adaYangKosong = true; return; }
+        
         items.push({
             category:    card.querySelector('.proj-category').value,
             title,
@@ -465,37 +423,35 @@ document.getElementById('save-projects-btn').addEventListener('click', async (e)
         });
     });
 
+    if (adaYangKosong) {
+        showToast('⚠️ Ada project yang Judulnya kosong! Harap isi judul.', 'error');
+        return;
+    }
+
     setBtnLoading(btn, true);
     try {
-        await setDoc(doc(db, 'portfolio', 'projects'), {
-            items,
-            updatedAt: new Date()
-        });
+        await setDoc(doc(db, 'portfolio', 'projects'), { items, updatedAt: new Date() });
         projectItems = items;
         showToast('✅ Projects berhasil disimpan!');
-    } catch (err) {
-        showToast('Gagal: ' + err.message, 'error');
-    } finally {
-        setBtnLoading(btn, false);
+    } catch (err) { 
+        showToast('Gagal: ' + err.message, 'error'); 
+    } finally { 
+        setBtnLoading(btn, false); 
     }
 });
 
 // ===========================================================
-// CONTACT & FOOTER
+// CONTACT
 // ===========================================================
 async function loadContact() {
-    try {
-        const snap = await getDoc(doc(db, 'portfolio', 'contact'));
-        if (snap.exists()) {
-            const d = snap.data();
-            document.getElementById('contact-email').value     = d.email || '';
-            document.getElementById('contact-instagram').value = d.instagram || '';
-            document.getElementById('contact-github').value    = d.github || '';
-            document.getElementById('contact-whatsapp').value  = d.whatsapp || '';
-            document.getElementById('contact-footer').value    = d.footerText || '';
-        }
-    } catch (err) {
-        showToast('Gagal memuat contact: ' + err.message, 'error');
+    const snap = await getDoc(doc(db, 'portfolio', 'contact'));
+    if (snap.exists()) {
+        const d = snap.data();
+        document.getElementById('contact-email').value     = d.email || '';
+        document.getElementById('contact-instagram').value = d.instagram || '';
+        document.getElementById('contact-github').value    = d.github || '';
+        document.getElementById('contact-whatsapp').value  = d.whatsapp || '';
+        document.getElementById('contact-footer').value    = d.footerText || '';
     }
 }
 
@@ -512,78 +468,7 @@ document.getElementById('form-contact').addEventListener('submit', async (e) => 
             footerText: document.getElementById('contact-footer').value.trim(),
             updatedAt:  new Date()
         }, { merge: true });
-        showToast('✅ Contact berhasil disimpan!');
-    } catch (err) {
-        showToast('Gagal: ' + err.message, 'error');
-    } finally {
-        setBtnLoading(btn, false);
-    }
-});
-
-// ===========================================================
-// SEED DEFAULT DATA (TOMBOL ISI DATA DEFAULT)
-// ===========================================================
-const SEED_DATA = {
-    about: {
-        name: 'M Ghazi Fawwaz El Aqiel',
-        greeting: 'HELLO, WELCOME TO MY WEBSITE',
-        title: 'Student | Designer | Developer',
-        description: 'I enjoy learning technology, creating designs, and developing creative projects. Welcome to my personal portfolio.',
-        aboutText: 'Hello! My name is M Ghazi Fawwaz El Aqiel. I am a student in IDN Boarding School who is interested in graphic design and web development. I enjoy exploring new ideas, learning new skills, and turning creative concepts into real projects. This website is where I showcase my work and progress.',
-        profileImage: 'images/profile.png'
-    },
-    skills: {
-        items: [
-            { title: 'HTML & CSS',     description: 'Building website structures and designing layouts.' },
-            { title: 'JavaScript',     description: 'Creating interactive website features.' },
-            { title: 'UI/UX Design',   description: 'Designing user interfaces and user experiences.' },
-            { title: 'Graphic Design', description: 'Creating posters, digital graphics, and visual content.' }
-        ]
-    },
-    software: {
-        items: [
-            { label: 'Ps',  name: 'Photoshop',     color: '#31a8ff' },
-            { label: 'Ai',  name: 'Illustrator',   color: '#ff9a00' },
-            { label: 'Pr',  name: 'Premiere Pro',  color: '#9999ff' },
-            { label: 'Fg',  name: 'Figma',         color: '#f24e1e' },
-            { label: 'JS',  name: 'JavaScript',    color: '#f7df1e' },
-            { label: '</>', name: 'HTML & CSS',    color: '#f5a31a' }
-        ]
-    },
-    projects: {
-        items: [
-            { category: 'web', title: 'Portfolio Website', description: 'A personal website built with HTML, CSS, and JavaScript.', tags: 'HTML, CSS, JavaScript', imageUrl: '' },
-            { category: 'web', title: 'UI/UX Design',      description: 'A modern application interface designed in Figma.',       tags: 'Figma, UI/UX',           imageUrl: '' },
-            { category: 'web', title: 'AquaSense',         description: 'A dashboard concept for monitoring water quality sensors.', tags: 'JavaScript, IoT, Firebase', imageUrl: '' }
-        ]
-    },
-    contact: {
-        email: 'yourname@email.com',
-        instagram: '',
-        github: '',
-        whatsapp: '',
-        footerText: 'M Ghazi Fawwaz El Aqiel'
-    }
-};
-
-document.getElementById('seed-btn').addEventListener('click', async () => {
-    if (!confirm('⚠️ Ini akan MENGISI data default ke Firestore. Data yang sudah ada akan ditimpa. Lanjutkan?')) return;
-
-    const btn = document.getElementById('seed-btn');
-    btn.disabled = true;
-    btn.textContent = 'Mengisi...';
-    try {
-        await setDoc(doc(db, 'portfolio', 'about'),    SEED_DATA.about);
-        await setDoc(doc(db, 'portfolio', 'skills'),   SEED_DATA.skills);
-        await setDoc(doc(db, 'portfolio', 'software'), SEED_DATA.software);
-        await setDoc(doc(db, 'portfolio', 'projects'), SEED_DATA.projects);
-        await setDoc(doc(db, 'portfolio', 'contact'),  SEED_DATA.contact);
-        showToast('✅ Data default berhasil diisi!');
-        await loadAllData();
-    } catch (err) {
-        showToast('Gagal: ' + err.message, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Isi Data Default';
-    }
+        showToast('✅ Contact disimpan!');
+    } catch (err) { showToast('Gagal: ' + err.message, 'error'); } 
+    finally { setBtnLoading(btn, false); }
 });
