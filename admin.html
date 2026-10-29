@@ -5,409 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Portofolio</title>
     <link rel="stylesheet" href="admin.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- ============ LOGIN SCREEN ============ -->
     <div id="login-screen" class="login-screen">
         <div class="login-card">
             <div class="login-brand">My<span>Portfolio.</span></div>
             <h1>Admin Panel</h1>
             <p class="login-desc">Login untuk mengelola konten portofolio kamu.</p>
             <button id="google-login-btn" class="btn-google">
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
+                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                 Login dengan Google
             </button>
             <p id="login-error" class="error-msg"></p>
         </div>
     </div>
 
-    <!-- ============ DASHBOARD ============ -->
     <div id="dashboard" class="dashboard" style="display: none;">
-
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-brand">My<span>Portfolio.</span></div>
                 <p class="sidebar-sub">Admin Panel</p>
             </div>
-
             <nav class="sidebar-nav">
-                <button class="nav-item active" data-tab="profile">
-                    <span class="nav-icon">👤</span> Profile & About
-                </button>
-                <button class="nav-item" data-tab="skills">
-                    <span class="nav-icon">🎨</span> Skills
-                </button>
-                <button class="nav-item" data-tab="software">
-                    <span class="nav-icon">💻</span> Software
-                </button>
-                <button class="nav-item" data-tab="projects">
-                    <span class="nav-icon">🖼️</span> Projects
-                </button>
-                <button class="nav-item" data-tab="contact">
-                    <span class="nav-icon">📧</span> Contact & Footer
-                </button>
+                <button class="nav-item active" data-tab="profile"><span class="nav-icon">👤</span> Profile & About</button>
+                <button class="nav-item" data-tab="skills"><span class="nav-icon">🎨</span> Skills</button>
+                <button class="nav-item" data-tab="software"><span class="nav-icon">💻</span> Software</button>
+                <button class="nav-item" data-tab="projects"><span class="nav-icon">🖼️</span> Projects & Video</button>
+                <button class="nav-item" data-tab="contact"><span class="nav-icon">📧</span> Contact & Footer</button>
             </nav>
-
             <div class="sidebar-footer">
                 <div class="user-info">
                     <span class="user-label">Login sebagai:</span>
                     <span class="user-email" id="user-email"></span>
                 </div>
                 <div class="sidebar-actions">
-                    <button id="seed-btn" class="btn-sidebar btn-secondary">Isi Data Default</button>
                     <button id="logout-btn" class="btn-sidebar btn-danger">Logout</button>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
             <header class="main-header">
                 <h1 id="page-title">Profile & About</h1>
                 <a href="index.html" target="_blank" class="btn-preview">Lihat Web ↗</a>
             </header>
 
-            <!-- ===== TAB: PROFILE ===== -->
             <section class="tab-content active" id="tab-profile">
                 <form id="form-profile">
                     <div class="form-section">
                         <h2>Hero / Cover</h2>
-                        <p class="form-hint">Teks yang muncul di halaman utama (slide 1).</p>
-
-                        <div class="form-group">
-                            <label>Nama Lengkap</label>
-                            <input type="text" id="profile-name" placeholder="M Ghazi Fawwaz El Aqiel">
-                        </div>
-                        <div class="form-group">
-                            <label>Greeting (teks kecil di atas judul)</label>
-                            <input type="text" id="profile-greeting" placeholder="HELLO, WELCOME TO MY WEBSITE">
-                        </div>
-                        <div class="form-group">
-                            <label>Subtitle (di bawah judul)</label>
-                            <input type="text" id="profile-title" placeholder="Student | Designer | Developer">
-                        </div>
-                        <div class="form-group">
-                            <label>Deskripsi Singkat</label>
-                            <textarea id="profile-description" rows="3"></textarea>
-                        </div>
+                        <div class="form-group"><label>Nama Lengkap</label><input type="text" id="profile-name"></div>
+                        <div class="form-group"><label>Greeting</label><input type="text" id="profile-greeting"></div>
+                        <div class="form-group"><label>Subtitle</label><input type="text" id="profile-title"></div>
+                        <div class="form-group"><label>Deskripsi Singkat</label><textarea id="profile-description" rows="3"></textarea></div>
                     </div>
-
                     <div class="form-section">
                         <h2>About Me</h2>
-                        <p class="form-hint">Teks panjang di halaman "Hello I'm".</p>
-
-                        <div class="form-group">
-                            <label>Teks About</label>
-                            <textarea id="profile-about-text" rows="6"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>URL Foto Profil</label>
-                            <input type="text" id="profile-image" placeholder="images/profile.png atau https://...">
-                            <div class="img-preview" id="profile-image-preview"></div>
-                        </div>
+                        <div class="form-group"><label>Teks About</label><textarea id="profile-about-text" rows="6"></textarea></div>
+                        <div class="form-group"><label>URL Foto Profil</label><input type="text" id="profile-image"><div class="img-preview" id="profile-image-preview"></div></div>
                     </div>
-
                     <button type="submit" class="btn-save">💾 Simpan Profile</button>
                 </form>
             </section>
 
-            <!-- ===== TAB: SKILLS ===== -->
             <section class="tab-content" id="tab-skills">
                 <div class="form-section">
                     <h2>Skills</h2>
-                    <p class="form-hint">Daftar skill yang tampil di section "Skills & Tools".</p>
-
                     <div id="skills-list" class="list-container"></div>
-
                     <button type="button" id="add-skill-btn" class="btn-add">+ Tambah Skill</button>
                     <button type="button" id="save-skills-btn" class="btn-save">💾 Simpan Skills</button>
                 </div>
             </section>
 
-            <!-- ===== TAB: SOFTWARE ===== -->
             <section class="tab-content" id="tab-software">
                 <div class="form-section">
                     <h2>Software / Tools</h2>
-                    <p class="form-hint">Ikon software yang kamu kuasai (Photoshop, Figma, dll).</p>
-
                     <div id="software-list" class="list-container"></div>
-
                     <button type="button" id="add-software-btn" class="btn-add">+ Tambah Software</button>
                     <button type="button" id="save-software-btn" class="btn-save">💾 Simpan Software</button>
                 </div>
             </section>
 
-            <!-- ===== TAB: PROJECTS ===== -->
             <section class="tab-content" id="tab-projects">
                 <div class="form-section">
-                    <h2>Projects</h2>
-                    <p class="form-hint">Semua proyek yang tampil di section "Featured Projects".</p>
-
+                    <h2>Projects & Video</h2>
                     <div id="projects-list" class="list-container"></div>
-
                     <button type="button" id="add-project-btn" class="btn-add">+ Tambah Project</button>
                     <button type="button" id="save-projects-btn" class="btn-save">💾 Simpan Projects</button>
                 </div>
             </section>
 
-            <!-- ===== TAB: CONTACT ===== -->
             <section class="tab-content" id="tab-contact">
                 <form id="form-contact">
                     <div class="form-section">
                         <h2>Contact</h2>
-                        <p class="form-hint">Info kontak yang tampil di bagian bawah website.</p>
-
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="contact-email" placeholder="yourname@email.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Instagram (URL)</label>
-                            <input type="url" id="contact-instagram" placeholder="https://instagram.com/username">
-                        </div>
-                        <div class="form-group">
-                            <label>GitHub (URL)</label>
-                            <input type="url" id="contact-github" placeholder="https://github.com/username">
-                        </div>
-                        <div class="form-group">
-                            <label>WhatsApp (link wa.me)</label>
-                            <input type="url" id="contact-whatsapp" placeholder="https://wa.me/6281234567890">
-                        </div>
+                        <div class="form-group"><label>Email (Untuk tombol Contact Me)</label><input type="email" id="contact-email"></div>
+                        <div class="form-group"><label>Instagram (URL)</label><input type="url" id="contact-instagram"></div>
+                        <div class="form-group"><label>GitHub (URL)</label><input type="url" id="contact-github"></div>
+                        <div class="form-group"><label>WhatsApp (URL)</label><input type="url" id="contact-whatsapp"></div>
                     </div>
-
                     <div class="form-section">
                         <h2>Footer</h2>
-                        <div class="form-group">
-                            <label>Teks Footer (nama pemilik)</label>
-                            <input type="text" id="contact-footer" placeholder="M Ghazi Fawwaz El Aqiel">
-                        </div>
+                        <div class="form-group"><label>Teks Footer</label><input type="text" id="contact-footer"></div>
                     </div>
-
                     <button type="submit" class="btn-save">💾 Simpan Contact</button>
                 </form>
             </section>
         </main>
     </div>
-
-    <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
-
-    <script type="module" src="admin.js"></script>
-</body>
-</html><!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | Portofolio</title>
-    <link rel="stylesheet" href="admin.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-
-    <!-- ============ LOGIN SCREEN ============ -->
-    <div id="login-screen" class="login-screen">
-        <div class="login-card">
-            <div class="login-brand">My<span>Portfolio.</span></div>
-            <h1>Admin Panel</h1>
-            <p class="login-desc">Login untuk mengelola konten portofolio kamu.</p>
-            <button id="google-login-btn" class="btn-google">
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Login dengan Google
-            </button>
-            <p id="login-error" class="error-msg"></p>
-        </div>
-    </div>
-
-    <!-- ============ DASHBOARD ============ -->
-    <div id="dashboard" class="dashboard" style="display: none;">
-
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-brand">My<span>Portfolio.</span></div>
-                <p class="sidebar-sub">Admin Panel</p>
-            </div>
-
-            <nav class="sidebar-nav">
-                <button class="nav-item active" data-tab="profile">
-                    <span class="nav-icon">👤</span> Profile & About
-                </button>
-                <button class="nav-item" data-tab="skills">
-                    <span class="nav-icon">🎨</span> Skills
-                </button>
-                <button class="nav-item" data-tab="software">
-                    <span class="nav-icon">💻</span> Software
-                </button>
-                <button class="nav-item" data-tab="projects">
-                    <span class="nav-icon">🖼️</span> Projects
-                </button>
-                <button class="nav-item" data-tab="contact">
-                    <span class="nav-icon">📧</span> Contact & Footer
-                </button>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <span class="user-label">Login sebagai:</span>
-                    <span class="user-email" id="user-email"></span>
-                </div>
-                <div class="sidebar-actions">
-                    <button id="seed-btn" class="btn-sidebar btn-secondary">Isi Data Default</button>
-                    <button id="logout-btn" class="btn-sidebar btn-danger">Logout</button>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="main-header">
-                <h1 id="page-title">Profile & About</h1>
-                <a href="index.html" target="_blank" class="btn-preview">Lihat Web ↗</a>
-            </header>
-
-            <!-- ===== TAB: PROFILE ===== -->
-            <section class="tab-content active" id="tab-profile">
-                <form id="form-profile">
-                    <div class="form-section">
-                        <h2>Hero / Cover</h2>
-                        <p class="form-hint">Teks yang muncul di halaman utama (slide 1).</p>
-
-                        <div class="form-group">
-                            <label>Nama Lengkap</label>
-                            <input type="text" id="profile-name" placeholder="M Ghazi Fawwaz El Aqiel">
-                        </div>
-                        <div class="form-group">
-                            <label>Greeting (teks kecil di atas judul)</label>
-                            <input type="text" id="profile-greeting" placeholder="HELLO, WELCOME TO MY WEBSITE">
-                        </div>
-                        <div class="form-group">
-                            <label>Subtitle (di bawah judul)</label>
-                            <input type="text" id="profile-title" placeholder="Student | Designer | Developer">
-                        </div>
-                        <div class="form-group">
-                            <label>Deskripsi Singkat</label>
-                            <textarea id="profile-description" rows="3"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h2>About Me</h2>
-                        <p class="form-hint">Teks panjang di halaman "Hello I'm".</p>
-
-                        <div class="form-group">
-                            <label>Teks About</label>
-                            <textarea id="profile-about-text" rows="6"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>URL Foto Profil</label>
-                            <input type="text" id="profile-image" placeholder="images/profile.png atau https://...">
-                            <div class="img-preview" id="profile-image-preview"></div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-save">💾 Simpan Profile</button>
-                </form>
-            </section>
-
-            <!-- ===== TAB: SKILLS ===== -->
-            <section class="tab-content" id="tab-skills">
-                <div class="form-section">
-                    <h2>Skills</h2>
-                    <p class="form-hint">Daftar skill yang tampil di section "Skills & Tools".</p>
-
-                    <div id="skills-list" class="list-container"></div>
-
-                    <button type="button" id="add-skill-btn" class="btn-add">+ Tambah Skill</button>
-                    <button type="button" id="save-skills-btn" class="btn-save">💾 Simpan Skills</button>
-                </div>
-            </section>
-
-            <!-- ===== TAB: SOFTWARE ===== -->
-            <section class="tab-content" id="tab-software">
-                <div class="form-section">
-                    <h2>Software / Tools</h2>
-                    <p class="form-hint">Ikon software yang kamu kuasai (Photoshop, Figma, dll).</p>
-
-                    <div id="software-list" class="list-container"></div>
-
-                    <button type="button" id="add-software-btn" class="btn-add">+ Tambah Software</button>
-                    <button type="button" id="save-software-btn" class="btn-save">💾 Simpan Software</button>
-                </div>
-            </section>
-
-            <!-- ===== TAB: PROJECTS ===== -->
-            <section class="tab-content" id="tab-projects">
-                <div class="form-section">
-                    <h2>Projects</h2>
-                    <p class="form-hint">Semua proyek yang tampil di section "Featured Projects".</p>
-
-                    <div id="projects-list" class="list-container"></div>
-
-                    <button type="button" id="add-project-btn" class="btn-add">+ Tambah Project</button>
-                    <button type="button" id="save-projects-btn" class="btn-save">💾 Simpan Projects</button>
-                </div>
-            </section>
-
-            <!-- ===== TAB: CONTACT ===== -->
-            <section class="tab-content" id="tab-contact">
-                <form id="form-contact">
-                    <div class="form-section">
-                        <h2>Contact</h2>
-                        <p class="form-hint">Info kontak yang tampil di bagian bawah website.</p>
-
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="contact-email" placeholder="yourname@email.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Instagram (URL)</label>
-                            <input type="url" id="contact-instagram" placeholder="https://instagram.com/username">
-                        </div>
-                        <div class="form-group">
-                            <label>GitHub (URL)</label>
-                            <input type="url" id="contact-github" placeholder="https://github.com/username">
-                        </div>
-                        <div class="form-group">
-                            <label>WhatsApp (link wa.me)</label>
-                            <input type="url" id="contact-whatsapp" placeholder="https://wa.me/6281234567890">
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h2>Footer</h2>
-                        <div class="form-group">
-                            <label>Teks Footer (nama pemilik)</label>
-                            <input type="text" id="contact-footer" placeholder="M Ghazi Fawwaz El Aqiel">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-save">💾 Simpan Contact</button>
-                </form>
-            </section>
-        </main>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
-
     <script type="module" src="admin.js"></script>
 </body>
 </html>
