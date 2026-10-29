@@ -1,8 +1,13 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// ==========================================
+// 1. LOAD SEMUA PROJECT
+// ==========================================
 async function loadAllProjects() {
     const container = document.getElementById('all-projects-container');
+    if (!container) return;
+
     try {
         const snap = await getDoc(doc(db, 'portfolio', 'projects'));
         if (snap.exists()) {
@@ -49,4 +54,36 @@ async function loadAllProjects() {
         container.innerHTML = '<h3 style="text-align:center; color:red;">Gagal memuat projects.</h3>';
     }
 }
-document.addEventListener('DOMContentLoaded', loadAllProjects);
+
+// ==========================================
+// 2. MENU MOBILE & TAHUN
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    loadAllProjects();
+
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+    }
+    const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
+});
+
+// ==========================================
+// 3. LOGIKA ANIMASI TRANSISI HALAMAN
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([target="_blank"])');
+    links.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('javascript:')) return;
+            e.preventDefault();
+            document.body.classList.add('page-exit');
+            setTimeout(() => { window.location.href = href; }, 400);
+        });
+    });
+});
