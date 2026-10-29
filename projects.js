@@ -1,9 +1,6 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ==========================================
-// 1. LOAD SEMUA PROJECT
-// ==========================================
 async function loadAllProjects() {
     const container = document.getElementById('all-projects-container');
     if (!container) return;
@@ -23,7 +20,16 @@ async function loadAllProjects() {
                 grouped[p.category].push(p);
             });
 
-            const catNames = { social: 'Social Media', print: 'Print Media', illustration: 'Illustrations', branding: 'Branding', web: 'Web & UI' };
+            // TAMBAHAN: Kategori Video & Motion
+            const catNames = { 
+                social: 'Social Media', 
+                print: 'Print Media', 
+                illustration: 'Illustrations', 
+                branding: 'Branding', 
+                web: 'Web & UI',
+                video: 'Video & Motion' 
+            };
+            
             container.innerHTML = '';
 
             for (const cat in grouped) {
@@ -55,9 +61,6 @@ async function loadAllProjects() {
     }
 }
 
-// ==========================================
-// 2. MENU MOBILE & TAHUN
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadAllProjects();
 
@@ -72,9 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
 });
 
-// ==========================================
-// 3. LOGIKA ANIMASI TRANSISI HALAMAN
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([target="_blank"])');
     links.forEach(link => {
