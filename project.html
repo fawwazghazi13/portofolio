@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Projects | Portofolio</title>
+    <link rel="stylesheet" href="portofolio.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body style="padding-top: 80px;">
+
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">My<span>Portfolio.</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="projects.html" class="active">Projects</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
+        </nav>
+    </header>
+
+    <section id="projects" class="section projects" style="min-height: 100vh;">
+        <p class="section-label">MY RECENT WORK</p>
+        <h2 class="slide-title">Featured Projects</h2>
+        
+        <div id="all-projects-container">
+            <h3 style="text-align:center; color:var(--muted);">Memuat Projects...</h3>
+        </div>
+    </section>
+
+    <footer>
+        <p>© <span id="year"></span> M Ghazi Fawwaz. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="projects.js"></script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+            });
+        }
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
