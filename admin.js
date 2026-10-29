@@ -1,262 +1,189 @@
-import { auth, db } from './firebase-config.js';
-import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap');
 
-const IMGBB_API_KEY = "b13b699f277502e951fe49bf7ec95edd";
-
-const loginScreen = document.getElementById('login-screen');
-const dashboard   = document.getElementById('dashboard');
-const loginError  = document.getElementById('login-error');
-const userEmail   = document.getElementById('user-email');
-const toastEl     = document.getElementById('toast');
-
-let toastTimeout;
-function showToast(message, type = 'success') {
-    clearTimeout(toastTimeout);
-    toastEl.textContent = message;
-    toastEl.className = 'toast ' + type + ' show';
-    toastTimeout = setTimeout(() => { toastEl.classList.remove('show'); }, 3000);
-}
-function esc(str) { const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML; }
-function setBtnLoading(btn, loading, originalText) {
-    if (loading) { btn.dataset.originalText = btn.textContent; btn.disabled = true; btn.textContent = 'Memproses...'; } 
-    else { btn.disabled = false; btn.textContent = originalText || btn.dataset.originalText || 'Simpan'; }
+:root {
+    --bg: #0a0a0a; --bg-soft: #141414; --card: #1a1a1a; --text: #f5f5f5; --muted: #a9a9a9;
+    --accent: #f5a31a; --accent-dark: #d98a00; --paper: #dcdcd7; --border: rgba(255, 255, 255, 0.14);
+    --font-heading: 'Anton', 'Impact', sans-serif; --font-script: 'Caveat Brush', cursive; --font-body: 'Poppins', sans-serif;
+    --radius: 14px;
+    --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    --squiggle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 40'%3E%3Cpath d='M4 22 Q14 -2 24 22 T44 22 T64 22 T84 22 T104 22 T136 22' fill='none' stroke='%23f5a31a' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E");
+    --spark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4 C54 34 66 46 96 50 C66 54 54 66 50 96 C46 66 34 54 4 50 C34 46 46 34 50 4Z' fill='%23ffffff'/%3E%3C/svg%3E");
+    --arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Cpath d='M6 120 C40 135 110 115 118 36' fill='none' stroke='white' stroke-width='3' stroke-dasharray='2 8' stroke-linecap='round'/%3E%3Cpath d='M104 50 L118 32 L132 50' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-async function uploadImage(file) {
-    if (!file) return null;
-    const formData = new FormData();
-    formData.append('image', file);
-    try {
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-        const data = await response.json();
-        if (data.success) return data.data.url;
-        throw new Error('Gagal upload ke ImgBB');
-    } catch (error) { console.error(error); throw error; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; position: relative; }
+body::before { content: ''; position: fixed; inset: 0; background-image: var(--noise); opacity: 0.07; pointer-events: none; z-index: 1; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img { max-width: 100%; display: block; }
+
+.doodle { position: absolute; pointer-events: none; background-repeat: no-repeat; background-size: contain; z-index: 0; }
+.squiggle { background-image: var(--squiggle); width: 130px; height: 38px; }
+.spark { background-image: var(--spark); width: 34px; height: 34px; opacity: 0.9; }
+.s-a { top: 22%; left: 5%; transform: rotate(-24deg); }
+.s-b { bottom: 14%; right: 7%; width: 170px; height: 48px; transform: rotate(18deg); }
+.s-c { top: 12%; right: 6%; transform: rotate(14deg); }
+.s-d { top: 14%; left: 8%; width: 160px; height: 46px; transform: rotate(-12deg); }
+.sp-a { top: 30%; right: 12%; animation: twinkle 3s infinite ease-in-out; }
+.sp-b { bottom: 24%; left: 10%; width: 22px; height: 22px; animation: twinkle 3.6s infinite ease-in-out; }
+.sp-c { bottom: 30%; right: 12%; animation: twinkle 3.2s infinite ease-in-out; }
+
+@keyframes twinkle { 0%, 100% { transform: scale(1) rotate(0); opacity: 0.9; } 50% { transform: scale(1.35) rotate(25deg); opacity: 0.5; } }
+
+.slide-head { display: flex; justify-content: space-between; font-size: 0.68rem; letter-spacing: 1px; color: var(--muted); margin-bottom: 28px; position: relative; z-index: 2; }
+.slide-head span:first-child { color: var(--accent); font-family: var(--font-script); font-size: 1rem; }
+
+header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; background: rgba(10, 10, 10, 0.88); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+.navbar { max-width: 1200px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: var(--font-heading); font-size: 1.5rem; letter-spacing: 1px; text-transform: uppercase; }
+.logo span { font-family: var(--font-script); color: var(--accent); text-transform: none; margin-left: 4px; }
+.nav-links { display: flex; gap: 30px; }
+.nav-links a { font-size: 0.88rem; font-weight: 500; color: var(--muted); position: relative; transition: color 0.3s; }
+.nav-links a::after { content: ''; position: absolute; left: 0; bottom: -5px; width: 0; height: 3px; border-radius: 3px; background: var(--accent); transition: width 0.3s; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); }
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+.menu-toggle { display: none; background: none; border: 1px solid var(--border); color: var(--text); font-size: 1.4rem; width: 44px; height: 44px; border-radius: 10px; cursor: pointer; }
+
+.btn { display: inline-block; padding: 13px 32px; border-radius: 50px; font-weight: 600; font-size: 0.92rem; border: 2px solid var(--accent); transition: transform 0.3s, background 0.3s, color 0.3s, box-shadow 0.3s; }
+.btn.primary { background: var(--accent); color: #000; }
+.btn.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(245, 163, 26, 0.3); }
+.btn.secondary { background: transparent; color: var(--accent); }
+.btn.secondary:hover { background: var(--accent); color: #000; transform: translateY(-3px); }
+
+.script { font-family: var(--font-script); font-weight: 400; color: var(--accent); text-transform: none; letter-spacing: 0; }
+.section-label { font-family: var(--font-script); color: var(--accent); font-size: 1.25rem; position: relative; z-index: 2; }
+.slide-title, .showcase-title, .cover-title, .thanks-title { font-family: var(--font-heading); font-weight: 400; text-transform: uppercase; line-height: 1; position: relative; z-index: 2; }
+.slide-title { font-size: clamp(2.6rem, 7vw, 5.2rem); margin-bottom: 36px; }
+.slide-title .script { font-size: 0.55em; display: inline-block; transform: rotate(-5deg); margin-left: 6px; }
+
+.hero { min-height: 100vh; max-width: 1200px; margin: 0 auto; padding: 100px 24px 60px; display: flex; flex-direction: column; position: relative; text-align: center; }
+.hero .slide-head { margin-bottom: 0; }
+.hero-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; }
+.greeting { font-size: 0.78rem; letter-spacing: 4px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+.cover-title { font-size: clamp(4rem, 17vw, 12.5rem); letter-spacing: 2px; margin-bottom: 0.45em; display: inline-block; }
+.cover-title .script { position: absolute; left: 50%; bottom: -0.2em; font-size: 0.4em; white-space: nowrap; transform: translateX(-35%) rotate(-7deg); text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8); }
+.hero h2 { font-family: var(--font-script); font-weight: 400; font-size: clamp(1.3rem, 3vw, 1.9rem); color: var(--text); margin: 18px 0 10px; }
+.description { max-width: 520px; color: var(--muted); margin-bottom: 28px; }
+.hero-buttons { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+
+.section { max-width: 1200px; margin: 0 auto; padding: 90px 24px; position: relative; }
+
+.about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; position: relative; z-index: 2; }
+.about-content { max-width: 560px; color: var(--muted); font-size: 1rem; }
+.hero-image { position: relative; display: flex; justify-content: center; }
+.hero-image img { width: 100%; max-width: 400px; aspect-ratio: 4 / 5; object-fit: contain; object-position: bottom; filter: drop-shadow(4px 0 0 #fff) drop-shadow(-4px 0 0 #fff) drop-shadow(0 4px 0 #fff) drop-shadow(0 -4px 0 #fff); position: relative; z-index: 2; }
+.arrow-doodle { position: absolute; left: -6%; top: 34%; width: 120px; height: 120px; background: var(--arrow) no-repeat center / contain; transform: rotate(-20deg) scaleX(-1); z-index: 3; }
+
+.skills { text-align: left; }
+.paper-card { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; padding: 44px; color: #111; border-radius: 6px; position: relative; z-index: 2; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); background-color: var(--paper); background-image: var(--noise), linear-gradient(118deg, rgba(255,255,255,0.75) 0 6%, transparent 22%), linear-gradient(62deg, rgba(0,0,0,0.12), transparent 30%), linear-gradient(200deg, rgba(0,0,0,0.14), transparent 28%), linear-gradient(-28deg, rgba(255,255,255,0.6), transparent 24%), linear-gradient(160deg, transparent 40%, rgba(0,0,0,0.1) 55%, transparent 70%), linear-gradient(20deg, transparent 35%, rgba(255,255,255,0.5) 50%, transparent 62%); background-blend-mode: multiply, normal, normal, normal, normal, normal, normal; }
+.paper-col h3 { font-family: var(--font-heading); font-weight: 400; text-transform: uppercase; font-size: 1.6rem; margin-bottom: 18px; letter-spacing: 1px; border-bottom: 4px solid var(--accent); display: inline-block; }
+.skills-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 24px; }
+.skill-card { padding-left: 18px; position: relative; transition: transform 0.3s; }
+.skill-card::before { content: ''; position: absolute; left: 0; top: 9px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+.skill-card:hover { transform: translateX(6px); }
+.skill-card h4 { font-weight: 600; font-size: 1.02rem; line-height: 1.4; }
+.skill-card p { font-size: 0.85rem; color: #444; line-height: 1.5; }
+.software-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.sw { aspect-ratio: 1; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: var(--font-body); font-weight: 600; font-size: 1.5rem; border: 3px solid; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35); transition: transform 0.3s; }
+.sw:hover { transform: translateY(-6px) rotate(-5deg); }
+
+.projects .slide-title { margin-bottom: 40px; }
+.showcase { border: 1px solid var(--border); border-radius: 6px; padding: 24px; margin-bottom: 36px; background: rgba(255, 255, 255, 0.02); position: relative; z-index: 2; }
+.showcase-title { font-size: clamp(2.2rem, 6vw, 4.2rem); margin-bottom: 26px; position: relative; display: inline-block; }
+.showcase-title .script { position: absolute; right: -0.3em; bottom: -0.35em; font-size: 0.5em; white-space: nowrap; transform: translateX(55%) rotate(-6deg); }
+.collage { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 95px; grid-auto-flow: dense; gap: 12px; margin-top: 20px; }
+
+.tile { position: relative; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12); display: flex; align-items: flex-end; transition: transform 0.35s, box-shadow 0.35s; background-image: var(--noise), linear-gradient(135deg, #f5a31a, #ff6a00); background-blend-mode: soft-light, normal; }
+.tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.tile span { position: relative; z-index: 2; margin: 10px; padding: 3px 12px; font-size: 0.68rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; background: rgba(0, 0, 0, 0.7); color: #fff; border-radius: 50px; }
+.tile:hover { transform: scale(1.03) rotate(-0.6deg); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6); z-index: 5; }
+.w1 { grid-column: span 1; } .w2 { grid-column: span 2; } .w3 { grid-column: span 3; } .h1 { grid-row: span 1; } .h2 { grid-row: span 2; } .h3 { grid-row: span 3; } .h4 { grid-row: span 4; }
+
+.contact { max-width: none; text-align: center; padding: 110px 24px 190px; overflow: hidden; }
+.contact::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 120px; background-color: var(--paper); background-image: var(--noise), linear-gradient(110deg, rgba(255,255,255,0.7), transparent 40%), linear-gradient(250deg, rgba(0,0,0,0.12), transparent 40%); background-blend-mode: multiply, normal, normal; clip-path: polygon(0 45%, 4% 30%, 9% 52%, 14% 28%, 20% 48%, 26% 25%, 33% 50%, 39% 30%, 46% 52%, 52% 26%, 59% 48%, 65% 28%, 72% 52%, 78% 30%, 85% 50%, 91% 26%, 96% 46%, 100% 30%, 100% 100%, 0 100%); z-index: 1; }
+.thanks-title { font-size: clamp(3.6rem, 15vw, 11rem); letter-spacing: 2px; display: inline-block; margin: 4px 0 52px; }
+.thanks-title .script { position: absolute; left: 50%; bottom: -0.1em; font-size: 0.34em; white-space: nowrap; transform: translateX(-50%) rotate(-5deg); text-shadow: 0 4px 18px rgba(0, 0, 0, 0.9); }
+.contact-text { color: var(--muted); max-width: 480px; margin: 0 auto 28px; position: relative; z-index: 2; }
+.contact .btn { position: relative; z-index: 2; }
+
+footer { text-align: center; padding: 22px 24px; background: var(--paper); color: #222; font-size: 0.82rem; position: relative; z-index: 2; }
+
+.project-tile-custom { height: auto !important; grid-row: auto !important; grid-column: auto !important; aspect-ratio: 4 / 5; position: relative; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12); }
+.project-tile-custom img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.project-tile-custom:hover img { transform: scale(1.05); }
+.project-tile-custom span { position: absolute; bottom: 10px; left: 10px; z-index: 2; margin: 0; }
+
+@media (max-width: 900px) {
+    .about-grid { grid-template-columns: 1fr; text-align: center; }
+    .about-content { margin: 0 auto; }
+    .hero-image { order: -1; }
+    .arrow-doodle { left: 4%; }
+    .paper-card { grid-template-columns: 1fr; padding: 30px 24px; }
+    .skills-container { grid-template-columns: 1fr; }
 }
 
-document.getElementById('google-login-btn').addEventListener('click', async () => {
-    loginError.textContent = '';
-    try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (err) { loginError.textContent = 'Gagal: ' + err.message; }
-});
-document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
-
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        loginScreen.style.display = 'none'; dashboard.style.display = 'grid'; userEmail.textContent = user.email;
-        await loadAllData();
-    } else {
-        loginScreen.style.display = 'flex'; dashboard.style.display = 'none';
-    }
-});
-
-document.querySelectorAll('.nav-item').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active'); document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-        document.getElementById('page-title').textContent = btn.textContent.trim().replace(/^[^\s]+\s/, '');
-    });
-});
-
-async function loadAllData() { await Promise.all([loadProfile(), loadSkills(), loadSoftware(), loadProjects(), loadContact()]); }
-
-// PROFILE
-async function loadProfile() {
-    const snap = await getDoc(doc(db, 'portfolio', 'about'));
-    if (snap.exists()) {
-        const d = snap.data();
-        document.getElementById('profile-name').value = d.name || '';
-        document.getElementById('profile-greeting').value = d.greeting || '';
-        document.getElementById('profile-title').value = d.title || '';
-        document.getElementById('profile-description').value = d.description || '';
-        document.getElementById('profile-about-text').value = d.aboutText || '';
-        document.getElementById('profile-image').value = d.profileImage || '';
-        updateImagePreview('profile-image', 'profile-image-preview');
-    }
-}
-document.getElementById('profile-image').addEventListener('input', () => updateImagePreview('profile-image', 'profile-image-preview'));
-document.getElementById('profile-image-file').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('profile-image-preview').innerHTML = `<img src="${e.target.result}">`; }; reader.readAsDataURL(file); }
-});
-function updateImagePreview(inputId, previewId) {
-    const url = document.getElementById(inputId).value.trim(); const preview = document.getElementById(previewId); preview.innerHTML = '';
-    if (!url) return; const img = document.createElement('img'); img.src = url; img.onerror = () => preview.innerHTML = '<span style="color:red;font-size:0.8rem;">URL Invalid</span>'; preview.appendChild(img);
-}
-document.getElementById('form-profile').addEventListener('submit', async (e) => {
-    e.preventDefault(); const btn = e.target.querySelector('.btn-save'); setBtnLoading(btn, true);
-    try {
-        let finalImageUrl = document.getElementById('profile-image').value.trim();
-        const fileInput = document.getElementById('profile-image-file');
-        if (fileInput.files.length > 0) { showToast('Mengupload foto...', 'success'); finalImageUrl = await uploadImage(fileInput.files[0]); }
-        await setDoc(doc(db, 'portfolio', 'about'), {
-            name: document.getElementById('profile-name').value.trim(), greeting: document.getElementById('profile-greeting').value.trim(),
-            title: document.getElementById('profile-title').value.trim(), description: document.getElementById('profile-description').value.trim(),
-            aboutText: document.getElementById('profile-about-text').value.trim(), profileImage: finalImageUrl, updatedAt: new Date()
-        }, { merge: true }); 
-        document.getElementById('profile-image').value = finalImageUrl; fileInput.value = ''; showToast('✅ Profile disimpan!');
-    } catch (err) { showToast('Gagal: ' + err.message, 'error'); } finally { setBtnLoading(btn, false); }
-});
-
-// SKILLS & SOFTWARE (Sama seperti sebelumnya)
-let skillsItems = [];
-async function loadSkills() { const snap = await getDoc(doc(db, 'portfolio', 'skills')); skillsItems = snap.exists() ? (snap.data().items || []) : []; renderSkills(); }
-function renderSkills() {
-    const container = document.getElementById('skills-list'); container.innerHTML = '';
-    if (skillsItems.length === 0) { container.innerHTML = '<div class="empty-state">Belum ada skill.</div>'; return; }
-    skillsItems.forEach((item, i) => {
-        const card = document.createElement('div'); card.className = 'list-card';
-        card.innerHTML = `<div class="list-card-header"><span class="list-card-title">Skill #${i + 1}</span><button type="button" class="btn-icon" data-remove-skill="${i}">✕</button></div>
-            <div class="form-group"><label>Judul</label><input type="text" class="skill-title" value="${esc(item.title)}"></div>
-            <div class="form-group"><label>Deskripsi</label><textarea class="skill-desc" rows="2">${esc(item.description)}</textarea></div>`;
-        container.appendChild(card);
-    });
-    container.querySelectorAll('[data-remove-skill]').forEach(btn => btn.addEventListener('click', (e) => { if (confirm('Hapus?')) { skillsItems.splice(parseInt(e.currentTarget.dataset.removeSkill), 1); renderSkills(); } }));
-}
-document.getElementById('add-skill-btn').addEventListener('click', () => { skillsItems.push({ title: '', description: '' }); renderSkills(); });
-document.getElementById('save-skills-btn').addEventListener('click', async (e) => {
-    const btn = e.currentTarget; const items = [];
-    document.querySelectorAll('#skills-list .list-card').forEach(card => { const title = card.querySelector('.skill-title').value.trim(); if (title) items.push({ title, description: card.querySelector('.skill-desc').value.trim() }); });
-    setBtnLoading(btn, true); try { await setDoc(doc(db, 'portfolio', 'skills'), { items }); skillsItems = items; showToast('✅ Disimpan!'); } catch (err) { showToast('Gagal', 'error'); } finally { setBtnLoading(btn, false); }
-});
-
-let softwareItems = [];
-async function loadSoftware() { const snap = await getDoc(doc(db, 'portfolio', 'software')); softwareItems = snap.exists() ? (snap.data().items || []) : []; renderSoftware(); }
-function renderSoftware() {
-    const container = document.getElementById('software-list'); container.innerHTML = '';
-    if (softwareItems.length === 0) { container.innerHTML = '<div class="empty-state">Belum ada software.</div>'; return; }
-    softwareItems.forEach((item, i) => {
-        const card = document.createElement('div'); card.className = 'list-card';
-        card.innerHTML = `<div class="list-card-header"><span class="list-card-title">Software #${i + 1}</span><button type="button" class="btn-icon" data-remove-sw="${i}">✕</button></div>
-            <div class="form-row"><div class="form-group" style="max-width:120px;"><label>Label</label><input type="text" class="sw-label" value="${esc(item.label)}"></div>
-            <div class="form-group"><label>Nama</label><input type="text" class="sw-name" value="${esc(item.name)}"></div>
-            <div class="form-group" style="max-width:120px;"><label>Warna</label><input type="color" class="sw-color" value="${item.color || '#f5a31a'}"></div></div>`;
-        container.appendChild(card);
-    });
-    container.querySelectorAll('[data-remove-sw]').forEach(btn => btn.addEventListener('click', (e) => { if (confirm('Hapus?')) { softwareItems.splice(parseInt(e.currentTarget.dataset.removeSw), 1); renderSoftware(); } }));
-}
-document.getElementById('add-software-btn').addEventListener('click', () => { softwareItems.push({ label: '', name: '', color: '#f5a31a' }); renderSoftware(); });
-document.getElementById('save-software-btn').addEventListener('click', async (e) => {
-    const btn = e.currentTarget; const items = [];
-    document.querySelectorAll('#software-list .list-card').forEach(card => { const label = card.querySelector('.sw-label').value.trim(); const name = card.querySelector('.sw-name').value.trim(); if (label && name) items.push({ label, name, color: card.querySelector('.sw-color').value }); });
-    setBtnLoading(btn, true); try { await setDoc(doc(db, 'portfolio', 'software'), { items }); softwareItems = items; showToast('✅ Disimpan!'); } catch (err) { showToast('Gagal', 'error'); } finally { setBtnLoading(btn, false); }
-});
-
-// PROJECTS (DENGAN OPSI VIDEO)
-let projectItems = [];
-// TAMBAHAN: Kategori Video & Motion
-const CATEGORIES = [
-    { value: 'social', label: 'Social Media' }, 
-    { value: 'print', label: 'Print Media' }, 
-    { value: 'illustration', label: 'Illustrations' }, 
-    { value: 'branding', label: 'Branding' }, 
-    { value: 'web', label: 'Web & UI' },
-    { value: 'video', label: 'Video & Motion' } 
-];
-
-async function loadProjects() { const snap = await getDoc(doc(db, 'portfolio', 'projects')); projectItems = snap.exists() ? (snap.data().items || []) : []; renderProjects(); }
-
-function renderProjects() {
-    const container = document.getElementById('projects-list'); container.innerHTML = '';
-    if (projectItems.length === 0) { container.innerHTML = '<div class="empty-state">Belum ada project.</div>'; return; }
-    projectItems.forEach((item, i) => {
-        const catOptions = CATEGORIES.map(c => `<option value="${c.value}" ${c.value === item.category ? 'selected' : ''}>${c.label}</option>`).join('');
-        const card = document.createElement('div'); card.className = 'list-card';
-        card.innerHTML = `
-            <input type="hidden" class="proj-id" value="${item.id || 'proj_' + Date.now()}">
-            <div class="list-card-header"><span class="list-card-title">Project #${i + 1}</span><button type="button" class="btn-icon" data-remove-proj="${i}" title="Hapus">✕</button></div>
-            <div class="form-row"><div class="form-group" style="max-width:200px;"><label>Kategori</label><select class="proj-category">${catOptions}</select></div>
-            <div class="form-group"><label>Judul (Wajib)</label><input type="text" class="proj-title" value="${esc(item.title)}"></div></div>
-            <div class="form-group"><label>Deskripsi</label><textarea class="proj-desc" rows="2">${esc(item.description)}</textarea></div>
-            <div class="form-group"><label>Tags</label><input type="text" class="proj-tags" value="${esc(item.tags)}"></div>
-            
-            <div class="form-group">
-                <label>Upload Gambar Project</label>
-                <input type="file" class="proj-image-file" accept="image/*">
-                <div style="margin-top: 5px; font-size: 0.8rem; color: #888;">Atau masukkan URL manual:</div>
-                <input type="text" class="proj-image" value="${esc(item.imageUrl)}" style="margin-top: 8px;">
-                <div class="img-preview proj-preview"></div>
-            </div>
-
-            <!-- OPSI VIDEO -->
-            <div class="form-group">
-                <label>URL Video (YouTube / Link MP4)</label>
-                <input type="text" class="proj-video" value="${esc(item.videoUrl)}" placeholder="Contoh: https://www.youtube.com/watch?v=xxxxx ATAU https://link.com/video.mp4">
-                <div style="margin-top: 5px; font-size: 0.75rem; color: #888;">Kamu bisa memasukkan link YouTube atau link langsung ke file video (.mp4).</div>
-            </div>
-        `;
-        container.appendChild(card);
-        
-        const imgInput = card.querySelector('.proj-image');
-        const fileInput = card.querySelector('.proj-image-file');
-        const preview = card.querySelector('.proj-preview');
-        
-        if (imgInput.value) renderProjPreview(imgInput.value, preview); 
-        imgInput.addEventListener('input', () => renderProjPreview(imgInput.value, preview));
-        
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) { const reader = new FileReader(); reader.onload = (e) => { preview.innerHTML = `<img src="${e.target.result}">`; }; reader.readAsDataURL(file); }
-        });
-    });
-    
-    container.querySelectorAll('[data-remove-proj]').forEach(btn => btn.addEventListener('click', async (e) => {
-        if (confirm('⚠️ Yakin hapus project ini?')) {
-            projectItems.splice(parseInt(e.currentTarget.dataset.removeProj), 1); renderProjects();
-            try {
-                const updatedItems = [];
-                document.querySelectorAll('#projects-list .list-card').forEach(card => {
-                    const title = card.querySelector('.proj-title').value.trim();
-                    if (title) updatedItems.push({ id: card.querySelector('.proj-id').value, category: card.querySelector('.proj-category').value, title, description: card.querySelector('.proj-desc').value.trim(), tags: card.querySelector('.proj-tags').value.trim(), imageUrl: card.querySelector('.proj-image').value.trim(), videoUrl: card.querySelector('.proj-video').value.trim() });
-                });
-                await setDoc(doc(db, 'portfolio', 'projects'), { items: updatedItems }); projectItems = updatedItems; showToast('🗑️ Project dihapus!');
-            } catch (err) { showToast('Gagal: ' + err.message, 'error'); }
-        }
-    }));
+@media (max-width: 768px) {
+    .menu-toggle { display: block; }
+    .nav-links { position: absolute; top: 100%; left: 0; width: 100%; flex-direction: column; gap: 0; background: rgba(10, 10, 10, 0.97); border-bottom: 1px solid var(--border); max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+    .nav-links.active { max-height: 360px; }
+    .nav-links li { text-align: center; }
+    .nav-links a { display: block; padding: 16px; }
+    .nav-links a::after { display: none; }
+    .section { padding: 70px 18px; }
+    .showcase { padding: 16px; }
+    .showcase-title .script { position: static; display: block; transform: rotate(-4deg); margin-top: 4px; }
+    .collage { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 100px; }
+    .collage .tile { grid-column: span 1 !important; grid-row: span 2 !important; }
+    .collage .tile:first-child { grid-column: span 2 !important; }
+    .doodle.squiggle { width: 90px; height: 26px; }
+    .contact { padding-bottom: 160px; }
 }
 
-function renderProjPreview(url, container) {
-    container.innerHTML = ''; if (!url || !url.trim()) return; const img = document.createElement('img'); img.src = url.trim();
-    img.onerror = () => container.innerHTML = '<span style="color:red;font-size:0.8rem;">URL Invalid</span>'; container.appendChild(img);
+/* ==========================================
+   ANIMASI TRANSISI HALAMAN
+   ========================================== */
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-document.getElementById('add-project-btn').addEventListener('click', () => { projectItems.push({ id: 'proj_' + Date.now(), category: 'web', title: '', description: '', tags: '', imageUrl: '', videoUrl: '' }); renderProjects(); });
-
-document.getElementById('save-projects-btn').addEventListener('click', async (e) => {
-    const btn = e.currentTarget; setBtnLoading(btn, true);
-    const cards = document.querySelectorAll('#projects-list .list-card'); const items = []; let adaYangKosong = false;
-    for (const card of cards) {
-        const title = card.querySelector('.proj-title').value.trim(); if (!title) { adaYangKosong = true; continue; }
-        let finalImageUrl = card.querySelector('.proj-image').value.trim();
-        const fileInput = card.querySelector('.proj-image-file');
-        if (fileInput.files.length > 0) {
-            showToast(`Mengupload gambar untuk: ${title}...`, 'success');
-            try { finalImageUrl = await uploadImage(fileInput.files[0]); card.querySelector('.proj-image').value = finalImageUrl; } catch (error) { showToast(`Gagal upload gambar ${title}`, 'error'); }
-        }
-        items.push({ id: card.querySelector('.proj-id').value, category: card.querySelector('.proj-category').value, title, description: card.querySelector('.proj-desc').value.trim(), tags: card.querySelector('.proj-tags').value.trim(), imageUrl: finalImageUrl, videoUrl: card.querySelector('.proj-video').value.trim() });
-    }
-    if (adaYangKosong) { showToast('⚠️ Judul project tidak boleh kosong!', 'error'); setBtnLoading(btn, false); return; }
-    try { await setDoc(doc(db, 'portfolio', 'projects'), { items }); projectItems = items; showToast('✅ Projects disimpan!'); renderProjects(); } 
-    catch (err) { showToast('Gagal: ' + err.message, 'error'); } finally { setBtnLoading(btn, false); }
-});
-
-// CONTACT
-async function loadContact() {
-    const snap = await getDoc(doc(db, 'portfolio', 'contact'));
-    if (snap.exists()) {
-        const d = snap.data();
-        document.getElementById('contact-email').value = d.email || '';
-        document.getElementById('contact-instagram').value = d.instagram || '';
-        document.getElementById('contact-github').value = d.github || '';
-        document.getElementById('contact-whatsapp').value = d.whatsapp || '';
-        document.getElementById('contact-footer').value = d.footerText || '';
-    }
+body {
+    animation: pageFadeIn 0.8s ease-out forwards;
 }
-document.getElementById('form-contact').addEventListener('submit', async (e) => {
-    e.preventDefault(); const btn = e.target.querySelector('.btn-save'); setBtnLoading(btn, true);
-    try {
-        await setDoc(doc(db, 'portfolio', 'contact'), { email: document.getElementById('contact-email').value.trim(), instagram: document.getElementById('contact-instagram').value.trim(), github: document.getElementById('contact-github').value.trim(), whatsapp: document.getElementById('contact-whatsapp').value.trim(), footerText: document.getElementById('contact-footer').value.trim(), updatedAt: new Date() }, { merge: true });
-        showToast('✅ Contact disimpan!');
-    } catch (err) { showToast('Gagal', 'error'); } finally { setBtnLoading(btn, false); }
-});
+
+@keyframes pageFadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-15px); }
+}
+
+body.page-exit {
+    animation: pageFadeOut 0.4s ease-in forwards;
+}
+
+/* --- Khusus untuk Frame Project Video (Landscape) --- */
+.project-tile-custom.video-tile {
+    aspect-ratio: 16 / 9 !important; /* Memaksa bentuk landscape */
+}
+
+/* --- Khusus untuk Halaman Detail Video --- */
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* Rasio 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+.video-container iframe, 
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #000;
+}
