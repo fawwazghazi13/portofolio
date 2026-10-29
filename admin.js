@@ -2,9 +2,6 @@ import { auth, db } from './firebase-config.js';
 import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ==========================================
-// MASUKKAN API KEY IMGBB KAMU DI SINI
-// ==========================================
 const IMGBB_API_KEY = "b13b699f277502e951fe49bf7ec95edd";
 
 const loginScreen = document.getElementById('login-screen');
@@ -26,34 +23,18 @@ function setBtnLoading(btn, loading, originalText) {
     else { btn.disabled = false; btn.textContent = originalText || btn.dataset.originalText || 'Simpan'; }
 }
 
-// ==========================================
-// FUNGSI UPLOAD GAMBAR KE IMGBB
-// ==========================================
 async function uploadImage(file) {
     if (!file) return null;
-    
     const formData = new FormData();
     formData.append('image', file);
-
     try {
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-            method: 'POST',
-            body: formData
-        });
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
         const data = await response.json();
-        
-        if (data.success) {
-            return data.data.url; // Mengembalikan link gambar
-        } else {
-            throw new Error('Gagal upload ke ImgBB');
-        }
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+        if (data.success) return data.data.url;
+        throw new Error('Gagal upload ke ImgBB');
+    } catch (error) { console.error(error); throw error; }
 }
 
-// AUTH
 document.getElementById('google-login-btn').addEventListener('click', async () => {
     loginError.textContent = '';
     try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (err) { loginError.textContent = 'Gagal: ' + err.message; }
@@ -80,9 +61,7 @@ document.querySelectorAll('.nav-item').forEach(btn => {
 
 async function loadAllData() { await Promise.all([loadProfile(), loadSkills(), loadSoftware(), loadProjects(), loadContact()]); }
 
-// ==========================================
 // PROFILE
-// ==========================================
 async function loadProfile() {
     const snap = await getDoc(doc(db, 'portfolio', 'about'));
     if (snap.exists()) {
@@ -96,55 +75,31 @@ async function loadProfile() {
         updateImagePreview('profile-image', 'profile-image-preview');
     }
 }
-
 document.getElementById('profile-image').addEventListener('input', () => updateImagePreview('profile-image', 'profile-image-preview'));
 document.getElementById('profile-image-file').addEventListener('change', (e) => {
     const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => { document.getElementById('profile-image-preview').innerHTML = `<img src="${e.target.result}">`; };
-        reader.readAsDataURL(file);
-    }
+    if (file) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('profile-image-preview').innerHTML = `<img src="${e.target.result}">`; }; reader.readAsDataURL(file); }
 });
-
 function updateImagePreview(inputId, previewId) {
     const url = document.getElementById(inputId).value.trim(); const preview = document.getElementById(previewId); preview.innerHTML = '';
     if (!url) return; const img = document.createElement('img'); img.src = url; img.onerror = () => preview.innerHTML = '<span style="color:red;font-size:0.8rem;">URL Invalid</span>'; preview.appendChild(img);
 }
-
 document.getElementById('form-profile').addEventListener('submit', async (e) => {
-    e.preventDefault(); 
-    const btn = e.target.querySelector('.btn-save'); 
-    setBtnLoading(btn, true);
-    
+    e.preventDefault(); const btn = e.target.querySelector('.btn-save'); setBtnLoading(btn, true);
     try {
         let finalImageUrl = document.getElementById('profile-image').value.trim();
         const fileInput = document.getElementById('profile-image-file');
-        
-        if (fileInput.files.length > 0) {
-            showToast('Mengupload foto...', 'success');
-            finalImageUrl = await uploadImage(fileInput.files[0]);
-        }
-
+        if (fileInput.files.length > 0) { showToast('Mengupload foto...', 'success'); finalImageUrl = await uploadImage(fileInput.files[0]); }
         await setDoc(doc(db, 'portfolio', 'about'), {
-            name: document.getElementById('profile-name').value.trim(), 
-            greeting: document.getElementById('profile-greeting').value.trim(),
-            title: document.getElementById('profile-title').value.trim(), 
-            description: document.getElementById('profile-description').value.trim(),
-            aboutText: document.getElementById('profile-about-text').value.trim(), 
-            profileImage: finalImageUrl, 
-            updatedAt: new Date()
+            name: document.getElementById('profile-name').value.trim(), greeting: document.getElementById('profile-greeting').value.trim(),
+            title: document.getElementById('profile-title').value.trim(), description: document.getElementById('profile-description').value.trim(),
+            aboutText: document.getElementById('profile-about-text').value.trim(), profileImage: finalImageUrl, updatedAt: new Date()
         }, { merge: true }); 
-        
-        document.getElementById('profile-image').value = finalImageUrl;
-        fileInput.value = ''; 
-        showToast('✅ Profile disimpan!');
+        document.getElementById('profile-image').value = finalImageUrl; fileInput.value = ''; showToast('✅ Profile disimpan!');
     } catch (err) { showToast('Gagal: ' + err.message, 'error'); } finally { setBtnLoading(btn, false); }
 });
 
-// ==========================================
-// SKILLS & SOFTWARE (Tetap Sama)
-// ==========================================
+// SKILLS & SOFTWARE (Sama seperti sebelumnya)
 let skillsItems = [];
 async function loadSkills() { const snap = await getDoc(doc(db, 'portfolio', 'skills')); skillsItems = snap.exists() ? (snap.data().items || []) : []; renderSkills(); }
 function renderSkills() {
@@ -188,11 +143,17 @@ document.getElementById('save-software-btn').addEventListener('click', async (e)
     setBtnLoading(btn, true); try { await setDoc(doc(db, 'portfolio', 'software'), { items }); softwareItems = items; showToast('✅ Disimpan!'); } catch (err) { showToast('Gagal', 'error'); } finally { setBtnLoading(btn, false); }
 });
 
-// ==========================================
-// PROJECTS (DENGAN IMGBB)
-// ==========================================
+// PROJECTS (DENGAN OPSI VIDEO)
 let projectItems = [];
-const CATEGORIES = [{ value: 'social', label: 'Social Media' }, { value: 'print', label: 'Print Media' }, { value: 'illustration', label: 'Illustrations' }, { value: 'branding', label: 'Branding' }, { value: 'web', label: 'Web & UI' }];
+// TAMBAHAN: Kategori Video & Motion
+const CATEGORIES = [
+    { value: 'social', label: 'Social Media' }, 
+    { value: 'print', label: 'Print Media' }, 
+    { value: 'illustration', label: 'Illustrations' }, 
+    { value: 'branding', label: 'Branding' }, 
+    { value: 'web', label: 'Web & UI' },
+    { value: 'video', label: 'Video & Motion' } 
+];
 
 async function loadProjects() { const snap = await getDoc(doc(db, 'portfolio', 'projects')); projectItems = snap.exists() ? (snap.data().items || []) : []; renderProjects(); }
 
@@ -218,7 +179,12 @@ function renderProjects() {
                 <div class="img-preview proj-preview"></div>
             </div>
 
-            <div class="form-group"><label>URL Video YouTube (Opsional)</label><input type="text" class="proj-video" value="${esc(item.videoUrl)}" placeholder="https://www.youtube.com/watch?v=xxxxx"></div>
+            <!-- OPSI VIDEO -->
+            <div class="form-group">
+                <label>URL Video (YouTube / Link MP4)</label>
+                <input type="text" class="proj-video" value="${esc(item.videoUrl)}" placeholder="Contoh: https://www.youtube.com/watch?v=xxxxx ATAU https://link.com/video.mp4">
+                <div style="margin-top: 5px; font-size: 0.75rem; color: #888;">Kamu bisa memasukkan link YouTube atau link langsung ke file video (.mp4).</div>
+            </div>
         `;
         container.appendChild(card);
         
@@ -231,11 +197,7 @@ function renderProjects() {
         
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => { preview.innerHTML = `<img src="${e.target.result}">`; };
-                reader.readAsDataURL(file);
-            }
+            if (file) { const reader = new FileReader(); reader.onload = (e) => { preview.innerHTML = `<img src="${e.target.result}">`; }; reader.readAsDataURL(file); }
         });
     });
     
@@ -262,58 +224,24 @@ function renderProjPreview(url, container) {
 document.getElementById('add-project-btn').addEventListener('click', () => { projectItems.push({ id: 'proj_' + Date.now(), category: 'web', title: '', description: '', tags: '', imageUrl: '', videoUrl: '' }); renderProjects(); });
 
 document.getElementById('save-projects-btn').addEventListener('click', async (e) => {
-    const btn = e.currentTarget; 
-    setBtnLoading(btn, true);
-    
-    const cards = document.querySelectorAll('#projects-list .list-card');
-    const items = []; 
-    let adaYangKosong = false;
-    
+    const btn = e.currentTarget; setBtnLoading(btn, true);
+    const cards = document.querySelectorAll('#projects-list .list-card'); const items = []; let adaYangKosong = false;
     for (const card of cards) {
-        const title = card.querySelector('.proj-title').value.trim(); 
-        if (!title) { adaYangKosong = true; continue; }
-        
+        const title = card.querySelector('.proj-title').value.trim(); if (!title) { adaYangKosong = true; continue; }
         let finalImageUrl = card.querySelector('.proj-image').value.trim();
         const fileInput = card.querySelector('.proj-image-file');
-        
         if (fileInput.files.length > 0) {
             showToast(`Mengupload gambar untuk: ${title}...`, 'success');
-            try {
-                finalImageUrl = await uploadImage(fileInput.files[0]);
-                card.querySelector('.proj-image').value = finalImageUrl; 
-            } catch (error) {
-                showToast(`Gagal upload gambar ${title}`, 'error');
-            }
+            try { finalImageUrl = await uploadImage(fileInput.files[0]); card.querySelector('.proj-image').value = finalImageUrl; } catch (error) { showToast(`Gagal upload gambar ${title}`, 'error'); }
         }
-        
-        items.push({ 
-            id: card.querySelector('.proj-id').value, 
-            category: card.querySelector('.proj-category').value, 
-            title, 
-            description: card.querySelector('.proj-desc').value.trim(), 
-            tags: card.querySelector('.proj-tags').value.trim(), 
-            imageUrl: finalImageUrl, 
-            videoUrl: card.querySelector('.proj-video').value.trim() 
-        });
+        items.push({ id: card.querySelector('.proj-id').value, category: card.querySelector('.proj-category').value, title, description: card.querySelector('.proj-desc').value.trim(), tags: card.querySelector('.proj-tags').value.trim(), imageUrl: finalImageUrl, videoUrl: card.querySelector('.proj-video').value.trim() });
     }
-
     if (adaYangKosong) { showToast('⚠️ Judul project tidak boleh kosong!', 'error'); setBtnLoading(btn, false); return; }
-
-    try { 
-        await setDoc(doc(db, 'portfolio', 'projects'), { items }); 
-        projectItems = items; 
-        showToast('✅ Projects disimpan!'); 
-        renderProjects(); 
-    } catch (err) { 
-        showToast('Gagal: ' + err.message, 'error'); 
-    } finally { 
-        setBtnLoading(btn, false); 
-    }
+    try { await setDoc(doc(db, 'portfolio', 'projects'), { items }); projectItems = items; showToast('✅ Projects disimpan!'); renderProjects(); } 
+    catch (err) { showToast('Gagal: ' + err.message, 'error'); } finally { setBtnLoading(btn, false); }
 });
 
-// ==========================================
 // CONTACT
-// ==========================================
 async function loadContact() {
     const snap = await getDoc(doc(db, 'portfolio', 'contact'));
     if (snap.exists()) {
