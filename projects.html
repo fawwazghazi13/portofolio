@@ -3,21 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Detail | Portofolio</title>
+    <title>All Projects | Portofolio</title>
+    
+    <!-- Memanggil CSS Utama -->
     <link rel="stylesheet" href="portofolio.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        .project-detail-container { max-width: 900px; margin: 120px auto 60px; padding: 40px; background: var(--card); border-radius: 12px; border: 1px solid var(--border); }
-        .project-detail-image { width: 100%; max-height: 500px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; }
-        /* Frame Video YouTube Responsive */
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-    </style>
 </head>
-<body style="background: var(--bg);">
-    <div class="project-detail-container" id="project-content">
-        <h1 style="font-family: var(--font-heading); color: var(--accent); text-align: center;">Memuat data...</h1>
-    </div>
-    <script type="module" src="project.js"></script>
+<body style="padding-top: 80px;">
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">My<span>Portfolio.</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="projects.html" class="active">Projects</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
+        </nav>
+    </header>
+
+    <!-- ===== SECTION PROJECTS ===== -->
+    <section id="projects" class="section projects" style="min-height: 100vh;">
+        <p class="section-label">MY RECENT WORK</p>
+        <h2 class="slide-title">Featured Projects</h2>
+        
+        <!-- WADAH INI SANGAT PENTING (Jangan diubah ID-nya) -->
+        <div id="all-projects-container">
+            <h3 style="text-align:center; color:var(--muted);">Memuat Projects...</h3>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© <span id="year"></span> M Ghazi Fawwaz. All rights reserved.</p>
+    </footer>
+
+    <!-- PENTING: Memanggil projects.js (pakai s) dengan type="module" -->
+    <script type="module" src="projects.js"></script>
+    
+    <!-- Script kecil untuk menu mobile dan tahun otomatis -->
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+            });
+        }
+        
+        const yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
