@@ -1,9 +1,6 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ==========================================
-// 1. LOAD DETAIL PROJECT & VIDEO
-// ==========================================
 async function loadProjectDetail() {
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
@@ -22,17 +19,34 @@ async function loadProjectDetail() {
 
             if (project) {
                 let videoHtml = '';
+                
                 if (project.videoUrl) {
-                    let videoId = '';
-                    if (project.videoUrl.includes('watch?v=')) videoId = project.videoUrl.split('v=')[1].split('&')[0];
-                    else if (project.videoUrl.includes('youtu.be/')) videoId = project.videoUrl.split('youtu.be/')[1].split('?')[0];
-                    
-                    if (videoId) {
+                    let isDirectVideo = false;
+                    // Cek apakah ini link video langsung (MP4/WebM)
+                    if (project.videoUrl.match(/\.(mp4|webm|ogg)$/i) || project.videoUrl.includes('firebasestorage') || project.videoUrl.includes('cloudinary')) {
+                        isDirectVideo = true;
+                    }
+
+                    if (isDirectVideo) {
+                        // Tampilan untuk file MP4 langsung
                         videoHtml = `
-                            <div class="video-container">
-                                <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                            <div class="video-container" style="padding-bottom: 56.25%; position: relative;">
+                                <video src="${project.videoUrl}" controls autoplay muted loop style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; background: #000; border-radius: 8px;"></video>
                             </div>
                         `;
+                    } else {
+                        // Tampilan untuk YouTube
+                        let videoId = '';
+                        if (project.videoUrl.includes('watch?v=')) videoId = project.videoUrl.split('v=')[1].split('&')[0];
+                        else if (project.videoUrl.includes('youtu.be/')) videoId = project.videoUrl.split('youtu.be/')[1].split('?')[0];
+                        
+                        if (videoId) {
+                            videoHtml = `
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                                </div>
+                            `;
+                        }
                     }
                 }
 
@@ -55,15 +69,9 @@ async function loadProjectDetail() {
     }
 }
 
-// ==========================================
-// 2. PANGGIL DATA
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadProjectDetail();
 
-    // ==========================================
-    // 3. LOGIKA ANIMASI TRANSISI HALAMAN
-    // ==========================================
     const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([target="_blank"])');
     links.forEach(link => {
         link.addEventListener('click', (e) => {
