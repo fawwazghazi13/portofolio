@@ -161,3 +161,29 @@ body {
 body.page-exit {
     animation: pageFadeOut 0.4s ease-in forwards;
 }
+
+/* --- Khusus untuk Frame Project Video (Landscape) --- */
+.project-tile-custom.video-tile {
+    aspect-ratio: 16 / 9 !important; /* Memaksa bentuk landscape */
+}
+
+/* --- Khusus untuk Halaman Detail Video --- */
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* Rasio 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+.video-container iframe, 
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #000;
+}
