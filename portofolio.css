@@ -110,7 +110,6 @@ header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; background
 
 footer { text-align: center; padding: 22px 24px; background: var(--paper); color: #222; font-size: 0.82rem; position: relative; z-index: 2; }
 
-/* KUSTOMISASI TILE PROJECT DARI FIREBASE */
 .project-tile-custom { height: auto !important; grid-row: auto !important; grid-column: auto !important; aspect-ratio: 4 / 5; position: relative; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12); }
 .project-tile-custom img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
 .project-tile-custom:hover img { transform: scale(1.05); }
@@ -140,4 +139,25 @@ footer { text-align: center; padding: 22px 24px; background: var(--paper); color
     .collage .tile:first-child { grid-column: span 2 !important; }
     .doodle.squiggle { width: 90px; height: 26px; }
     .contact { padding-bottom: 160px; }
+}
+
+/* ==========================================
+   ANIMASI TRANSISI HALAMAN
+   ========================================== */
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+body {
+    animation: pageFadeIn 0.8s ease-out forwards;
+}
+
+@keyframes pageFadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-15px); }
+}
+
+body.page-exit {
+    animation: pageFadeOut 0.4s ease-in forwards;
 }
