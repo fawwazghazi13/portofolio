@@ -20,14 +20,9 @@ async function loadAllProjects() {
                 grouped[p.category].push(p);
             });
 
-            // TAMBAHAN: Kategori Video & Motion
             const catNames = { 
-                social: 'Social Media', 
-                print: 'Print Media', 
-                illustration: 'Illustrations', 
-                branding: 'Branding', 
-                web: 'Web & UI',
-                video: 'Video & Motion' 
+                social: 'Social Media', print: 'Print Media', illustration: 'Illustrations', 
+                branding: 'Branding', web: 'Web & UI', video: 'Video & Motion' 
             };
             
             container.innerHTML = '';
@@ -36,10 +31,26 @@ async function loadAllProjects() {
                 const showcase = document.createElement('div');
                 showcase.className = 'showcase';
                 let tilesHtml = '';
+                
                 grouped[cat].forEach((p) => {
+                    let displayImage = p.imageUrl;
+                    let isVideo = p.category === 'video';
+
+                    // FITUR AJAIB: Ambil thumbnail YouTube jika kosong
+                    if (isVideo && !displayImage && p.videoUrl) {
+                        let videoId = getYouTubeId(p.videoUrl);
+                        if (videoId) {
+                            // Gunakan maxresdefault untuk kualitas HD
+                            displayImage = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                        }
+                    }
+
+                    // Tambahkan class 'video-tile' jika ini video agar frame-nya landscape
+                    const extraClass = isVideo ? 'video-tile' : ''; 
+
                     tilesHtml += `
-                        <a href="project.html?id=${p.id}" class="tile project-tile-custom" title="${p.title}">
-                            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : ''}
+                        <a href="project.html?id=${p.id}" class="tile project-tile-custom ${extraClass}" title="${p.title}">
+                            ${displayImage ? `<img src="${displayImage}" alt="${p.title}" onerror="this.src='https://img.youtube.com/vi/${getYouTubeId(p.videoUrl)}/hqdefault.jpg'">` : ''}
                             <span>${p.title}</span>
                         </a>
                     `;
@@ -48,7 +59,7 @@ async function loadAllProjects() {
                 showcase.innerHTML = `
                     <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
                     <h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3>
-                    <div class="collage" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; grid-auto-rows: auto;">
+                    <div class="collage" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; grid-auto-rows: auto;">
                         ${tilesHtml}
                     </div>
                 `;
@@ -59,6 +70,14 @@ async function loadAllProjects() {
         console.error(err);
         container.innerHTML = '<h3 style="text-align:center; color:red;">Gagal memuat projects.</h3>';
     }
+}
+
+// Fungsi bantuan untuk mengambil ID Video YouTube
+function getYouTubeId(url) {
+    if (!url) return '';
+    if (url.includes('watch?v=')) return url.split('v=')[1].split('&')[0];
+    if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0];
+    return '';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
