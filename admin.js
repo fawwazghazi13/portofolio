@@ -59,7 +59,9 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     });
 });
 
-async function loadAllData() { await Promise.all([loadProfile(), loadSkills(), loadSoftware(), loadProjects(), loadContact()]); }
+async function loadAllData() { 
+    await Promise.all([loadProfile(), loadSkills(), loadSoftware(), loadProjects(), loadCertificates(), loadContact()]); 
+}
 
 // PROFILE
 async function loadProfile() {
@@ -99,7 +101,7 @@ document.getElementById('form-profile').addEventListener('submit', async (e) => 
     } catch (err) { showToast('Gagal: ' + err.message, 'error'); } finally { setBtnLoading(btn, false); }
 });
 
-// SKILLS & SOFTWARE
+// SKILLS
 let skillsItems = [];
 async function loadSkills() { const snap = await getDoc(doc(db, 'portfolio', 'skills')); skillsItems = snap.exists() ? (snap.data().items || []) : []; renderSkills(); }
 function renderSkills() {
@@ -121,6 +123,7 @@ document.getElementById('save-skills-btn').addEventListener('click', async (e) =
     setBtnLoading(btn, true); try { await setDoc(doc(db, 'portfolio', 'skills'), { items }); skillsItems = items; showToast('✅ Disimpan!'); } catch (err) { showToast('Gagal', 'error'); } finally { setBtnLoading(btn, false); }
 });
 
+// SOFTWARE
 let softwareItems = [];
 async function loadSoftware() { const snap = await getDoc(doc(db, 'portfolio', 'software')); softwareItems = snap.exists() ? (snap.data().items || []) : []; renderSoftware(); }
 function renderSoftware() {
@@ -143,16 +146,14 @@ document.getElementById('save-software-btn').addEventListener('click', async (e)
     setBtnLoading(btn, true); try { await setDoc(doc(db, 'portfolio', 'software'), { items }); softwareItems = items; showToast('✅ Disimpan!'); } catch (err) { showToast('Gagal', 'error'); } finally { setBtnLoading(btn, false); }
 });
 
-// PROJECTS (DENGAN VIDEO & AUTO-THUMBNAIL)
+// PROJECTS
 let projectItems = [];
 const CATEGORIES = [
     { value: 'social', label: 'Social Media' }, { value: 'print', label: 'Print Media' }, 
     { value: 'illustration', label: 'Illustrations' }, { value: 'branding', label: 'Branding' }, 
     { value: 'web', label: 'Web & UI' }, { value: 'video', label: 'Video & Motion' } 
 ];
-
 async function loadProjects() { const snap = await getDoc(doc(db, 'portfolio', 'projects')); projectItems = snap.exists() ? (snap.data().items || []) : []; renderProjects(); }
-
 function renderProjects() {
     const container = document.getElementById('projects-list'); container.innerHTML = '';
     if (projectItems.length === 0) { container.innerHTML = '<div class="empty-state">Belum ada project.</div>'; return; }
@@ -168,79 +169,44 @@ function renderProjects() {
             </div>
             <div class="form-group"><label>Deskripsi</label><textarea class="proj-desc" rows="2">${esc(item.description)}</textarea></div>
             <div class="form-group"><label>Tags</label><input type="text" class="proj-tags" value="${esc(item.tags)}"></div>
-            
             <div class="form-group">
                 <label>URL Video YouTube</label>
                 <input type="text" class="proj-video" value="${esc(item.videoUrl)}" placeholder="https://www.youtube.com/watch?v=xxxxx">
-                <div style="margin-top: 5px; font-size: 0.75rem; color: #888;">Kosongkan gambar di bawah jika ingin otomatis mengambil gambar dari YouTube.</div>
             </div>
-
             <div class="form-group">
                 <label>Gambar Project</label>
                 <input type="file" class="proj-image-file" accept="image/*">
-                <div style="margin-top: 5px; font-size: 0.8rem; color: #888;">Atau masukkan URL manual:</div>
                 <input type="text" class="proj-image" value="${esc(item.imageUrl)}" style="margin-top: 8px;">
                 <div class="img-preview proj-preview"></div>
             </div>
         `;
         container.appendChild(card);
-        
-        const imgInput = card.querySelector('.proj-image');
-        const fileInput = card.querySelector('.proj-image-file');
-        const videoInput = card.querySelector('.proj-video');
-        const preview = card.querySelector('.proj-preview');
-        
-        // Tampilkan preview gambar jika sudah ada
+        const imgInput = card.querySelector('.proj-image'); const fileInput = card.querySelector('.proj-image-file'); const videoInput = card.querySelector('.proj-video'); const preview = card.querySelector('.proj-preview');
         if (imgInput.value) renderProjPreview(imgInput.value, preview); 
-        
-        // Update preview jika URL diketik manual
         imgInput.addEventListener('input', () => renderProjPreview(imgInput.value, preview));
-        
-        // Update preview jika upload file
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) { const reader = new FileReader(); reader.onload = (e) => { preview.innerHTML = `<img src="${e.target.result}">`; }; reader.readAsDataURL(file); }
         });
-
-        // FITUR AJAIB: Jika user mengetik link YouTube, otomatis isi URL gambar dengan thumbnail
         videoInput.addEventListener('blur', () => {
             const url = videoInput.value;
-            if (url && !imgInput.value) { // Hanya isi jika kolom gambar masih kosong
-                let videoId = '';
-                if (url.includes('watch?v=')) videoId = url.split('v=')[1].split('&')[0];
-                else if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0];
-                
-                if (videoId) {
-                    const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-                    imgInput.value = thumbUrl;
-                    renderProjPreview(thumbUrl, preview);
-                }
+            if (url && !imgInput.value) { 
+                let videoId = ''; if (url.includes('watch?v=')) videoId = url.split('v=')[1].split('&')[0]; else if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0];
+                if (videoId) { const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`; imgInput.value = thumbUrl; renderProjPreview(thumbUrl, preview); }
             }
         });
     });
-    
     container.querySelectorAll('[data-remove-proj]').forEach(btn => btn.addEventListener('click', async (e) => {
         if (confirm('⚠️ Yakin hapus project ini?')) {
             projectItems.splice(parseInt(e.currentTarget.dataset.removeProj), 1); renderProjects();
-            try {
-                const updatedItems = [];
-                document.querySelectorAll('#projects-list .list-card').forEach(card => {
-                    const title = card.querySelector('.proj-title').value.trim();
-                    if (title) updatedItems.push({ id: card.querySelector('.proj-id').value, category: card.querySelector('.proj-category').value, title, description: card.querySelector('.proj-desc').value.trim(), tags: card.querySelector('.proj-tags').value.trim(), imageUrl: card.querySelector('.proj-image').value.trim(), videoUrl: card.querySelector('.proj-video').value.trim() });
-                });
-                await setDoc(doc(db, 'portfolio', 'projects'), { items: updatedItems }); projectItems = updatedItems; showToast('🗑️ Project dihapus!');
-            } catch (err) { showToast('Gagal: ' + err.message, 'error'); }
         }
     }));
 }
-
 function renderProjPreview(url, container) {
     container.innerHTML = ''; if (!url || !url.trim()) return; const img = document.createElement('img'); img.src = url.trim();
     img.onerror = () => container.innerHTML = '<span style="color:red;font-size:0.8rem;">URL Invalid</span>'; container.appendChild(img);
 }
-
 document.getElementById('add-project-btn').addEventListener('click', () => { projectItems.push({ id: 'proj_' + Date.now(), category: 'web', title: '', description: '', tags: '', imageUrl: '', videoUrl: '' }); renderProjects(); });
-
 document.getElementById('save-projects-btn').addEventListener('click', async (e) => {
     const btn = e.currentTarget; setBtnLoading(btn, true);
     const cards = document.querySelectorAll('#projects-list .list-card'); const items = []; let adaYangKosong = false;
@@ -249,13 +215,73 @@ document.getElementById('save-projects-btn').addEventListener('click', async (e)
         let finalImageUrl = card.querySelector('.proj-image').value.trim();
         const fileInput = card.querySelector('.proj-image-file');
         if (fileInput.files.length > 0) {
-            showToast(`Mengupload gambar untuk: ${title}...`, 'success');
+            showToast(`Mengupload gambar: ${title}...`, 'success');
             try { finalImageUrl = await uploadImage(fileInput.files[0]); card.querySelector('.proj-image').value = finalImageUrl; } catch (error) { showToast(`Gagal upload gambar ${title}`, 'error'); }
         }
         items.push({ id: card.querySelector('.proj-id').value, category: card.querySelector('.proj-category').value, title, description: card.querySelector('.proj-desc').value.trim(), tags: card.querySelector('.proj-tags').value.trim(), imageUrl: finalImageUrl, videoUrl: card.querySelector('.proj-video').value.trim() });
     }
     if (adaYangKosong) { showToast('⚠️ Judul project tidak boleh kosong!', 'error'); setBtnLoading(btn, false); return; }
     try { await setDoc(doc(db, 'portfolio', 'projects'), { items }); projectItems = items; showToast('✅ Projects disimpan!'); renderProjects(); } 
+    catch (err) { showToast('Gagal: ' + err.message, 'error'); } finally { setBtnLoading(btn, false); }
+});
+
+// CERTIFICATES
+let certItems = [];
+async function loadCertificates() { 
+    const snap = await getDoc(doc(db, 'portfolio', 'certificates')); 
+    certItems = snap.exists() ? (snap.data().items || []) : []; 
+    renderCertificates(); 
+}
+function renderCertificates() {
+    const container = document.getElementById('certificates-list'); container.innerHTML = '';
+    if (certItems.length === 0) { container.innerHTML = '<div class="empty-state">Belum ada sertifikat.</div>'; return; }
+    certItems.forEach((item, i) => {
+        const card = document.createElement('div'); card.className = 'list-card';
+        card.innerHTML = `
+            <input type="hidden" class="cert-id" value="${item.id || 'cert_' + Date.now()}">
+            <div class="list-card-header"><span class="list-card-title">Sertifikat #${i + 1}</span><button type="button" class="btn-icon" data-remove-cert="${i}">✕</button></div>
+            <div class="form-row">
+                <div class="form-group"><label>Judul Sertifikat</label><input type="text" class="cert-title" value="${esc(item.title)}"></div>
+                <div class="form-group"><label>Penerbit (Issuer)</label><input type="text" class="cert-issuer" value="${esc(item.issuer)}"></div>
+                <div class="form-group" style="max-width:150px;"><label>Tanggal</label><input type="text" class="cert-date" value="${esc(item.date)}" placeholder="2024"></div>
+            </div>
+            <div class="form-group"><label>URL Kredensial (Opsional)</label><input type="text" class="cert-url" value="${esc(item.credentialUrl)}" placeholder="https://..."></div>
+            <div class="form-group">
+                <label>Upload Gambar Sertifikat</label>
+                <input type="file" class="cert-image-file" accept="image/*">
+                <div style="margin-top: 5px; font-size: 0.8rem; color: #888;">Atau masukkan URL manual:</div>
+                <input type="text" class="cert-image" value="${esc(item.imageUrl)}" style="margin-top: 8px;">
+                <div class="img-preview cert-preview"></div>
+            </div>
+        `;
+        container.appendChild(card);
+        const imgInput = card.querySelector('.cert-image'); const fileInput = card.querySelector('.cert-image-file'); const preview = card.querySelector('.cert-preview');
+        if (imgInput.value) renderProjPreview(imgInput.value, preview); 
+        imgInput.addEventListener('input', () => renderProjPreview(imgInput.value, preview));
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) { const reader = new FileReader(); reader.onload = (e) => { preview.innerHTML = `<img src="${e.target.result}">`; }; reader.readAsDataURL(file); }
+        });
+    });
+    container.querySelectorAll('[data-remove-cert]').forEach(btn => btn.addEventListener('click', (e) => {
+        if (confirm('⚠️ Yakin hapus sertifikat ini?')) { certItems.splice(parseInt(e.currentTarget.dataset.removeCert), 1); renderCertificates(); }
+    }));
+}
+document.getElementById('add-cert-btn').addEventListener('click', () => { certItems.push({ id: 'cert_' + Date.now(), title: '', issuer: '', date: '', credentialUrl: '', imageUrl: '' }); renderCertificates(); });
+document.getElementById('save-certs-btn').addEventListener('click', async (e) => {
+    const btn = e.currentTarget; setBtnLoading(btn, true);
+    const cards = document.querySelectorAll('#certificates-list .list-card'); const items = [];
+    for (const card of cards) {
+        const title = card.querySelector('.cert-title').value.trim(); if (!title) continue;
+        let finalImageUrl = card.querySelector('.cert-image').value.trim();
+        const fileInput = card.querySelector('.cert-image-file');
+        if (fileInput.files.length > 0) {
+            showToast(`Mengupload gambar ${title}...`, 'success');
+            try { finalImageUrl = await uploadImage(fileInput.files[0]); } catch (error) { showToast('Gagal upload', 'error'); }
+        }
+        items.push({ id: card.querySelector('.cert-id').value, title, issuer: card.querySelector('.cert-issuer').value.trim(), date: card.querySelector('.cert-date').value.trim(), credentialUrl: card.querySelector('.cert-url').value.trim(), imageUrl: finalImageUrl });
+    }
+    try { await setDoc(doc(db, 'portfolio', 'certificates'), { items }); certItems = items; showToast('✅ Sertifikat disimpan!'); renderCertificates(); } 
     catch (err) { showToast('Gagal: ' + err.message, 'error'); } finally { setBtnLoading(btn, false); }
 });
 
