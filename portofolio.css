@@ -204,3 +204,92 @@ body.page-exit { animation: pageFadeOut 0.3s ease-out forwards; }
         .cursor-dot, .cursor-outline { display: none !important; }
     }
 }
+
+/* ==========================================
+   FITUR BARU: HALAMAN SERTIFIKAT
+   ========================================== */
+.cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 30px;
+}
+
+.cert-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.cert-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+.cert-image-wrapper {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #111;
+    position: relative;
+}
+
+.cert-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.cert-card:hover .cert-image-wrapper img {
+    transform: scale(1.08);
+}
+
+.cert-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.cert-info h3 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    color: var(--text);
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+.cert-info .cert-issuer {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cert-info .cert-btn {
+    margin-top: auto;
+    display: inline-block;
+    text-align: center;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    transition: all 0.3s ease;
+}
+
+.cert-info .cert-btn:hover {
+    background: var(--accent);
+    color: #000;
+}
