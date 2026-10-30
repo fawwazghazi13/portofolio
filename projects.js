@@ -40,7 +40,7 @@ function getYouTubeId(url) { if (!url) return ''; if (url.includes('watch?v=')) 
 
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
-        if (document.querySelector('.cursor-dot')) return; // Cegah duplikasi
+        if (document.querySelector('.cursor-dot')) return;
 
         const cursorDot = document.createElement('div'); cursorDot.classList.add('cursor-dot');
         const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
@@ -52,15 +52,13 @@ function initPremiumFeatures() {
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
-            cursorDot.style.left = mouse.x + 'px';
-            cursorDot.style.top = mouse.y + 'px';
+            cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
         });
 
         gsap.ticker.add(() => {
             pos.x += (mouse.x - pos.x) * 0.25;
             pos.y += (mouse.y - pos.y) * 0.25;
-            cursorOutline.style.left = pos.x + 'px';
-            cursorOutline.style.top = pos.y + 'px';
+            cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
 
         document.querySelectorAll('a, button, .btn, .video-item-card, .tile').forEach(el => {
