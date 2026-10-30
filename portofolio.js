@@ -33,17 +33,33 @@ async function loadPortfolioContent() {
 
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
+        if (document.querySelector('.cursor-dot')) return; // Cegah duplikasi
+
         const cursorDot = document.createElement('div'); cursorDot.classList.add('cursor-dot');
         const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
         document.body.appendChild(cursorDot); document.body.appendChild(cursorOutline);
-        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; const mouse = { x: pos.x, y: pos.y };
-        window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`; });
-        gsap.ticker.add(() => { pos.x += (mouse.x - pos.x) * 0.15; pos.y += (mouse.y - pos.y) * 0.15; cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`; });
-        document.querySelectorAll('a, button, .btn, .tile').forEach(el => {
+
+        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        const mouse = { x: pos.x, y: pos.y };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
+        });
+
+        gsap.ticker.add(() => {
+            pos.x += (mouse.x - pos.x) * 0.25;
+            pos.y += (mouse.y - pos.y) * 0.25;
+            cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
+        });
+
+        document.querySelectorAll('a, button, .btn, .tile, .video-item-card').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
     }
+    
     document.querySelectorAll('.btn').forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
             const rect = btn.getBoundingClientRect(); const x = e.clientX - rect.left - rect.width / 2; const y = e.clientY - rect.top - rect.height / 2;
@@ -57,7 +73,6 @@ window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
     
-    // Animasi Logo Berputar
     gsap.to('#preloader-logo', { rotation: 360, duration: 2, repeat: -1, ease: "linear" });
 
     gsap.to(progress, { val: 100, duration: 1.5, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
@@ -67,7 +82,9 @@ window.addEventListener('load', () => {
             gsap.from('.greeting, .hero h2, .description, .hero-buttons', { y: 30, opacity: 0, duration: 1, stagger: 0.1, delay: 0.3, ease: "power3.out" });
         }});
     }});
+    
     initPremiumFeatures();
+    
     gsap.registerPlugin(ScrollTrigger);
     document.querySelectorAll('.reveal').forEach(el => {
         gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
