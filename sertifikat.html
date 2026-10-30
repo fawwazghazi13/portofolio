@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificates | Portofolio</title>
+    <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
+    <link rel="stylesheet" href="portofolio.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body style="padding-top: 80px;">
+
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg" id="preloader-logo" alt="Ghazi Logo" style="border-radius: 50%;">
+            <div class="preloader-text">0%</div>
+            <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+        </div>
+    </div>
+
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                <img src="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg" alt="Ghazi Logo" style="height: 45px; width: 45px; object-fit: cover; border-radius: 50%;">
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="sertifikat.html" class="active">Certificates</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
+        </nav>
+    </header>
+
+    <section id="certificates" class="section" style="min-height: 100vh;">
+        <p class="section-label">MY ACHIEVEMENTS</p>
+        <h2 class="slide-title">Certificates <span class="script">Awards</span></h2>
+        
+        <div id="all-certificates-container" class="cert-grid">
+            <h3 style="text-align:center; color:var(--muted); grid-column: 1 / -1;">Memuat Certificates...</h3>
+        </div>
+    </section>
+
+    <footer>
+        <p>© <span id="year"></span> M Ghazi Fawwaz. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script type="module" src="sertifikat.js"></script>
+</body>
+</html>
