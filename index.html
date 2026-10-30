@@ -4,14 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portfolio | Home</title>
+    
+    <!-- Favicon (Logo di Tab Browser) -->
+    <link rel="icon" type="image/png" href="images/logo.png">
+    
     <link rel="stylesheet" href="portofolio.css">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="images/logo.png" id="preloader-logo" alt="Ghazi Logo">
+            <div class="preloader-text">0%</div>
+            <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+        </div>
+    </div>
+
     <header>
         <nav class="navbar">
-            <a href="index.html" class="logo">My<span>Portfolio.</span></a>
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Ghazi Logo" style="height: 45px; width: auto;">
+            </a>
             <ul class="nav-links">
                 <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="#about">About</a></li>
@@ -92,7 +107,6 @@
         <p class="section-label">LET'S CONNECT</p>
         <h2 class="thanks-title">Thank You <span class="script">For Attention</span></h2>
         <p class="contact-text">Interested in my work or want to collaborate? Feel free to reach out.</p>
-        <!-- TOMBOL INI AKAN OTOMATIS TERHUBUNG KE GMAIL KAMU -->
         <a href="mailto:fawwazghazi13@gmail.com" class="btn primary" id="contact-email-btn">Send Me an Email</a>
     </section>
 
@@ -100,6 +114,9 @@
         <p>© <span id="year"></span> M Ghazi Fawwaz. All rights reserved.</p>
     </footer>
 
+    <!-- GSAP Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script type="module" src="portofolio.js"></script>
 </body>
 </html>
