@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Detail | Portofolio</title>
     
-    <!-- Favicon (Logo di Tab Browser) -->
+    <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
     
     <link rel="stylesheet" href="portofolio.css">
@@ -28,6 +28,25 @@
         </div>
     </div>
 
+    <!-- NAVBAR -->
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                <img src="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg" alt="Ghazi Logo" style="height: 45px; width: 45px; object-fit: cover; border-radius: 50%;">
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="sertifikat.html">Certificates</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle" aria-label="Buka menu">☰</button>
+        </nav>
+    </header>
+
+    <!-- KONTEN PROJECT -->
     <div class="project-detail-container" id="project-content">
         <h1 style="font-family: var(--font-heading); color: var(--accent); text-align: center;">Memuat data...</h1>
     </div>
@@ -35,6 +54,8 @@
     <!-- GSAP Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Script Utama -->
     <script type="module" src="project.js"></script>
 </body>
 </html>
