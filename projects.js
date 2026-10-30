@@ -40,12 +40,29 @@ function getYouTubeId(url) { if (!url) return ''; if (url.includes('watch?v=')) 
 
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
+        if (document.querySelector('.cursor-dot')) return; // Cegah duplikasi
+
         const cursorDot = document.createElement('div'); cursorDot.classList.add('cursor-dot');
         const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
         document.body.appendChild(cursorDot); document.body.appendChild(cursorOutline);
-        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; const mouse = { x: pos.x, y: pos.y };
-        window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`; });
-        gsap.ticker.add(() => { pos.x += (mouse.x - pos.x) * 0.15; pos.y += (mouse.y - pos.y) * 0.15; cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`; });
+
+        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        const mouse = { x: pos.x, y: pos.y };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            cursorDot.style.left = mouse.x + 'px';
+            cursorDot.style.top = mouse.y + 'px';
+        });
+
+        gsap.ticker.add(() => {
+            pos.x += (mouse.x - pos.x) * 0.25;
+            pos.y += (mouse.y - pos.y) * 0.25;
+            cursorOutline.style.left = pos.x + 'px';
+            cursorOutline.style.top = pos.y + 'px';
+        });
+
         document.querySelectorAll('a, button, .btn, .video-item-card, .tile').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
@@ -61,6 +78,7 @@ window.addEventListener('load', () => {
     gsap.to(progress, { val: 100, duration: 1.2, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
         gsap.to('#preloader', { y: '-100%', duration: 0.8, ease: "power4.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
     }});
+    
     initPremiumFeatures();
     gsap.registerPlugin(ScrollTrigger);
     setTimeout(() => {
