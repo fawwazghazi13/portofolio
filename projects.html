@@ -4,21 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Projects | Portofolio</title>
-    
-    <!-- Memanggil CSS Utama -->
+    <link rel="icon" type="image/png" href="images/logo.png">
     <link rel="stylesheet" href="portofolio.css">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body style="padding-top: 80px;">
 
-    <!-- Navbar -->
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="images/logo.png" id="preloader-logo" alt="Ghazi Logo">
+            <div class="preloader-text">0%</div>
+            <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+        </div>
+    </div>
+
     <header>
         <nav class="navbar">
-            <a href="index.html" class="logo">My<span>Portfolio.</span></a>
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Ghazi Logo" style="height: 45px; width: auto;">
+            </a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#about">About</a></li>
@@ -30,39 +35,21 @@
         </nav>
     </header>
 
-    <!-- ===== SECTION PROJECTS ===== -->
     <section id="projects" class="section projects" style="min-height: 100vh;">
         <p class="section-label">MY RECENT WORK</p>
         <h2 class="slide-title">Featured Projects</h2>
-        
-        <!-- WADAH INI SANGAT PENTING (Jangan diubah ID-nya) -->
         <div id="all-projects-container">
             <h3 style="text-align:center; color:var(--muted);">Memuat Projects...</h3>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <p>© <span id="year"></span> M Ghazi Fawwaz. All rights reserved.</p>
     </footer>
 
-    <!-- PENTING: Memanggil projects.js (pakai s) dengan type="module" -->
+    <!-- GSAP Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script type="module" src="projects.js"></script>
-    
-    <!-- Script kecil untuk menu mobile dan tahun otomatis -->
-    <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const navLinks = document.querySelector('.nav-links');
-        
-        if (menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-                menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
-            });
-        }
-        
-        const yearEl = document.getElementById('year');
-        if (yearEl) yearEl.textContent = new Date().getFullYear();
-    </script>
 </body>
 </html>
