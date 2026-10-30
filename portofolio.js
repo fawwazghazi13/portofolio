@@ -3,90 +3,87 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-
 
 async function loadPortfolioContent() {
     try {
-        // --- Bagian About & Profile ---
         const aboutSnap = await getDoc(doc(db, 'portfolio', 'about'));
         if (aboutSnap.exists()) {
             const d = aboutSnap.data();
             if (d.greeting) document.querySelector('.greeting').textContent = d.greeting;
             if (d.name) document.querySelectorAll('.slide-head span')[1].textContent = d.name;
             if (d.description) document.querySelector('.description').textContent = d.description;
-            
-            // GANTI TEKS LOADING DENGAN DATA ASLI
-            if (d.aboutText) {
-                document.querySelector('.about-content p').textContent = d.aboutText;
-            } else {
-                document.querySelector('.about-content p').textContent = "Halo! Saya Ghazi. (Data About belum diisi di Admin Panel).";
-            }
-            
-            if (d.profileImage) {
-                document.querySelector('.hero-image img').src = d.profileImage;
-            }
-        } else {
-            // Kalau data 'about' belum ada di Firebase
-            document.querySelector('.about-content p').textContent = "Data About belum dibuat. Silakan login ke Admin Panel dan simpan Profile.";
+            if (d.aboutText) document.querySelector('.about-content p').textContent = d.aboutText;
+            if (d.profileImage) document.querySelector('.hero-image img').src = d.profileImage;
         }
-
-        // --- Bagian Skills ---
         const skillsSnap = await getDoc(doc(db, 'portfolio', 'skills'));
         if (skillsSnap.exists()) {
             const items = skillsSnap.data().items || [];
-            if(items.length > 0) {
-                document.querySelector('.skills-container').innerHTML = items.map(s => `<li class="skill-card"><h4>${s.title}</h4><p>${s.description}</p></li>`).join('');
-            } else {
-                document.querySelector('.skills-container').innerHTML = '<li class="skill-card"><h4>Belum ada skill</h4><p>Tambahkan di Admin Panel.</p></li>';
-            }
+            document.querySelector('.skills-container').innerHTML = items.map(s => `<li class="skill-card"><h4>${s.title}</h4><p>${s.description}</p></li>`).join('');
         }
-
-        // --- Bagian Software ---
         const swSnap = await getDoc(doc(db, 'portfolio', 'software'));
         if (swSnap.exists()) {
             const items = swSnap.data().items || [];
-            if (items.length > 0) {
-                document.querySelector('.software-grid').innerHTML = items.map(s => `<div class="sw" title="${s.name}" style="color:${s.color};border-color:${s.color}; background: #222;">${s.label}</div>`).join('');
-            } else {
-                document.querySelector('.software-grid').innerHTML = '<div class="sw" style="border-color:#666; color:#666;">-</div>';
-            }
+            document.querySelector('.software-grid').innerHTML = items.map(s => `<div class="sw" title="${s.name}" style="color:${s.color};border-color:${s.color}; background: #222;">${s.label}</div>`).join('');
         }
-
-        // --- Bagian Contact ---
         const contactSnap = await getDoc(doc(db, 'portfolio', 'contact'));
         if (contactSnap.exists()) {
             const d = contactSnap.data();
             const emailBtn = document.getElementById('contact-email-btn');
-            if (emailBtn && d.email) {
-                emailBtn.href = `mailto:${d.email}?subject=Halo, saya tertarik dengan portofolio Anda`;
-            }
+            if (emailBtn && d.email) emailBtn.href = `mailto:${d.email}?subject=Halo, saya tertarik dengan portofolio Anda`;
         }
-    } catch (err) { 
-        console.error('Gagal memuat:', err); 
-        // Jika error (misal rules Firebase salah), tampilkan pesan di web
-        document.querySelector('.about-content p').textContent = "Gagal memuat data. Periksa Console (F12) untuk detail error.";
-    }
+    } catch (err) { console.error('Gagal memuat:', err); }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadPortfolioContent();
-
-    const menuToggle = document.getElementById('menuToggle');
-    const navLinks = document.querySelector('.nav-links');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+function initPremiumFeatures() {
+    if (window.matchMedia("(pointer: fine)").matches) {
+        const cursorDot = document.createElement('div'); cursorDot.classList.add('cursor-dot');
+        const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
+        document.body.appendChild(cursorDot); document.body.appendChild(cursorOutline);
+        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; const mouse = { x: pos.x, y: pos.y };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`; });
+        gsap.ticker.add(() => { pos.x += (mouse.x - pos.x) * 0.15; pos.y += (mouse.y - pos.y) * 0.15; cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`; });
+        document.querySelectorAll('a, button, .btn, .tile').forEach(el => {
+            el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
+            el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
     }
-    const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect(); const x = e.clientX - rect.left - rect.width / 2; const y = e.clientY - rect.top - rect.height / 2;
+            gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.5, ease: "power2.out" });
+        });
+        btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" }));
+    });
+}
+
+window.addEventListener('load', () => {
+    let progress = { val: 0 };
+    const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
+    
+    // Animasi Logo Berputar
+    gsap.to('#preloader-logo', { rotation: 360, duration: 2, repeat: -1, ease: "linear" });
+
+    gsap.to(progress, { val: 100, duration: 1.5, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
+        gsap.to('#preloader', { y: '-100%', duration: 0.8, ease: "power4.inOut", onComplete: () => {
+            document.getElementById('preloader').style.display = 'none';
+            gsap.from('.cover-title', { y: 100, opacity: 0, duration: 1, ease: "back.out(1.7)" });
+            gsap.from('.greeting, .hero h2, .description, .hero-buttons', { y: 30, opacity: 0, duration: 1, stagger: 0.1, delay: 0.3, ease: "power3.out" });
+        }});
+    }});
+    initPremiumFeatures();
+    gsap.registerPlugin(ScrollTrigger);
+    document.querySelectorAll('.reveal').forEach(el => {
+        gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
+    });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadPortfolioContent();
+    const menuToggle = document.getElementById('menuToggle'); const navLinks = document.querySelector('.nav-links');
+    if (menuToggle) menuToggle.addEventListener('click', () => { navLinks.classList.toggle('active'); menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
+    const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
     const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([target="_blank"])');
     links.forEach(link => {
         link.addEventListener('click', (e) => {
-            const href = link.getAttribute('href');
-            if (!href || href.startsWith('javascript:')) return;
-            e.preventDefault();
-            document.body.classList.add('page-exit');
-            setTimeout(() => { window.location.href = href; }, 400);
+            const href = link.getAttribute('href'); if (!href || href.startsWith('javascript:')) return;
+            e.preventDefault(); document.body.classList.add('page-exit'); setTimeout(() => { window.location.href = href; }, 400);
         });
     });
 });
