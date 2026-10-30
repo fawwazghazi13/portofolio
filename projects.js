@@ -30,39 +30,66 @@ async function loadAllProjects() {
             for (const cat in grouped) {
                 const showcase = document.createElement('div');
                 showcase.className = 'showcase';
-                let tilesHtml = '';
-                
-                grouped[cat].forEach((p) => {
-                    let displayImage = p.imageUrl;
-                    let isVideo = p.category === 'video';
 
-                    // FITUR AJAIB: Ambil thumbnail YouTube jika kosong
-                    if (isVideo && !displayImage && p.videoUrl) {
-                        let videoId = getYouTubeId(p.videoUrl);
-                        if (videoId) {
-                            // Gunakan maxresdefault untuk kualitas HD
-                            displayImage = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                // ==========================================
+                // LOGIKA KHUSUS UNTUK KATEGORI VIDEO (MARQUEE)
+                // ==========================================
+                if (cat === 'video') {
+                    let videoCardsHtml = '';
+                    
+                    grouped[cat].forEach((p) => {
+                        let displayImage = p.imageUrl;
+                        if (!displayImage && p.videoUrl) {
+                            let vid = getYouTubeId(p.videoUrl);
+                            if (vid) displayImage = `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`;
                         }
-                    }
 
-                    // Tambahkan class 'video-tile' jika ini video agar frame-nya landscape
-                    const extraClass = isVideo ? 'video-tile' : ''; 
+                        videoCardsHtml += `
+                            <a href="project.html?id=${p.id}" class="video-item-card" title="Tonton: ${p.title}">
+                                ${displayImage ? `<img src="${displayImage}" alt="${p.title}" onerror="this.src='https://img.youtube.com/vi/${getYouTubeId(p.videoUrl)}/hqdefault.jpg'">` : ''}
+                                <div class="play-icon">▶</div>
+                                <span style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.8); color:#fff; padding:4px 10px; border-radius:50px; font-size:0.75rem; font-weight:bold; z-index:2;">${p.title}</span>
+                            </a>
+                        `;
+                    });
 
-                    tilesHtml += `
-                        <a href="project.html?id=${p.id}" class="tile project-tile-custom ${extraClass}" title="${p.title}">
-                            ${displayImage ? `<img src="${displayImage}" alt="${p.title}" onerror="this.src='https://img.youtube.com/vi/${getYouTubeId(p.videoUrl)}/hqdefault.jpg'">` : ''}
-                            <span>${p.title}</span>
-                        </a>
+                    // KUNCI LOOPING: Kita duplikasi card-nya 2x lipat agar animasinya tidak putus
+                    const duplicatedCards = videoCardsHtml + videoCardsHtml;
+
+                    showcase.innerHTML = `
+                        <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
+                        <h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3>
+                        <div class="video-marquee-wrapper">
+                            <div class="video-marquee-track">
+                                ${duplicatedCards}
+                            </div>
+                        </div>
                     `;
-                });
+                } 
+                // ==========================================
+                // LOGIKA NORMAL UNTUK KATEGORI LAIN (GRID)
+                // ==========================================
+                else {
+                    let tilesHtml = '';
+                    grouped[cat].forEach((p) => {
+                        let displayImage = p.imageUrl;
+                        tilesHtml += `
+                            <a href="project.html?id=${p.id}" class="tile project-tile-custom" title="${p.title}">
+                                ${displayImage ? `<img src="${displayImage}" alt="${p.title}">` : ''}
+                                <span>${p.title}</span>
+                            </a>
+                        `;
+                    });
 
-                showcase.innerHTML = `
-                    <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
-                    <h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3>
-                    <div class="collage" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; grid-auto-rows: auto;">
-                        ${tilesHtml}
-                    </div>
-                `;
+                    showcase.innerHTML = `
+                        <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
+                        <h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3>
+                        <div class="collage" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; grid-auto-rows: auto;">
+                            ${tilesHtml}
+                        </div>
+                    `;
+                }
+                
                 container.appendChild(showcase);
             }
         }
@@ -72,7 +99,7 @@ async function loadAllProjects() {
     }
 }
 
-// Fungsi bantuan untuk mengambil ID Video YouTube
+// Fungsi bantuan ID YouTube
 function getYouTubeId(url) {
     if (!url) return '';
     if (url.includes('watch?v=')) return url.split('v=')[1].split('&')[0];
