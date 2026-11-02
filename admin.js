@@ -2,7 +2,7 @@ import { auth, db } from './firebase-config.js';
 import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const IMGBB_API_KEY = "MASUKKAN_API_KEY_IMGBB_KAMU_DI_SINI";
+const IMGBB_API_KEY = "b13b699f277502e951fe49bf7ec95edd";
 
 const loginScreen = document.getElementById('login-screen');
 const dashboard   = document.getElementById('dashboard');
