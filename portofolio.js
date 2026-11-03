@@ -59,7 +59,6 @@ function initPremiumFeatures() {
         btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" }));
     });
 
-    // EFEK PARALLAX UNTUK DOODLES & GAMBAR
     window.addEventListener('mousemove', (e) => {
         const x = (window.innerWidth / 2 - e.pageX) / 50;
         const y = (window.innerHeight / 2 - e.pageY) / 50;
@@ -70,18 +69,28 @@ function initPremiumFeatures() {
 
 window.addEventListener('load', () => {
     let progress = { val: 0 };
-    const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
-    gsap.to('#preloader-logo', { rotation: 360, duration: 2, repeat: -1, ease: "linear" });
-
-    gsap.to(progress, { val: 100, duration: 1.5, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
-        gsap.to('#preloader', { y: '-100%', duration: 0.8, ease: "power4.inOut", onComplete: () => {
-            document.getElementById('preloader').style.display = 'none';
-            // Animasi GSAP saat web dibuka
-            gsap.from('.cover-title', { y: 100, opacity: 0, duration: 1, ease: "power3.out" });
-            gsap.from('.greeting, .hero h2, .description, .hero-buttons', { y: 30, opacity: 0, duration: 1, stagger: 0.1, delay: 0.3, ease: "power3.out" });
-            gsap.from('.glass-panel', { opacity: 0, y: 50, duration: 1, delay: 1, stagger: 0.2 });
-        }});
-    }});
+    const preloaderText = document.querySelector('.preloader-text'); 
+    const preloaderBar = document.querySelector('.preloader-bar-fill');
+    
+    gsap.to(progress, { 
+        val: 100, duration: 2.5, ease: "power3.inOut", 
+        onUpdate: () => { 
+            if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; 
+            if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
+        }, 
+        onComplete: () => {
+            // Animasi Keluar Sinematik (Zoom in + Blur + Fade out)
+            gsap.to('#preloader', { 
+                opacity: 0, scale: 1.5, filter: "blur(20px)", duration: 1, ease: "power3.inOut", 
+                onComplete: () => { 
+                    document.getElementById('preloader').style.display = 'none'; 
+                    gsap.from('.cover-title', { y: 100, opacity: 0, duration: 1, ease: "power3.out" });
+                    gsap.from('.greeting, .hero h2, .description, .hero-buttons', { y: 30, opacity: 0, duration: 1, stagger: 0.1, delay: 0.3, ease: "power3.out" });
+                    gsap.from('.glass-panel', { opacity: 0, y: 50, duration: 1, delay: 1, stagger: 0.2 });
+                } 
+            });
+        }
+    });
     
     initPremiumFeatures();
     gsap.registerPlugin(ScrollTrigger);
