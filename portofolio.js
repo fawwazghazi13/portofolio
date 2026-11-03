@@ -1,9 +1,6 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ==========================================
-// 1. LOAD DATA DARI FIREBASE
-// ==========================================
 async function loadPortfolioContent() {
     try {
         const aboutSnap = await getDoc(doc(db, 'portfolio', 'about'));
@@ -22,7 +19,8 @@ async function loadPortfolioContent() {
         const swSnap = await getDoc(doc(db, 'portfolio', 'software'));
         if (swSnap.exists()) {
             const items = swSnap.data().items || [];
-            document.querySelector('.software-grid').innerHTML = items.map(s => `<div class="sw" title="${s.name}" style="color:${s.color};box-shadow: inset 0 0 15px ${s.color}33;">${s.label}</div>`).join('');
+            // UPDATE: Menggunakan span dengan warna neon glow
+            document.querySelector('.software-grid').innerHTML = items.map(s => `<div class="sw" title="${s.name}"><span style="color:${s.color}; text-shadow: 0 0 15px ${s.color};">${s.label}</span></div>`).join('');
         }
         const contactSnap = await getDoc(doc(db, 'portfolio', 'contact'));
         if (contactSnap.exists()) {
@@ -33,9 +31,6 @@ async function loadPortfolioContent() {
     } catch (err) { console.error('Gagal memuat:', err); }
 }
 
-// ==========================================
-// 2. FITUR PREMIUM (CURSOR & MAGNETIC)
-// ==========================================
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
         if (document.querySelector('.cursor-dot')) return;
@@ -68,7 +63,6 @@ function initPremiumFeatures() {
         btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" }));
     });
 
-    // Efek Parallax untuk Doodles
     window.addEventListener('mousemove', (e) => {
         const x = (window.innerWidth / 2 - e.pageX) / 50;
         const y = (window.innerHeight / 2 - e.pageY) / 50;
@@ -77,15 +71,11 @@ function initPremiumFeatures() {
     });
 }
 
-// ==========================================
-// 3. PRELOADER & ANIMASI AWAL (GSAP)
-// ==========================================
 window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); 
     const preloaderBar = document.querySelector('.preloader-bar-fill');
     
-    // Sembunyikan elemen hero terlebih dahulu agar tidak muncul tiba-tiba
     gsap.set(['.cover-title', '.greeting', '.hero h2', '.hero-buttons', '.hero-stack', '.glass-panel'], { opacity: 0, y: 50 });
 
     gsap.to(progress, { 
@@ -95,7 +85,6 @@ window.addEventListener('load', () => {
             if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
         }, 
         onComplete: () => {
-            // GSAP TIMELINE: ANIMASI OVERLAP TANPA JEDA
             const tl = gsap.timeline({
                 onComplete: () => {
                     document.getElementById('preloader').style.display = 'none';
@@ -107,52 +96,26 @@ window.addEventListener('load', () => {
                 }
             });
 
-            // 1. Animasi Preloader Mundur & Memudar
-            tl.to('#preloader', { 
-                opacity: 0, 
-                scale: 1.1, 
-                filter: "blur(10px)",
-                duration: 0.8, 
-                ease: "power2.inOut" 
-            })
-            // 2. Teks Hero Muncul (Termasuk yang ada efek Glitch-nya)
-            .to('.cover-title', { 
-                y: 0, opacity: 1, duration: 1, ease: "power3.out" 
-            }, "-=0.6")
-            .to('.greeting', { 
-                y: 0, opacity: 1, duration: 0.6, ease: "power3.out" 
-            }, "-=0.8")
-            .to('.hero h2, .hero-buttons', { 
-                y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power3.out" 
-            }, "-=0.6")
-            // 3. Tech Stack Badges Baru Muncul
-            .to('.hero-stack', { 
-                y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power3.out" 
-            }, "-=0.4")
-            // 4. Panel Kaca (Navbar & Header Kecil)
-            .to('.glass-panel', { 
-                y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" 
-            }, "-=0.6");
+            tl.to('#preloader', { opacity: 0, scale: 1.1, filter: "blur(10px)", duration: 0.8, ease: "power2.inOut" })
+            .to('.cover-title', { y: 0, opacity: 1, duration: 1, ease: "power3.out" }, "-=0.6")
+            .to('.greeting', { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.8")
+            .to('.hero h2, .hero-buttons', { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power3.out" }, "-=0.6")
+            .to('.hero-stack', { y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power3.out" }, "-=0.4")
+            .to('.glass-panel', { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }, "-=0.6");
         }
     });
 });
 
-// ==========================================
-// 4. MENU MOBILE & TRANSISI HALAMAN
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadPortfolioContent();
-    
     const menuToggle = document.getElementById('menuToggle'); 
     const navLinks = document.querySelector('.nav-links');
     if (menuToggle) menuToggle.addEventListener('click', () => { 
         navLinks.classList.toggle('active'); 
         menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; 
     });
-    
     const year = document.getElementById('year'); 
     if (year) year.textContent = new Date().getFullYear();
-    
     const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([target="_blank"])');
     links.forEach(link => {
         link.addEventListener('click', (e) => {
