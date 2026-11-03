@@ -382,3 +382,46 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     .nav-links a { display: block; padding: 15px; text-align: center; }
     .cover-title .script { position: static; display: block; transform: none; margin-top: 10px; font-size: 0.4em; }
 }
+
+/* ==========================================
+   EFEK GLITCH PADA TEKS
+   ========================================== */
+.glitch-effect { 
+    position: relative; 
+}
+
+.glitch-effect::before, 
+.glitch-effect::after { 
+    content: attr(data-text); 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: var(--bg); 
+}
+
+/* Efek warna merah di kiri */
+.glitch-effect::before { 
+    left: 3px; 
+    text-shadow: -2px 0 #ff003c; 
+    clip: rect(24px, 550px, 90px, 0); 
+    animation: glitch-anim 3s infinite linear alternate-reverse; 
+}
+
+/* Efek warna biru di kanan */
+.glitch-effect::after { 
+    left: -3px; 
+    text-shadow: 2px 0 #00e5ff; 
+    clip: rect(85px, 550px, 140px, 0); 
+    animation: glitch-anim 2s infinite linear alternate-reverse; 
+}
+
+@keyframes glitch-anim { 
+    0% { clip: rect(10px, 9999px, 50px, 0); } 
+    20% { clip: rect(80px, 9999px, 20px, 0); }
+    40% { clip: rect(30px, 9999px, 70px, 0); }
+    60% { clip: rect(60px, 9999px, 40px, 0); }
+    80% { clip: rect(15px, 9999px, 90px, 0); }
+    100% { clip: rect(80px, 9999px, 100px, 0); } 
+}
