@@ -67,8 +67,8 @@ window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
     
-    gsap.to(progress, { val: 100, duration: 1.5, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
-        gsap.to('#preloader', { y: '-100%', duration: 0.8, ease: "power4.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
+    gsap.to(progress, { val: 100, duration: 2.5, ease: "power3.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
+        gsap.to('#preloader', { opacity: 0, scale: 1.5, filter: "blur(20px)", duration: 1, ease: "power3.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
     }});
     
     initPremiumFeatures();
