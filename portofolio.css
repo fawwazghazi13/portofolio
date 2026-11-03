@@ -101,28 +101,13 @@ header {
 
 /* Teks "Student | Designer | Developer" */
 .hero h2 { 
-    font-family: var(--font-body);
+    font-family: var(--font-body) !important;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 3px;
     font-size: clamp(0.9rem, 2vw, 1.2rem); 
     color: var(--text); 
     margin: 25px 0 15px; 
-}
-
-/* ==========================================
-   TEKS PARAGRAF DESCRIPTION (SUDAH DIPERBAIKI TOTAL)
-   ========================================== */
-.description { 
-    max-width: 550px; 
-    color: var(--muted); 
-    margin-bottom: 40px; 
-    font-size: 1.05rem; 
-    font-family: 'Poppins', sans-serif !important; /* Paksa pakai Poppins */
-    font-style: normal !important; /* Paksa tidak miring */
-    letter-spacing: 0.5px;
-    line-height: 1.6;
-    text-align: center;
 }
 
 /* --- TOMBOL NEON --- */
@@ -142,7 +127,7 @@ header {
 .highlight { color: var(--text); font-weight: 600; position: relative; display: inline-block; }
 .highlight::after { content: ''; position: absolute; bottom: 2px; left: 0; width: 100%; height: 30%; background: rgba(245, 163, 26, 0.2); z-index: -1; transition: height 0.3s ease; }
 .about-content:hover .highlight::after { height: 50%; background: rgba(245, 163, 26, 0.3); }
-.about-content p { color: var(--muted); font-size: 1.05rem; line-height: 1.8; margin-bottom: 30px; }
+.about-content p { color: var(--muted); font-size: 1.05rem; line-height: 1.8; margin-bottom: 30px; font-family: var(--font-body); font-style: normal; }
 .about-stats { display: flex; gap: 15px; flex-wrap: wrap; }
 .stat-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 15px 25px; border-radius: 12px; text-align: center; flex: 1; min-width: 100px; transition: all 0.3s ease; }
 .stat-box:hover { background: rgba(245, 163, 26, 0.1); border-color: var(--accent); transform: translateY(-5px); }
