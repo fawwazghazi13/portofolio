@@ -39,26 +39,18 @@ async function loadProjectDetail() {
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
         if (document.querySelector('.cursor-dot')) return;
-
         const cursorDot = document.createElement('div'); cursorDot.classList.add('cursor-dot');
         const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
         document.body.appendChild(cursorDot); document.body.appendChild(cursorOutline);
-
-        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-        const mouse = { x: pos.x, y: pos.y };
-
+        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; const mouse = { x: pos.x, y: pos.y };
         window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            mouse.x = e.clientX; mouse.y = e.clientY;
             cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
         });
-
         gsap.ticker.add(() => {
-            pos.x += (mouse.x - pos.x) * 0.25;
-            pos.y += (mouse.y - pos.y) * 0.25;
+            pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
-
         document.querySelectorAll('a, button, .btn').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
@@ -69,10 +61,9 @@ function initPremiumFeatures() {
 window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
-    gsap.to('#preloader-logo', { rotation: 360, duration: 2, repeat: -1, ease: "linear" });
     
-    gsap.to(progress, { val: 100, duration: 1.2, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
-        gsap.to('#preloader', { y: '-100%', duration: 0.8, ease: "power4.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
+    gsap.to(progress, { val: 100, duration: 2.5, ease: "power3.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
+        gsap.to('#preloader', { opacity: 0, scale: 1.5, filter: "blur(20px)", duration: 1, ease: "power3.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
     }});
     
     initPremiumFeatures();
