@@ -87,14 +87,15 @@ header {
 .greeting { font-size: 0.8rem; letter-spacing: 5px; color: var(--accent); font-weight: 600; margin-bottom: 20px; text-shadow: 0 0 20px var(--accent-glow); }
 .cover-title { font-size: clamp(4rem, 15vw, 11rem); letter-spacing: 2px; margin-bottom: 0.4em; font-family: var(--font-heading); line-height: 0.9; position: relative; }
 
-/* Teks "Graphic Design" */
+/* Teks "Graphic Design" - SUDAH RATA TENGAH SEMPURNA */
 .cover-title .script { 
     position: absolute; 
-    left: 50%; 
+    left: 0; 
+    right: 0; 
+    text-align: center; 
     bottom: -0.2em; 
     font-size: 0.35em; 
     white-space: nowrap; 
-    transform: translateX(-50%); 
     text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); 
 }
 
@@ -109,16 +110,14 @@ header {
     margin: 25px 0 15px; 
 }
 
-/* ==========================================
-   PERBAIKAN: TEKS PARAGRAF DESCRIPTION
-   ========================================== */
+/* Teks Paragraf Description */
 .description { 
     max-width: 550px; 
     color: var(--muted); 
     margin-bottom: 40px; 
     font-size: 1.05rem; 
-    font-family: var(--font-body); /* Paksa pakai font utama */
-    font-style: normal !important; /* Paksa tidak miring */
+    font-family: var(--font-body);
+    font-style: normal !important; 
     letter-spacing: 0.5px;
     line-height: 1.6;
     text-align: center;
