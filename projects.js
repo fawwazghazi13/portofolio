@@ -16,56 +16,19 @@ async function loadAllProjects() {
 
             for (const cat in grouped) {
                 const showcase = document.createElement('div'); showcase.className = 'showcase';
-                
                 if (cat === 'video') {
                     let videoCardsHtml = '';
                     grouped[cat].forEach((p) => {
                         let displayImage = p.imageUrl;
                         if (!displayImage && p.videoUrl) { let vid = getYouTubeId(p.videoUrl); if (vid) displayImage = `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`; }
-                        
-                        videoCardsHtml += `
-                            <a href="project.html?id=${p.id}" class="video-item-card" title="Tonton: ${p.title}">
-                                <div class="video-card-inner">
-                                    ${displayImage ? `<img src="${displayImage}" alt="${p.title}" onerror="this.src='https://img.youtube.com/vi/${getYouTubeId(p.videoUrl)}/hqdefault.jpg'">` : ''}
-                                    <div class="video-overlay"></div>
-                                    <div class="play-btn-wrapper">
-                                        <div class="play-btn">▶</div>
-                                    </div>
-                                    <div class="video-title-badge">${p.title}</div>
-                                </div>
-                            </a>
-                        `;
+                        videoCardsHtml += `<a href="project.html?id=${p.id}" class="video-item-card" title="Tonton: ${p.title}"><div class="video-card-inner">${displayImage ? `<img src="${displayImage}" alt="${p.title}" onerror="this.src='https://img.youtube.com/vi/${getYouTubeId(p.videoUrl)}/hqdefault.jpg'">` : ''}<div class="video-overlay"></div><div class="play-btn-wrapper"><div class="play-btn">▶</div></div><div class="video-title-badge">${p.title}</div></div></a>`;
                     });
                     const duplicatedCards = videoCardsHtml + videoCardsHtml;
-                    showcase.innerHTML = `
-                        <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
-                        <h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3>
-                        <div class="video-marquee-wrapper">
-                            <div class="video-marquee-track">${duplicatedCards}</div>
-                        </div>
-                    `;
+                    showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3><div class="video-marquee-wrapper"><div class="video-marquee-track">${duplicatedCards}</div></div>`;
                 } else {
-                    // DESAIN BARU UNTUK GRID GAMBAR (BUKAN VIDEO)
                     let tilesHtml = '';
-                    grouped[cat].forEach((p) => { 
-                        tilesHtml += `
-                            <a href="project.html?id=${p.id}" class="modern-project-card reveal" title="${p.title}">
-                                ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}
-                                <div class="modern-project-overlay"></div>
-                                <div class="modern-project-info">
-                                    <h4>${p.title}</h4>
-                                    <span>${p.tags}</span>
-                                </div>
-                            </a>
-                        `; 
-                    });
-                    showcase.innerHTML = `
-                        <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
-                        <h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3>
-                        <div class="modern-project-grid">
-                            ${tilesHtml}
-                        </div>
-                    `;
+                    grouped[cat].forEach((p) => { tilesHtml += `<a href="project.html?id=${p.id}" class="modern-project-card reveal" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}<div class="modern-project-overlay"></div><div class="modern-project-info"><h4>${p.title}</h4><span>${p.tags}</span></div></a>`; });
+                    showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3><div class="modern-project-grid">${tilesHtml}</div>`;
                 }
                 container.appendChild(showcase);
             }
@@ -100,10 +63,9 @@ function initPremiumFeatures() {
 window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
-    gsap.to('#preloader-logo', { rotation: 360, duration: 2, repeat: -1, ease: "linear" });
     
-    gsap.to(progress, { val: 100, duration: 1.2, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
-        gsap.to('#preloader', { y: '-100%', duration: 0.8, ease: "power4.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
+    gsap.to(progress, { val: 100, duration: 2.5, ease: "power3.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
+        gsap.to('#preloader', { opacity: 0, scale: 1.5, filter: "blur(20px)", duration: 1, ease: "power3.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
     }});
     
     initPremiumFeatures();
