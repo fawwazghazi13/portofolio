@@ -21,10 +21,28 @@ async function loadAllProjects() {
                     grouped[cat].forEach((p) => {
                         let displayImage = p.imageUrl;
                         if (!displayImage && p.videoUrl) { let vid = getYouTubeId(p.videoUrl); if (vid) displayImage = `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`; }
-                        videoCardsHtml += `<a href="project.html?id=${p.id}" class="video-item-card" title="Tonton: ${p.title}">${displayImage ? `<img src="${displayImage}" alt="${p.title}">` : ''}<div class="play-icon">▶</div><span style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.8); color:#fff; padding:4px 10px; border-radius:50px; font-size:0.75rem; font-weight:bold; z-index:2;">${p.title}</span></a>`;
+                        
+                        videoCardsHtml += `
+                            <a href="project.html?id=${p.id}" class="video-item-card" title="Tonton: ${p.title}">
+                                <div class="video-card-inner">
+                                    ${displayImage ? `<img src="${displayImage}" alt="${p.title}" onerror="this.src='https://img.youtube.com/vi/${getYouTubeId(p.videoUrl)}/hqdefault.jpg'">` : ''}
+                                    <div class="video-overlay"></div>
+                                    <div class="play-btn-wrapper">
+                                        <div class="play-btn">▶</div>
+                                    </div>
+                                    <div class="video-title-badge">${p.title}</div>
+                                </div>
+                            </a>
+                        `;
                     });
                     const duplicatedCards = videoCardsHtml + videoCardsHtml;
-                    showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3><div class="video-marquee-wrapper"><div class="video-marquee-track">${duplicatedCards}</div></div>`;
+                    showcase.innerHTML = `
+                        <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
+                        <h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3>
+                        <div class="video-marquee-wrapper">
+                            <div class="video-marquee-track">${duplicatedCards}</div>
+                        </div>
+                    `;
                 } else {
                     let tilesHtml = '';
                     grouped[cat].forEach((p) => { tilesHtml += `<a href="project.html?id=${p.id}" class="tile project-tile-custom reveal" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : ''}<span>${p.title}</span></a>`; });
@@ -41,26 +59,18 @@ function getYouTubeId(url) { if (!url) return ''; if (url.includes('watch?v=')) 
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
         if (document.querySelector('.cursor-dot')) return;
-
         const cursorDot = document.createElement('div'); cursorDot.classList.add('cursor-dot');
         const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
         document.body.appendChild(cursorDot); document.body.appendChild(cursorOutline);
-
-        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-        const mouse = { x: pos.x, y: pos.y };
-
+        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; const mouse = { x: pos.x, y: pos.y };
         window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            mouse.x = e.clientX; mouse.y = e.clientY;
             cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
         });
-
         gsap.ticker.add(() => {
-            pos.x += (mouse.x - pos.x) * 0.25;
-            pos.y += (mouse.y - pos.y) * 0.25;
+            pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
-
         document.querySelectorAll('a, button, .btn, .video-item-card, .tile').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
