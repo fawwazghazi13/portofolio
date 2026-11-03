@@ -64,17 +64,26 @@ window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
     
+    gsap.set(['.slide-title', '.section-label', '#all-projects-container'], { opacity: 0, y: 30 });
+
     gsap.to(progress, { val: 100, duration: 2.5, ease: "power3.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
-        gsap.to('#preloader', { opacity: 0, scale: 1.5, filter: "blur(20px)", duration: 1, ease: "power3.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
-    }});
-    
-    initPremiumFeatures();
-    gsap.registerPlugin(ScrollTrigger);
-    setTimeout(() => {
-        document.querySelectorAll('.reveal').forEach(el => {
-            gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
+        const tl = gsap.timeline({
+            onComplete: () => {
+                document.getElementById('preloader').style.display = 'none';
+                initPremiumFeatures();
+                gsap.registerPlugin(ScrollTrigger);
+                setTimeout(() => {
+                    document.querySelectorAll('.reveal').forEach(el => {
+                        gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
+                    });
+                }, 100);
+            }
         });
-    }, 100);
+
+        tl.to('#preloader', { opacity: 0, scale: 1.1, filter: "blur(10px)", duration: 0.8, ease: "power2.inOut" })
+          .to('.slide-title, #all-projects-container', { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6")
+          .to('.section-label', { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.8");
+    }});
 });
 
 document.addEventListener('DOMContentLoaded', () => {
