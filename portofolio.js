@@ -19,7 +19,6 @@ async function loadPortfolioContent() {
         const swSnap = await getDoc(doc(db, 'portfolio', 'software'));
         if (swSnap.exists()) {
             const items = swSnap.data().items || [];
-            // UPDATE: Menggunakan span dengan warna neon glow
             document.querySelector('.software-grid').innerHTML = items.map(s => `<div class="sw" title="${s.name}"><span style="color:${s.color}; text-shadow: 0 0 15px ${s.color};">${s.label}</span></div>`).join('');
         }
         const contactSnap = await getDoc(doc(db, 'portfolio', 'contact'));
@@ -63,11 +62,24 @@ function initPremiumFeatures() {
         btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" }));
     });
 
+    // Parallax untuk Doodles & Gambar
     window.addEventListener('mousemove', (e) => {
         const x = (window.innerWidth / 2 - e.pageX) / 50;
         const y = (window.innerHeight / 2 - e.pageY) / 50;
         gsap.to('.parallax', { x: x, y: y, duration: 1, ease: "power2.out" });
         gsap.to('.floating-img', { x: -x*1.5, y: -y*1.5, duration: 1, ease: "power2.out" });
+    });
+
+    // Parallax untuk Elemen 3D (Kubus, Piramida, Ring)
+    window.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth / 2 - e.pageX) / 30;
+        const y = (window.innerHeight / 2 - e.pageY) / 30;
+        gsap.to('.parallax-3d', { 
+            rotationY: x, 
+            rotationX: -y, 
+            duration: 1.5, 
+            ease: "power2.out" 
+        });
     });
 }
 
