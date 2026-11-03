@@ -1,7 +1,6 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Fungsi Load Data
 async function loadAllCertificates() {
     const container = document.getElementById('all-certificates-container');
     if (!container) return;
@@ -16,7 +15,8 @@ async function loadAllCertificates() {
             container.innerHTML = '';
             items.forEach((item) => {
                 const card = document.createElement('div');
-                card.className = 'cert-card reveal';
+                // PERBAIKAN: Hapus class 'reveal' dari kartu
+                card.className = 'cert-card';
                 card.innerHTML = `
                     <div class="cert-image-wrapper">
                         ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}
@@ -62,19 +62,29 @@ function initPremiumFeatures() {
     }
 }
 
-// PERBAIKAN: Pakai Async/Await biar Preloader nunggu data siap dulu
 window.addEventListener('load', async () => {
-    // 1. TUNGGU DATA FIREBASE SELESAI DIMUAT
-    await loadAllCertificates();
-
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); 
     const preloaderBar = document.querySelector('.preloader-bar-fill');
     
     gsap.set(['.slide-title', '.section-label', '#all-certificates-container'], { opacity: 0, y: 30 });
 
+    // 1. Mulai loading bar ke 80%
+    let tlProgress = gsap.to(progress, { 
+        val: 80, duration: 1.2, ease: "power2.out", 
+        onUpdate: () => { 
+            if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; 
+            if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
+        } 
+    });
+
+    // 2. Tunggu data Firebase
+    await loadAllCertificates();
+
+    // 3. Selesaikan ke 100%
+    tlProgress.kill();
     gsap.to(progress, { 
-        val: 100, duration: 2.5, ease: "power3.inOut", 
+        val: 100, duration: 0.5, ease: "power2.in", 
         onUpdate: () => { 
             if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; 
             if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
@@ -84,12 +94,6 @@ window.addEventListener('load', async () => {
                 onComplete: () => {
                     document.getElementById('preloader').style.display = 'none';
                     initPremiumFeatures();
-                    gsap.registerPlugin(ScrollTrigger);
-                    setTimeout(() => {
-                        document.querySelectorAll('.reveal').forEach(el => {
-                            gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
-                        });
-                    }, 100);
                 }
             });
 
@@ -101,7 +105,6 @@ window.addEventListener('load', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // loadAllCertificates() dihapus dari sini karena sudah dipindah ke atas
     const menuToggle = document.getElementById('menuToggle'); const navLinks = document.querySelector('.nav-links');
     if (menuToggle) menuToggle.addEventListener('click', () => { navLinks.classList.toggle('active'); menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
     const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
