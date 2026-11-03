@@ -13,13 +13,14 @@
     <!-- PRELOADER -->
     <div id="preloader">
         <div class="preloader-content">
-            <img src="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg" id="preloader-logo" alt="Ghazi Logo" style="border-radius: 50%;">
+            <div class="preloader-ring"></div>
+            <img src="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg" id="preloader-logo" alt="Ghazi Logo">
             <div class="preloader-text">0%</div>
             <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
         </div>
     </div>
 
-    <!-- BACKGROUND MARQUEE (BARU) -->
+    <!-- BACKGROUND MARQUEE -->
     <div class="bg-marquee">
         <div class="marquee-content">
             <span>PORTFOLIO • DESIGNER • DEVELOPER • CREATIVE • </span>
@@ -46,7 +47,6 @@
 
     <!-- ===== SLIDE 1 : COVER ===== -->
     <section id="home" class="hero">
-        <!-- Doodles dengan efek parallax -->
         <span class="doodle squiggle s-a parallax" data-speed="2"></span>
         <span class="doodle squiggle s-b parallax" data-speed="-1"></span>
         <span class="doodle spark sp-a"></span>
@@ -79,10 +79,38 @@
                 <div class="about-text">
                     <p class="section-label">GET TO KNOW ME</p>
                     <h2 class="slide-title">Hello I'm <span class="script">Ghazi</span></h2>
-                    <div class="about-content"><p>Loading...</p></div>
+                    <div class="about-content">
+                        <p>
+                            I'm a 9th-grade student at <span class="highlight">IDN Boarding School Pamijahan, Bogor</span>, with a strong passion for <span class="highlight">technology, design, and mobile app development</span>. I enjoy exploring new technologies, learning new skills, and turning creative ideas into functional and visually appealing digital projects. 
+                            <br><br>
+                            I'm currently developing my skills in <span class="highlight">Flutter, Figma, Canva, and Kodular</span>, while learning more about UI/UX design and application development. I believe that every project is an opportunity to learn, grow, and improve.
+                        </p>
+                    </div>
+                    
+                    <!-- KOTAK STATISTIK -->
+                    <div class="about-stats">
+                        <div class="stat-box">
+                            <h4>9th</h4>
+                            <span>Grade</span>
+                        </div>
+                        <div class="stat-box">
+                            <h4>IDN</h4>
+                            <span>Boarding</span>
+                        </div>
+                        <div class="stat-box">
+                            <h4>5+</h4>
+                            <span>Skills</span>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="hero-image floating-img">
-                    <img src="images/profile.png" alt="Profile picture">
+                
+                <!-- GAMBAR DENGAN EFEK GLOW & BINGKAI -->
+                <div class="hero-image-wrapper">
+                    <div class="glow-backdrop"></div>
+                    <div class="hero-image floating-img">
+                        <img src="images/profile.png" alt="Profile picture">
+                    </div>
                 </div>
             </div>
         </div>
@@ -94,12 +122,10 @@
         <h2 class="slide-title text-center">Skills &amp; Tools</h2>
         
         <div class="bento-grid">
-            <!-- Kotak Kiri: Skills Text -->
             <div class="bento-item glass-panel skill-list-wrapper">
                 <h3>Design & Code</h3>
                 <ul class="skills-container"><li class="skill-card"><h4>Loading...</h4></li></ul>
             </div>
-            <!-- Kotak Kanan: Software Icons -->
             <div class="bento-item glass-panel software-wrapper">
                 <h3>Softwares</h3>
                 <div class="software-grid"><div class="sw sw-ps">...</div></div>
