@@ -1,6 +1,7 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// Fungsi Load Data
 async function loadAllProjects() {
     const container = document.getElementById('all-projects-container');
     if (!container) return;
@@ -60,34 +61,47 @@ function initPremiumFeatures() {
     }
 }
 
-window.addEventListener('load', () => {
+// PERBAIKAN: Pakai Async/Await biar Preloader nunggu data siap dulu
+window.addEventListener('load', async () => {
+    // 1. TUNGGU DATA FIREBASE SELESAI DIMUAT
+    await loadAllProjects(); 
+
     let progress = { val: 0 };
-    const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
+    const preloaderText = document.querySelector('.preloader-text'); 
+    const preloaderBar = document.querySelector('.preloader-bar-fill');
     
+    // Sembunyikan dulu kontennya
     gsap.set(['.slide-title', '.section-label', '#all-projects-container'], { opacity: 0, y: 30 });
 
-    gsap.to(progress, { val: 100, duration: 2.5, ease: "power3.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
-        const tl = gsap.timeline({
-            onComplete: () => {
-                document.getElementById('preloader').style.display = 'none';
-                initPremiumFeatures();
-                gsap.registerPlugin(ScrollTrigger);
-                setTimeout(() => {
-                    document.querySelectorAll('.reveal').forEach(el => {
-                        gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
-                    });
-                }, 100);
-            }
-        });
+    gsap.to(progress, { 
+        val: 100, duration: 2.5, ease: "power3.inOut", 
+        onUpdate: () => { 
+            if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; 
+            if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
+        }, 
+        onComplete: () => {
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    document.getElementById('preloader').style.display = 'none';
+                    initPremiumFeatures();
+                    gsap.registerPlugin(ScrollTrigger);
+                    setTimeout(() => {
+                        document.querySelectorAll('.reveal').forEach(el => {
+                            gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
+                        });
+                    }, 100);
+                }
+            });
 
-        tl.to('#preloader', { opacity: 0, scale: 1.1, filter: "blur(10px)", duration: 0.8, ease: "power2.inOut" })
-          .to('.slide-title, #all-projects-container', { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6")
-          .to('.section-label', { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.8");
-    }});
+            tl.to('#preloader', { opacity: 0, scale: 1.1, filter: "blur(10px)", duration: 0.8, ease: "power2.inOut" })
+              .to('.slide-title, #all-projects-container', { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6")
+              .to('.section-label', { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.8");
+        }
+    });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadAllProjects();
+    // loadAllProjects() dihapus dari sini karena sudah dipindah ke atas
     const menuToggle = document.getElementById('menuToggle'); const navLinks = document.querySelector('.nav-links');
     if (menuToggle) menuToggle.addEventListener('click', () => { navLinks.classList.toggle('active'); menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
     const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
