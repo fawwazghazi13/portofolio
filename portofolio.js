@@ -72,6 +72,9 @@ window.addEventListener('load', () => {
     const preloaderText = document.querySelector('.preloader-text'); 
     const preloaderBar = document.querySelector('.preloader-bar-fill');
     
+    // Sembunyikan elemen hero dulu agar tidak muncul tiba-tiba
+    gsap.set(['.cover-title', '.greeting', '.hero h2', '.description', '.hero-buttons', '.glass-panel'], { opacity: 0, y: 50 });
+
     gsap.to(progress, { 
         val: 100, duration: 2.5, ease: "power3.inOut", 
         onUpdate: () => { 
@@ -79,21 +82,27 @@ window.addEventListener('load', () => {
             if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
         }, 
         onComplete: () => {
-            // Animasi Keluar Sinematik (Zoom in + Blur + Fade out)
-            gsap.to('#preloader', { 
-                opacity: 0, scale: 1.5, filter: "blur(20px)", duration: 1, ease: "power3.inOut", 
-                onComplete: () => { 
-                    document.getElementById('preloader').style.display = 'none'; 
-                    gsap.from('.cover-title', { y: 100, opacity: 0, duration: 1, ease: "power3.out" });
-                    gsap.from('.greeting, .hero h2, .description, .hero-buttons', { y: 30, opacity: 0, duration: 1, stagger: 0.1, delay: 0.3, ease: "power3.out" });
-                    gsap.from('.glass-panel', { opacity: 0, y: 50, duration: 1, delay: 1, stagger: 0.2 });
-                } 
+            // GSAP TIMELINE: ANIMASI OVERLAP TANPA JEDA
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    document.getElementById('preloader').style.display = 'none';
+                    initPremiumFeatures();
+                    gsap.registerPlugin(ScrollTrigger);
+                    document.querySelectorAll('.reveal').forEach(el => {
+                        gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
+                    });
+                }
             });
+
+            // Animasi Preloader Mulai Pudar & Mengecil
+            tl.to('#preloader', { opacity: 0, scale: 1.1, filter: "blur(10px)", duration: 0.8, ease: "power2.inOut" })
+              // Teks Hero Mulai Muncul (-=0.6 artinya animasi mulai 0.6 detik SEBELUM preloader hilang total)
+              .to('.cover-title', { y: 0, opacity: 1, duration: 1, ease: "power3.out" }, "-=0.6")
+              .to('.greeting', { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.8")
+              .to('.hero h2, .description, .hero-buttons', { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power3.out" }, "-=0.6")
+              .to('.glass-panel', { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }, "-=0.6");
         }
     });
-    
-    initPremiumFeatures();
-    gsap.registerPlugin(ScrollTrigger);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
