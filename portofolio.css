@@ -268,3 +268,60 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     .nav-links a { display: block; padding: 15px; text-align: center; }
     .cover-title .script { position: static; display: block; transform: none; margin-top: 10px; font-size: 0.4em; }
 }
+
+/* ==========================================
+   BACKGROUND PREMIUM UNTUK PROJECTS & CERTIFICATES
+   ========================================== */
+.page-bg-container {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+/* Grid Futuristik */
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+    animation: panGrid 20s linear infinite;
+}
+
+@keyframes panGrid {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+}
+
+/* Glowing Orbs */
+.bg-orb-orange, .bg-orb-purple {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.2;
+    z-index: 0;
+}
+
+.bg-orb-orange {
+    width: 500px; height: 500px;
+    background: var(--accent);
+    top: -100px; left: -100px;
+    animation: floatOrb 8s infinite alternate ease-in-out;
+}
+
+.bg-orb-purple {
+    width: 600px; height: 600px;
+    background: #4a00e0;
+    bottom: -200px; right: -100px;
+    animation: floatOrb 10s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes floatOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(100px, 100px) scale(1.2); }
+}
