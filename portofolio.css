@@ -106,7 +106,7 @@ header { position: fixed !important; top: 20px !important; left: 0; width: 100%;
 .section { max-width: 1100px; margin: 0 auto; padding: 100px 24px; position: relative; z-index: 2; }
 
 /* ==========================================
-   UPGRADE ABOUT & SKILLS (HUD TECH)
+   UPGRADE ABOUT SECTION (HUD TECH)
    ========================================== */
 .about-container { padding: 50px; position: relative; overflow: hidden; }
 .about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 50px; align-items: center; }
@@ -132,8 +132,28 @@ header { position: fixed !important; top: 20px !important; left: 0; width: 100%;
 .hero-image:hover::before, .hero-image:hover::after { width: 100%; height: 100%; border-radius: 24px; opacity: 0.3; }
 .hero-image img { width: 100%; border-radius: 16px; object-fit: cover; filter: contrast(1.1) saturate(1.2); }
 
-.bento-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 25px; margin-top: 30px; }
-.bento-item { padding: 40px; position: relative; overflow: hidden; }
+/* ==========================================
+   UPGRADE SKILLS SECTION (PERBAIKAN LAYOUT FLEX)
+   ========================================== */
+.bento-grid { 
+    display: flex; /* Ubah dari Grid ke Flexbox */
+    flex-direction: row;
+    gap: 25px; 
+    margin-top: 30px; 
+    align-items: flex-start; /* Kunci Utama: Frame kanan tidak akan melar ke bawah */
+}
+.bento-item { 
+    padding: 40px; 
+    position: relative; 
+    overflow: hidden; 
+}
+.skill-list-wrapper {
+    flex: 1.2; /* Box kiri lebih lebar */
+}
+.software-wrapper {
+    flex: 0.8; /* Box kanan lebih kecil */
+}
+
 .bento-item h3 { font-family: var(--font-heading); font-size: 1.8rem; color: var(--accent); margin-bottom: 30px; letter-spacing: 1px; }
 .skills-container { display: flex; flex-direction: column; gap: 25px; }
 .skill-card { padding-left: 20px; border-left: 2px solid rgba(255,255,255,0.1); position: relative; transition: all 0.3s; }
@@ -143,8 +163,20 @@ header { position: fixed !important; top: 20px !important; left: 0; width: 100%;
 .skill-card h4 { font-size: 1.15rem; color: #fff; margin-bottom: 8px; }
 .skill-card p { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
 
-.software-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-.sw { aspect-ratio: 1; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; text-align: center; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); position: relative; overflow: hidden; }
+/* Ikon Software jadi 2 Kolom agar lebih besar */
+.software-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px; 
+}
+.sw { 
+    aspect-ratio: 1; border-radius: 16px; display: flex; align-items: center; justify-content: center; 
+    font-weight: 700; font-size: 1.3rem; text-align: center;
+    background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); 
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    position: relative; overflow: hidden;
+}
 .sw::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, currentColor 0%, transparent 70%); opacity: 0.1; transition: opacity 0.3s; }
 .sw:hover { transform: translateY(-8px) scale(1.05); border-color: currentColor; box-shadow: 0 10px 20px rgba(0,0,0,0.5), 0 0 15px currentColor; }
 .sw:hover::after { opacity: 0.3; }
@@ -238,7 +270,10 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
 @media (max-width: 900px) {
     .about-grid { grid-template-columns: 1fr; }
     .hero-image { order: -1; margin-bottom: 20px; }
-    .bento-grid { grid-template-columns: 1fr; }
+    /* Bento Grid jadi vertikal di HP */
+    .bento-grid { flex-direction: column; }
+    .skill-list-wrapper, .software-wrapper { width: 100%; }
+    
     .about-container { padding: 30px; }
     .about-stats { justify-content: center; }
     .stat-box { flex: 1 1 30%; }
