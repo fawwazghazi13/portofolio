@@ -1,43 +1,91 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+let allProjects = [];
+let currentFilter = 'all';
+
 async function loadAllProjects() {
     const container = document.getElementById('all-projects-container');
     if (!container) return;
     try {
         const snap = await getDoc(doc(db, 'portfolio', 'projects'));
         if (snap.exists()) {
-            const items = snap.data().items || [];
-            if(items.length === 0) { container.innerHTML = '<h3 style="text-align:center; color:var(--muted);">Belum ada project.</h3>'; return; }
-            const grouped = {};
-            items.forEach(p => { if (!grouped[p.category]) grouped[p.category] = []; grouped[p.category].push(p); });
-            const catNames = { social: 'Social Media', print: 'Print Media', illustration: 'Illustrations', branding: 'Branding', web: 'Web & UI', video: 'Video & Motion' };
-            container.innerHTML = '';
-
-            for (const cat in grouped) {
-                const showcase = document.createElement('div'); showcase.className = 'showcase';
-                if (cat === 'video') {
-                    let videoCardsHtml = '';
-                    grouped[cat].forEach((p) => {
-                        let displayImage = p.imageUrl;
-                        if (!displayImage && p.videoUrl) { let vid = getYouTubeId(p.videoUrl); if (vid) displayImage = `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`; }
-                        videoCardsHtml += `<a href="project.html?id=${p.id}" class="video-item-card" title="Tonton: ${p.title}"><div class="video-card-inner">${displayImage ? `<img src="${displayImage}" alt="${p.title}" onerror="this.src='https://img.youtube.com/vi/${getYouTubeId(p.videoUrl)}/hqdefault.jpg'">` : ''}<div class="video-overlay"></div><div class="play-btn-wrapper"><div class="play-btn">▶</div></div><div class="video-title-badge">${p.title}</div></div></a>`;
-                    });
-                    const duplicatedCards = videoCardsHtml + videoCardsHtml;
-                    showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3><div class="video-marquee-wrapper"><div class="video-marquee-track">${duplicatedCards}</div></div>`;
-                } else {
-                    let tilesHtml = '';
-                    // PERBAIKAN: Hapus class 'reveal' dari kartu
-                    grouped[cat].forEach((p) => { tilesHtml += `<a href="project.html?id=${p.id}" class="modern-project-card" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}<div class="modern-project-overlay"></div><div class="modern-project-info"><h4>${p.title}</h4><span>${p.tags}</span></div></a>`; });
-                    showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3><div class="modern-project-grid">${tilesHtml}</div>`;
-                }
-                container.appendChild(showcase);
-            }
+            allProjects = snap.data().items || [];
+            renderFilteredProjects();
         }
     } catch (err) { console.error(err); }
 }
 
+function renderFilteredProjects() {
+    const container = document.getElementById('all-projects-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    let filteredItems = allProjects;
+    if (currentFilter !== 'all') {
+        filteredItems = allProjects.filter(p => p.category === currentFilter);
+    }
+
+    if (filteredItems.length === 0) {
+        container.innerHTML = '<h3 style="text-align:center; color:var(--muted); width:100%;">Belum ada project di kategori ini.</h3>';
+        return;
+    }
+
+    const grouped = {};
+    filteredItems.forEach(p => { if (!grouped[p.category]) grouped[p.category] = []; grouped[p.category].push(p); });
+    const catNames = { social: 'Social Media', print: 'Print Media', illustration: 'Illustrations', branding: 'Branding', web: 'Web & UI', video: 'Video & Motion' };
+
+    for (const cat in grouped) {
+        const showcase = document.createElement('div'); showcase.className = 'showcase';
+        if (cat === 'video') {
+            let videoCardsHtml = '';
+            grouped[cat].forEach((p) => {
+                let displayImage = p.imageUrl;
+                if (!displayImage && p.videoUrl) { let vid = getYouTubeId(p.videoUrl); if (vid) displayImage = `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`; }
+                videoCardsHtml += `<a href="project.html?id=${p.id}" class="video-item-card" title="Tonton: ${p.title}"><div class="video-card-inner">${displayImage ? `<img src="${displayImage}" alt="${p.title}" onerror="this.src='https://img.youtube.com/vi/${getYouTubeId(p.videoUrl)}/hqdefault.jpg'">` : ''}<div class="video-overlay"></div><div class="play-btn-wrapper"><div class="play-btn">▶</div></div><div class="video-title-badge">${p.title}</div></div></a>`;
+            });
+            const duplicatedCards = videoCardsHtml + videoCardsHtml;
+            showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3><div class="video-marquee-wrapper"><div class="video-marquee-track">${duplicatedCards}</div></div>`;
+        } else {
+            let tilesHtml = '';
+            grouped[cat].forEach((p) => { tilesHtml += `<a href="project.html?id=${p.id}" class="modern-project-card" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}<div class="modern-project-overlay"></div><div class="modern-project-info"><h4>${p.title}</h4><span>${p.tags}</span></div></a>`; });
+            showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3><div class="modern-project-grid">${tilesHtml}</div>`;
+        }
+        container.appendChild(showcase);
+    }
+}
+
 function getYouTubeId(url) { if (!url) return ''; if (url.includes('watch?v=')) return url.split('v=')[1].split('&')[0]; if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0]; return ''; }
+
+function initScrollProgress() {
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('scroll-progress');
+    document.body.appendChild(progressBar);
+    window.addEventListener('scroll', () => {
+        let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        let scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + "%";
+    });
+}
+
+function initTiltEffect() {
+    if (window.matchMedia("(pointer: fine)").matches) {
+        const cards = document.querySelectorAll('.modern-project-card, .video-item-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                const centerX = rect.width / 2; const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -8; const rotateY = ((x - centerX) / centerX) * 8;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+            });
+        });
+    }
+}
 
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
@@ -54,46 +102,41 @@ function initPremiumFeatures() {
             pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
-        document.querySelectorAll('a, button, .btn, .video-item-card, .modern-project-card').forEach(el => {
+        document.querySelectorAll('a, button, .btn, .modern-project-card, .video-item-card').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
     }
+    initTiltEffect();
 }
 
 window.addEventListener('load', async () => {
+    initScrollProgress();
+    
     let progress = { val: 0 };
-    const preloaderText = document.querySelector('.preloader-text'); 
-    const preloaderBar = document.querySelector('.preloader-bar-fill');
+    const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
     
     gsap.set(['.slide-title', '.section-label', '#all-projects-container'], { opacity: 0, y: 30 });
 
-    // 1. Mulai loading bar ke 80% dengan cepat
     let tlProgress = gsap.to(progress, { 
         val: 80, duration: 1.2, ease: "power2.out", 
-        onUpdate: () => { 
-            if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; 
-            if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
-        } 
+        onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; } 
     });
 
-    // 2. Tunggu data Firebase selesai dimuat
     await loadAllProjects(); 
 
-    // 3. Selesaikan loading bar ke 100%
     tlProgress.kill();
     gsap.to(progress, { 
         val: 100, duration: 0.5, ease: "power2.in", 
-        onUpdate: () => { 
-            if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; 
-            if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
-        }, 
+        onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, 
         onComplete: () => {
             const tl = gsap.timeline({
                 onComplete: () => {
                     document.getElementById('preloader').style.display = 'none';
                     initPremiumFeatures();
-                    // ScrollTrigger untuk element lain (jika ada) tetap jalan, tapi kartu project tidak perlu
+                    gsap.registerPlugin(ScrollTrigger);
+                    // Panggil Tilt Effect setelah cards di-render
+                    initTiltEffect();
                 }
             });
 
@@ -105,6 +148,23 @@ window.addEventListener('load', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Filter Logic
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            currentFilter = e.currentTarget.dataset.filter;
+            
+            // Animasi keluar-masuk singkat saat filter diklik
+            gsap.to('#all-projects-container', { opacity: 0, duration: 0.2, onComplete: () => {
+                renderFilteredProjects();
+                gsap.to('#all-projects-container', { opacity: 1, duration: 0.4 });
+                initTiltEffect(); // Re-attach tilt effect to new DOM elements
+            }});
+        });
+    });
+
     const menuToggle = document.getElementById('menuToggle'); const navLinks = document.querySelector('.nav-links');
     if (menuToggle) menuToggle.addEventListener('click', () => { navLinks.classList.toggle('active'); menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
     const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
