@@ -1,7 +1,6 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Fungsi Load Data
 async function loadAllProjects() {
     const container = document.getElementById('all-projects-container');
     if (!container) return;
@@ -28,7 +27,8 @@ async function loadAllProjects() {
                     showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3><div class="video-marquee-wrapper"><div class="video-marquee-track">${duplicatedCards}</div></div>`;
                 } else {
                     let tilesHtml = '';
-                    grouped[cat].forEach((p) => { tilesHtml += `<a href="project.html?id=${p.id}" class="modern-project-card reveal" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}<div class="modern-project-overlay"></div><div class="modern-project-info"><h4>${p.title}</h4><span>${p.tags}</span></div></a>`; });
+                    // PERBAIKAN: Hapus class 'reveal' dari kartu
+                    grouped[cat].forEach((p) => { tilesHtml += `<a href="project.html?id=${p.id}" class="modern-project-card" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}<div class="modern-project-overlay"></div><div class="modern-project-info"><h4>${p.title}</h4><span>${p.tags}</span></div></a>`; });
                     showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3><div class="modern-project-grid">${tilesHtml}</div>`;
                 }
                 container.appendChild(showcase);
@@ -61,20 +61,29 @@ function initPremiumFeatures() {
     }
 }
 
-// PERBAIKAN: Pakai Async/Await biar Preloader nunggu data siap dulu
 window.addEventListener('load', async () => {
-    // 1. TUNGGU DATA FIREBASE SELESAI DIMUAT
-    await loadAllProjects(); 
-
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); 
     const preloaderBar = document.querySelector('.preloader-bar-fill');
     
-    // Sembunyikan dulu kontennya
     gsap.set(['.slide-title', '.section-label', '#all-projects-container'], { opacity: 0, y: 30 });
 
+    // 1. Mulai loading bar ke 80% dengan cepat
+    let tlProgress = gsap.to(progress, { 
+        val: 80, duration: 1.2, ease: "power2.out", 
+        onUpdate: () => { 
+            if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; 
+            if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
+        } 
+    });
+
+    // 2. Tunggu data Firebase selesai dimuat
+    await loadAllProjects(); 
+
+    // 3. Selesaikan loading bar ke 100%
+    tlProgress.kill();
     gsap.to(progress, { 
-        val: 100, duration: 2.5, ease: "power3.inOut", 
+        val: 100, duration: 0.5, ease: "power2.in", 
         onUpdate: () => { 
             if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; 
             if(preloaderBar) preloaderBar.style.width = progress.val + '%'; 
@@ -84,12 +93,7 @@ window.addEventListener('load', async () => {
                 onComplete: () => {
                     document.getElementById('preloader').style.display = 'none';
                     initPremiumFeatures();
-                    gsap.registerPlugin(ScrollTrigger);
-                    setTimeout(() => {
-                        document.querySelectorAll('.reveal').forEach(el => {
-                            gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
-                        });
-                    }, 100);
+                    // ScrollTrigger untuk element lain (jika ada) tetap jalan, tapi kartu project tidak perlu
                 }
             });
 
@@ -101,7 +105,6 @@ window.addEventListener('load', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // loadAllProjects() dihapus dari sini karena sudah dipindah ke atas
     const menuToggle = document.getElementById('menuToggle'); const navLinks = document.querySelector('.nav-links');
     if (menuToggle) menuToggle.addEventListener('click', () => { navLinks.classList.toggle('active'); menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
     const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
