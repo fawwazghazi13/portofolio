@@ -4,12 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Projects | Portofolio</title>
+    
+    <!-- SEO & Open Graph (Biar keren pas di-share) -->
+    <meta name="description" content="Portofolio M Ghazi Fawwaz El Aqiel - Graphic Designer, Web Developer, & UI/UX Enthusiast.">
+    <meta property="og:title" content="Ghazi | Graphic Design Portfolio">
+    <meta property="og:description" content="I craft digital experiences, visual identities, and interactive web designs.">
+    <meta property="og:image" content="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
+    <meta property="og:url" content="https://portofolio-beta-peach-33.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
+    
     <link rel="stylesheet" href="portofolio.css">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body style="padding-top: 80px;">
 
+    <!-- BACKGROUND PROJECTS -->
     <div class="page-bg-container">
         <div class="bg-grid"></div>
         <div class="bg-orb-orange"></div>
@@ -22,6 +35,7 @@
         </div>
     </div>
 
+    <!-- PRELOADER -->
     <div id="preloader">
         <div class="preloader-content">
             <div class="ring-outer"></div>
@@ -34,6 +48,7 @@
         <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
     </div>
 
+    <!-- NAVBAR -->
     <header>
         <nav class="navbar glass-panel">
             <a href="index.html" class="logo">
@@ -51,20 +66,37 @@
         </nav>
     </header>
 
+    <!-- KONTEN PROJECTS -->
     <section id="projects" class="section projects" style="min-height: 100vh;">
         <p class="section-label">MY RECENT WORK</p>
         <h2 class="slide-title">Featured Projects</h2>
+        
+        <!-- TOMBOL FILTER -->
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">All Work</button>
+            <button class="filter-btn" data-filter="web">Web & UI</button>
+            <button class="filter-btn" data-filter="illustration">Illustrations</button>
+            <button class="filter-btn" data-filter="social">Social Media</button>
+            <button class="filter-btn" data-filter="print">Print</button>
+            <button class="filter-btn" data-filter="video">Videos</button>
+        </div>
+
+        <!-- WADAH PROJECT (HANYA SATU) -->
         <div id="all-projects-container">
             <h3 style="text-align:center; color:var(--muted);">Memuat Projects...</h3>
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer>
         <p>© <span id="year"></span> M Ghazi Fawwaz. All rights reserved.</p>
     </footer>
 
+    <!-- GSAP Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Script Utama -->
     <script type="module" src="projects.js"></script>
 </body>
 </html>
