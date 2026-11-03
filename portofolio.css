@@ -151,3 +151,141 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     .nav-links a { display: block; padding: 15px; text-align: center; }
     .cover-title .script { position: static; display: block; transform: none; margin-top: 10px; font-size: 0.4em; }
 }
+
+/* ==========================================
+   VIDEO MARQUEE PREMIUM (GLASSMORPHISM & 3D)
+   ========================================== */
+.video-marquee-wrapper { 
+    overflow: hidden; 
+    width: 100%; 
+    position: relative; 
+    padding: 40px 0; 
+    /* Efek fade di ujung kiri dan kanan */
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); 
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); 
+    perspective: 1000px; /* Untuk efek 3D */
+}
+
+.video-marquee-track { 
+    display: flex; 
+    gap: 30px; 
+    width: max-content; 
+    animation: scrollMarquee 45s linear infinite; 
+    transform-style: preserve-3d;
+}
+
+.video-marquee-wrapper:hover .video-marquee-track { 
+    animation-play-state: paused; 
+}
+
+@keyframes scrollMarquee { 
+    0% { transform: translateX(0); } 
+    100% { transform: translateX(-50%); } 
+}
+
+/* Kartu Video */
+.video-item-card { 
+    width: 380px !important; 
+    aspect-ratio: 16 / 9 !important; 
+    flex-shrink: 0; 
+    position: relative; 
+    border-radius: 16px; 
+    overflow: hidden; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #111;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
+    transform-style: preserve-3d;
+}
+
+/* Efek saat di-hover (membesar dan menyala) */
+.video-item-card:hover { 
+    border-color: var(--accent); 
+    transform: scale(1.08) translateZ(30px) rotateX(2deg) rotateY(-2deg); 
+    box-shadow: 0 20px 40px rgba(245, 163, 26, 0.2), 0 0 20px rgba(245, 163, 26, 0.1);
+    z-index: 10;
+}
+
+.video-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.video-item-card img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: transform 0.5s ease;
+}
+
+.video-item-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Overlay gelap agar teks terbaca */
+.video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+    transition: opacity 0.3s ease;
+}
+
+/* Tombol Play di Tengah */
+.play-btn-wrapper {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) translateZ(20px);
+    opacity: 0.8;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.video-item-card:hover .play-btn-wrapper {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateZ(40px) scale(1.1);
+}
+
+.play-btn { 
+    width: 60px; height: 60px;
+    background: rgba(10, 10, 10, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 1.2rem;
+    padding-left: 5px; /* Biar segitiga play-nya pas di tengah */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.video-item-card:hover .play-btn {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    box-shadow: 0 0 30px var(--accent-glow);
+}
+
+/* Label Judul Video (Glassmorphism) */
+.video-title-badge {
+    position: absolute;
+    bottom: 15px; left: 15px;
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transform: translateZ(30px);
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.video-item-card:hover .video-title-badge {
+    background: rgba(245, 163, 26, 0.9);
+    color: #000;
+    border-color: var(--accent);
+}
