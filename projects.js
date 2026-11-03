@@ -16,6 +16,7 @@ async function loadAllProjects() {
 
             for (const cat in grouped) {
                 const showcase = document.createElement('div'); showcase.className = 'showcase';
+                
                 if (cat === 'video') {
                     let videoCardsHtml = '';
                     grouped[cat].forEach((p) => {
@@ -44,9 +45,27 @@ async function loadAllProjects() {
                         </div>
                     `;
                 } else {
+                    // DESAIN BARU UNTUK GRID GAMBAR (BUKAN VIDEO)
                     let tilesHtml = '';
-                    grouped[cat].forEach((p) => { tilesHtml += `<a href="project.html?id=${p.id}" class="tile project-tile-custom reveal" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : ''}<span>${p.title}</span></a>`; });
-                    showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3><div class="collage" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; grid-auto-rows: auto;">${tilesHtml}</div>`;
+                    grouped[cat].forEach((p) => { 
+                        tilesHtml += `
+                            <a href="project.html?id=${p.id}" class="modern-project-card reveal" title="${p.title}">
+                                ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}
+                                <div class="modern-project-overlay"></div>
+                                <div class="modern-project-info">
+                                    <h4>${p.title}</h4>
+                                    <span>${p.tags}</span>
+                                </div>
+                            </a>
+                        `; 
+                    });
+                    showcase.innerHTML = `
+                        <div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div>
+                        <h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3>
+                        <div class="modern-project-grid">
+                            ${tilesHtml}
+                        </div>
+                    `;
                 }
                 container.appendChild(showcase);
             }
@@ -71,7 +90,7 @@ function initPremiumFeatures() {
             pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
-        document.querySelectorAll('a, button, .btn, .video-item-card, .tile').forEach(el => {
+        document.querySelectorAll('a, button, .btn, .video-item-card, .modern-project-card').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
