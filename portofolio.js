@@ -1,6 +1,9 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// ==========================================
+// 1. LOAD DATA DARI FIREBASE
+// ==========================================
 async function loadPortfolioContent() {
     try {
         const aboutSnap = await getDoc(doc(db, 'portfolio', 'about'));
@@ -30,6 +33,9 @@ async function loadPortfolioContent() {
     } catch (err) { console.error('Gagal memuat:', err); }
 }
 
+// ==========================================
+// 2. FITUR PREMIUM (CURSOR & MAGNETIC)
+// ==========================================
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
         if (document.querySelector('.cursor-dot')) return;
@@ -37,14 +43,17 @@ function initPremiumFeatures() {
         const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
         document.body.appendChild(cursorDot); document.body.appendChild(cursorOutline);
         const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; const mouse = { x: pos.x, y: pos.y };
+        
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX; mouse.y = e.clientY;
             cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
         });
+        
         gsap.ticker.add(() => {
             pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
+        
         document.querySelectorAll('a, button, .btn').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
@@ -59,6 +68,7 @@ function initPremiumFeatures() {
         btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" }));
     });
 
+    // Efek Parallax untuk Doodles
     window.addEventListener('mousemove', (e) => {
         const x = (window.innerWidth / 2 - e.pageX) / 50;
         const y = (window.innerHeight / 2 - e.pageY) / 50;
@@ -67,13 +77,16 @@ function initPremiumFeatures() {
     });
 }
 
+// ==========================================
+// 3. PRELOADER & ANIMASI AWAL (GSAP)
+// ==========================================
 window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); 
     const preloaderBar = document.querySelector('.preloader-bar-fill');
     
-    // Sembunyikan elemen hero dulu agar tidak muncul tiba-tiba
-    gsap.set(['.cover-title', '.greeting', '.hero h2', '.description', '.hero-buttons', '.glass-panel'], { opacity: 0, y: 50 });
+    // Sembunyikan elemen hero terlebih dahulu agar tidak muncul tiba-tiba
+    gsap.set(['.cover-title', '.greeting', '.hero h2', '.hero-buttons', '.hero-stack', '.glass-panel'], { opacity: 0, y: 50 });
 
     gsap.to(progress, { 
         val: 100, duration: 2.5, ease: "power3.inOut", 
@@ -94,27 +107,60 @@ window.addEventListener('load', () => {
                 }
             });
 
-            // Animasi Preloader Mulai Pudar & Mengecil
-            tl.to('#preloader', { opacity: 0, scale: 1.1, filter: "blur(10px)", duration: 0.8, ease: "power2.inOut" })
-              // Teks Hero Mulai Muncul (-=0.6 artinya animasi mulai 0.6 detik SEBELUM preloader hilang total)
-              .to('.cover-title', { y: 0, opacity: 1, duration: 1, ease: "power3.out" }, "-=0.6")
-              .to('.greeting', { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.8")
-              .to('.hero h2, .description, .hero-buttons', { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power3.out" }, "-=0.6")
-              .to('.glass-panel', { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }, "-=0.6");
+            // 1. Animasi Preloader Mundur & Memudar
+            tl.to('#preloader', { 
+                opacity: 0, 
+                scale: 1.1, 
+                filter: "blur(10px)",
+                duration: 0.8, 
+                ease: "power2.inOut" 
+            })
+            // 2. Teks Hero Muncul (Termasuk yang ada efek Glitch-nya)
+            .to('.cover-title', { 
+                y: 0, opacity: 1, duration: 1, ease: "power3.out" 
+            }, "-=0.6")
+            .to('.greeting', { 
+                y: 0, opacity: 1, duration: 0.6, ease: "power3.out" 
+            }, "-=0.8")
+            .to('.hero h2, .hero-buttons', { 
+                y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power3.out" 
+            }, "-=0.6")
+            // 3. Tech Stack Badges Baru Muncul
+            .to('.hero-stack', { 
+                y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power3.out" 
+            }, "-=0.4")
+            // 4. Panel Kaca (Navbar & Header Kecil)
+            .to('.glass-panel', { 
+                y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" 
+            }, "-=0.6");
         }
     });
 });
 
+// ==========================================
+// 4. MENU MOBILE & TRANSISI HALAMAN
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadPortfolioContent();
-    const menuToggle = document.getElementById('menuToggle'); const navLinks = document.querySelector('.nav-links');
-    if (menuToggle) menuToggle.addEventListener('click', () => { navLinks.classList.toggle('active'); menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
-    const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
+    
+    const menuToggle = document.getElementById('menuToggle'); 
+    const navLinks = document.querySelector('.nav-links');
+    if (menuToggle) menuToggle.addEventListener('click', () => { 
+        navLinks.classList.toggle('active'); 
+        menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; 
+    });
+    
+    const year = document.getElementById('year'); 
+    if (year) year.textContent = new Date().getFullYear();
+    
     const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([target="_blank"])');
     links.forEach(link => {
         link.addEventListener('click', (e) => {
-            const href = link.getAttribute('href'); if (!href || href.startsWith('javascript:')) return;
-            e.preventDefault(); document.body.classList.add('page-exit'); setTimeout(() => { window.location.href = href; }, 400);
+            const href = link.getAttribute('href'); 
+            if (!href || href.startsWith('javascript:')) return;
+            e.preventDefault(); 
+            document.body.classList.add('page-exit'); 
+            setTimeout(() => { window.location.href = href; }, 400);
         });
     });
 });
