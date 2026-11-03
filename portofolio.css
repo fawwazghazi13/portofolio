@@ -33,10 +33,10 @@ img { max-width: 100%; display: block; }
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* --- BACKGROUND MARQUEE (TEKS BERJALAN) - KEMBALI MIRING --- */
+/* --- BACKGROUND MARQUEE (TEKS BERJALAN) --- */
 .bg-marquee {
     position: fixed; top: 50%; left: 0; width: 100vw; overflow: hidden; z-index: -1;
-    transform: translateY(-50%) rotate(-5deg); /* <--- Rotasi dikembalikan */
+    transform: translateY(-50%) rotate(-5deg);
     opacity: 0.03; pointer-events: none;
 }
 .marquee-content {
@@ -87,7 +87,7 @@ header {
 .greeting { font-size: 0.8rem; letter-spacing: 5px; color: var(--accent); font-weight: 600; margin-bottom: 20px; text-shadow: 0 0 20px var(--accent-glow); }
 .cover-title { font-size: clamp(4rem, 15vw, 11rem); letter-spacing: 2px; margin-bottom: 0.4em; font-family: var(--font-heading); line-height: 0.9; position: relative; }
 
-/* Teks "Graphic Design" - Lurus */
+/* Teks "Graphic Design" */
 .cover-title .script { 
     position: absolute; 
     left: 50%; 
@@ -98,9 +98,9 @@ header {
     text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); 
 }
 
-/* PERBAIKAN: Teks "Student | Designer | Developer" diubah jadi Poppins (Lurus) */
+/* Teks "Student | Designer | Developer" */
 .hero h2 { 
-    font-family: var(--font-body); /* Diubah dari var(--font-script) */
+    font-family: var(--font-body);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 3px;
@@ -109,7 +109,20 @@ header {
     margin: 25px 0 15px; 
 }
 
-.description { max-width: 550px; color: var(--muted); margin-bottom: 40px; font-size: 1.05rem; }
+/* ==========================================
+   PERBAIKAN: TEKS PARAGRAF DESCRIPTION
+   ========================================== */
+.description { 
+    max-width: 550px; 
+    color: var(--muted); 
+    margin-bottom: 40px; 
+    font-size: 1.05rem; 
+    font-family: var(--font-body); /* Paksa pakai font utama */
+    font-style: normal !important; /* Paksa tidak miring */
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+    text-align: center;
+}
 
 /* --- TOMBOL NEON --- */
 .btn { display: inline-block; padding: 15px 38px; border-radius: 50px; font-weight: 600; font-size: 0.95rem; border: 2px solid var(--accent); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; text-transform: uppercase; letter-spacing: 1px; }
