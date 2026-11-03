@@ -87,7 +87,7 @@ header {
 .greeting { font-size: 0.8rem; letter-spacing: 5px; color: var(--accent); font-weight: 600; margin-bottom: 20px; text-shadow: 0 0 20px var(--accent-glow); }
 .cover-title { font-size: clamp(4rem, 15vw, 11rem); letter-spacing: 2px; margin-bottom: 0.4em; font-family: var(--font-heading); line-height: 0.9; position: relative; }
 
-/* Teks "Graphic Design" - SUDAH RATA TENGAH SEMPURNA */
+/* Teks "Graphic Design" */
 .cover-title .script { 
     position: absolute; 
     left: 0; 
@@ -110,14 +110,16 @@ header {
     margin: 25px 0 15px; 
 }
 
-/* Teks Paragraf Description */
+/* ==========================================
+   TEKS PARAGRAF DESCRIPTION (SUDAH DIPERBAIKI TOTAL)
+   ========================================== */
 .description { 
     max-width: 550px; 
     color: var(--muted); 
     margin-bottom: 40px; 
     font-size: 1.05rem; 
-    font-family: var(--font-body);
-    font-style: normal !important; 
+    font-family: 'Poppins', sans-serif !important; /* Paksa pakai Poppins */
+    font-style: normal !important; /* Paksa tidak miring */
     letter-spacing: 0.5px;
     line-height: 1.6;
     text-align: center;
