@@ -20,11 +20,12 @@ async function loadAllCertificates() {
                 card.className = 'cert-card reveal';
                 card.innerHTML = `
                     <div class="cert-image-wrapper">
-                        ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.title}">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#555;">No Image</div>'}
+                        ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}
+                        <div class="cert-overlay"></div>
                     </div>
                     <div class="cert-info">
                         <h3>${item.title}</h3>
-                        <div class="cert-issuer">
+                        <div class="cert-issuer-row">
                             <span>${item.issuer}</span>
                             <span>${item.date}</span>
                         </div>
@@ -65,9 +66,8 @@ function initPremiumFeatures() {
 window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
-    gsap.to('#preloader-logo', { rotation: 360, duration: 2, repeat: -1, ease: "linear" });
     
-    gsap.to(progress, { val: 100, duration: 1.2, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
+    gsap.to(progress, { val: 100, duration: 1.5, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
         gsap.to('#preloader', { y: '-100%', duration: 0.8, ease: "power4.inOut", onComplete: () => { document.getElementById('preloader').style.display = 'none'; } });
     }});
     
