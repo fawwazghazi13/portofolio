@@ -7,7 +7,6 @@ async function loadPortfolioContent() {
         if (aboutSnap.exists()) {
             const d = aboutSnap.data();
             if (d.greeting) document.querySelector('.greeting').textContent = d.greeting;
-            if (d.name) document.querySelectorAll('.slide-head span')[1].textContent = d.name;
             if (d.description) document.querySelector('.description').textContent = d.description;
             if (d.aboutText) document.querySelector('.about-content p').textContent = d.aboutText;
             if (d.profileImage) document.querySelector('.hero-image img').src = d.profileImage;
@@ -20,7 +19,7 @@ async function loadPortfolioContent() {
         const swSnap = await getDoc(doc(db, 'portfolio', 'software'));
         if (swSnap.exists()) {
             const items = swSnap.data().items || [];
-            document.querySelector('.software-grid').innerHTML = items.map(s => `<div class="sw" title="${s.name}" style="color:${s.color};border-color:${s.color}; background: #222;">${s.label}</div>`).join('');
+            document.querySelector('.software-grid').innerHTML = items.map(s => `<div class="sw" title="${s.name}" style="color:${s.color};box-shadow: inset 0 0 15px ${s.color}33;">${s.label}</div>`).join('');
         }
         const contactSnap = await getDoc(doc(db, 'portfolio', 'contact'));
         if (contactSnap.exists()) {
@@ -33,62 +32,59 @@ async function loadPortfolioContent() {
 
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
-        if (document.querySelector('.cursor-dot')) return; // Cegah duplikasi
-
+        if (document.querySelector('.cursor-dot')) return;
         const cursorDot = document.createElement('div'); cursorDot.classList.add('cursor-dot');
         const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
         document.body.appendChild(cursorDot); document.body.appendChild(cursorOutline);
-
-        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-        const mouse = { x: pos.x, y: pos.y };
-
+        const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; const mouse = { x: pos.x, y: pos.y };
         window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            mouse.x = e.clientX; mouse.y = e.clientY;
             cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
         });
-
         gsap.ticker.add(() => {
-            pos.x += (mouse.x - pos.x) * 0.25;
-            pos.y += (mouse.y - pos.y) * 0.25;
+            pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
-
-        document.querySelectorAll('a, button, .btn, .tile, .video-item-card').forEach(el => {
+        document.querySelectorAll('a, button, .btn').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
     }
     
-    document.querySelectorAll('.btn').forEach(btn => {
+    document.querySelectorAll('.btn.magnetic').forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
             const rect = btn.getBoundingClientRect(); const x = e.clientX - rect.left - rect.width / 2; const y = e.clientY - rect.top - rect.height / 2;
-            gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.5, ease: "power2.out" });
+            gsap.to(btn, { x: x * 0.4, y: y * 0.4, duration: 0.4, ease: "power2.out" });
         });
         btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" }));
+    });
+
+    // EFEK PARALLAX UNTUK DOODLES & GAMBAR
+    window.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth / 2 - e.pageX) / 50;
+        const y = (window.innerHeight / 2 - e.pageY) / 50;
+        gsap.to('.parallax', { x: x, y: y, duration: 1, ease: "power2.out" });
+        gsap.to('.floating-img', { x: -x*1.5, y: -y*1.5, duration: 1, ease: "power2.out" });
     });
 }
 
 window.addEventListener('load', () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
-    
     gsap.to('#preloader-logo', { rotation: 360, duration: 2, repeat: -1, ease: "linear" });
 
     gsap.to(progress, { val: 100, duration: 1.5, ease: "power2.inOut", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, onComplete: () => {
         gsap.to('#preloader', { y: '-100%', duration: 0.8, ease: "power4.inOut", onComplete: () => {
             document.getElementById('preloader').style.display = 'none';
-            gsap.from('.cover-title', { y: 100, opacity: 0, duration: 1, ease: "back.out(1.7)" });
+            // Animasi GSAP saat web dibuka
+            gsap.from('.cover-title', { y: 100, opacity: 0, duration: 1, ease: "power3.out" });
             gsap.from('.greeting, .hero h2, .description, .hero-buttons', { y: 30, opacity: 0, duration: 1, stagger: 0.1, delay: 0.3, ease: "power3.out" });
+            gsap.from('.glass-panel', { opacity: 0, y: 50, duration: 1, delay: 1, stagger: 0.2 });
         }});
     }});
     
     initPremiumFeatures();
-    
     gsap.registerPlugin(ScrollTrigger);
-    document.querySelectorAll('.reveal').forEach(el => {
-        gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" } });
-    });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
