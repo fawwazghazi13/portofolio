@@ -33,10 +33,10 @@ img { max-width: 100%; display: block; }
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* --- BACKGROUND MARQUEE (TEKS BERJALAN) --- */
+/* --- BACKGROUND MARQUEE (TEKS BERJALAN) - SUDAH DILURUSKAN --- */
 .bg-marquee {
     position: fixed; top: 50%; left: 0; width: 100vw; overflow: hidden; z-index: -1;
-    transform: translateY(-50%) rotate(-5deg);
+    transform: translateY(-50%); /* <--- Rotasi dihilangkan */
     opacity: 0.03; pointer-events: none;
 }
 .marquee-content {
@@ -86,7 +86,17 @@ header {
 .slide-head span:first-child { color: var(--accent); font-family: var(--font-script); font-size: 1.1rem; }
 .greeting { font-size: 0.8rem; letter-spacing: 5px; color: var(--accent); font-weight: 600; margin-bottom: 20px; text-shadow: 0 0 20px var(--accent-glow); }
 .cover-title { font-size: clamp(4rem, 15vw, 11rem); letter-spacing: 2px; margin-bottom: 0.4em; font-family: var(--font-heading); line-height: 0.9; position: relative; }
-.cover-title .script { position: absolute; left: 50%; bottom: -0.2em; font-size: 0.35em; white-space: nowrap; transform: translateX(-50%) rotate(-7deg); text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); }
+
+/* Teks "Graphic Design" - SUDAH DILURUSKAN */
+.cover-title .script { 
+    position: absolute; 
+    left: 50%; 
+    bottom: -0.2em; 
+    font-size: 0.35em; 
+    white-space: nowrap; 
+    transform: translateX(-50%); /* <--- Rotasi dihilangkan */
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); 
+}
 .hero h2 { font-family: var(--font-script); font-weight: 400; font-size: clamp(1.3rem, 3vw, 1.9rem); color: var(--text); margin: 20px 0 15px; }
 .description { max-width: 550px; color: var(--muted); margin-bottom: 40px; font-size: 1.05rem; }
 
