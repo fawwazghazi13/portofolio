@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portfolio | Home</title>
-        <!-- SEO & Open Graph -->
-    <meta name="description" content="Portofolio M Ghazi Fawwaz El Aqiel - Graphic Designer, Web Developer, & UI/UX Enthusiast.">
-    <meta property="og:title" content="Ghazi | Graphic Design Portfolio">
-    <meta property="og:description" content="I craft digital experiences, visual identities, and interactive web designs.">
-    <meta property="og:image" content="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
-    <meta property="og:url" content="https://portofolio-beta-peach-33.vercel.app/">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
     <link rel="stylesheet" href="portofolio.css">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -69,11 +61,9 @@
 
     <section id="home" class="hero">
         
-        <!-- ========================================== -->
-        <!-- 3D ELEMENTS SCENE (Hanya ada di sini) -->
-        <!-- ========================================== -->
+        <!-- SCENE 3D (YANG LAMA - AUTO SPIN) -->
         <div class="scene-3d">
-            <div class="cube-wrapper pos-cube parallax-3d">
+            <div class="cube-wrapper parallax-3d">
                 <div class="cube">
                     <div class="face front"></div>
                     <div class="face back"></div>
@@ -83,7 +73,7 @@
                     <div class="face bottom"></div>
                 </div>
             </div>
-            <div class="pyramid-wrapper pos-pyramid parallax-3d">
+            <div class="pyramid-wrapper parallax-3d">
                 <div class="pyramid">
                     <div class="pyramid-face pf-front"></div>
                     <div class="pyramid-face pf-back"></div>
@@ -91,9 +81,29 @@
                     <div class="pyramid-face pf-left"></div>
                 </div>
             </div>
-            <div class="ring-wrapper pos-ring parallax-3d">
+            <div class="ring-wrapper parallax-3d">
                 <div class="ring-3d"></div>
             </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ELEMEN 3D BARU: INTERACTIVE HOLOGRAM GLOBE -->
+        <!-- ========================================== -->
+        <div class="interactive-3d-wrapper parallax-3d" id="interactive-3d">
+            <div class="globe">
+                <!-- Garis Lintang -->
+                <div class="globe-ring"></div>
+                <div class="globe-ring" style="transform: rotateY(45deg);"></div>
+                <div class="globe-ring" style="transform: rotateY(90deg);"></div>
+                <div class="globe-ring" style="transform: rotateY(135deg);"></div>
+                <!-- Garis Bujur -->
+                <div class="globe-ring" style="transform: rotateX(90deg);"></div>
+                <div class="globe-ring" style="transform: rotateX(90deg) rotateY(45deg);"></div>
+                <div class="globe-ring" style="transform: rotateX(90deg) rotateY(90deg);"></div>
+                <div class="globe-ring" style="transform: rotateX(90deg) rotateY(135deg);"></div>
+            </div>
+            <!-- Petunjuk Teks -->
+            <div class="drag-hint">Drag Me!</div>
         </div>
         <!-- ========================================== -->
 
@@ -131,7 +141,7 @@
         </div>
     </section>
 
-    <!-- SECTION ABOUT (Tidak ada 3D di sini) -->
+    <!-- Sisa section About, Skills, Contact tetap sama -->
     <section id="about" class="section about">
         <div class="glass-panel about-container">
             <div class="slide-head"><span>Ghazi</span><span>Portfolio</span></div>
@@ -164,7 +174,6 @@
         </div>
     </section>
 
-    <!-- SECTION SKILLS -->
     <section id="skills" class="section skills">
         <p class="section-label text-center">MY EXPERTISE</p>
         <h2 class="slide-title text-center">Skills &amp; Tools</h2>
@@ -181,7 +190,6 @@
         </div>
     </section>
 
-    <!-- SECTION CONTACT -->
     <section id="contact" class="section contact">
         <div class="glow-orb"></div>
         <p class="section-label">LET'S COLLABORATE</p>
