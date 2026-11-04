@@ -31,7 +31,58 @@ async function loadPortfolioContent() {
 }
 
 // ==========================================
-// FITUR: TEXT SCRAMBLE EFFECT
+// FITUR: 3D DRAG HANYA UNTUK GLOBE BARU
+// ==========================================
+function initNewInteractive3D() {
+    const wrapper = document.getElementById('interactive-3d');
+    if (!wrapper) return;
+    const globe = wrapper.querySelector('.globe');
+    
+    let isDragging = false;
+    let prevX = 0, prevY = 0;
+    let currentRotationX = 0, currentRotationY = 0;
+
+    wrapper.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        prevX = e.clientX;
+        prevY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        let deltaX = e.clientX - prevX;
+        let deltaY = e.clientY - prevY;
+        
+        currentRotationY += deltaX * 0.6;
+        currentRotationX -= deltaY * 0.6;
+        
+        gsap.set(globe, {
+            rotationX: currentRotationX,
+            rotationY: currentRotationY
+        });
+        
+        prevX = e.clientX;
+        prevY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            // Efek inersia (berhenti perlahan)
+            gsap.to(globe, {
+                rotationX: currentRotationX + (currentRotationX > 0 ? 15 : -15),
+                rotationY: currentRotationY + (currentRotationY > 0 ? 15 : -15),
+                duration: 1.5,
+                ease: "power3.out"
+            });
+            currentRotationX += (currentRotationX > 0 ? 15 : -15);
+            currentRotationY += (currentRotationY > 0 ? 15 : -15);
+        }
+    });
+}
+
+// ==========================================
+// FITUR LAINNYA (TEXT SCRAMBLE, SCROLL PROGRESS, DLL)
 // ==========================================
 class TextScramble {
     constructor(el) {
@@ -64,9 +115,6 @@ class TextScramble {
     }
 }
 
-// ==========================================
-// FITUR: SCROLL PROGRESS & 3D TILT
-// ==========================================
 function initScrollProgress() {
     const progressBar = document.createElement('div');
     progressBar.classList.add('scroll-progress');
@@ -77,28 +125,6 @@ function initScrollProgress() {
         let scrolled = (winScroll / height) * 100;
         progressBar.style.width = scrolled + "%";
     });
-}
-
-function initTiltEffect() {
-    // Efek Tilt untuk kartu project & sertifikat
-    if (window.matchMedia("(pointer: fine)").matches) {
-        const cards = document.querySelectorAll('.modern-project-card, .cert-card');
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -8; // max 8 deg
-                const rotateY = ((x - centerX) / centerX) * 8;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
-            });
-        });
-    }
 }
 
 function initPremiumFeatures() {
@@ -119,7 +145,7 @@ function initPremiumFeatures() {
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
         
-        document.querySelectorAll('a, button, .btn').forEach(el => {
+        document.querySelectorAll('a, button, .btn, #interactive-3d').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
@@ -146,7 +172,8 @@ function initPremiumFeatures() {
         gsap.to('.parallax-3d', { rotationY: x, rotationX: -y, duration: 1.5, ease: "power2.out" });
     });
 
-    initTiltEffect();
+    // Panggil fungsi drag khusus globe baru
+    initNewInteractive3D();
 }
 
 window.addEventListener('load', () => {
@@ -156,11 +183,9 @@ window.addEventListener('load', () => {
     const preloaderText = document.querySelector('.preloader-text'); 
     const preloaderBar = document.querySelector('.preloader-bar-fill');
     
-    // Sembunyikan dulu teks aslinya untuk scramble
     const titleEl = document.querySelector('.cover-title');
     let originalText = "PORTFOLIO";
     if (titleEl) {
-        // Simpan span script-nya
         titleEl.innerHTML = `<span class="scramble-text">${originalText}</span><span class="script">Graphic Design</span>`;
     }
 
@@ -179,11 +204,9 @@ window.addEventListener('load', () => {
                     initPremiumFeatures();
                     gsap.registerPlugin(ScrollTrigger);
                     
-                    // JALANKAN TEXT SCRAMBLE SETELAH PRELOADER HILANG
                     if (titleEl) {
                         const fx = new TextScramble(document.querySelector('.scramble-text'));
                         fx.setText("PORTFOLIO");
-                        // Update data-text untuk glitch agar sinkron
                         setTimeout(() => { titleEl.setAttribute('data-text', 'PORTFOLIO'); }, 1500); 
                     }
 
