@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certificates | Portofolio</title>
-        <!-- SEO & Open Graph -->
+    
+    <!-- SEO & Open Graph -->
     <meta name="description" content="Portofolio M Ghazi Fawwaz El Aqiel - Graphic Designer, Web Developer, & UI/UX Enthusiast.">
     <meta property="og:title" content="Ghazi | Graphic Design Portfolio">
     <meta property="og:description" content="I craft digital experiences, visual identities, and interactive web designs.">
@@ -12,6 +13,7 @@
     <meta property="og:url" content="https://portofolio-beta-peach-33.vercel.app/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
+
     <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
     <link rel="stylesheet" href="portofolio.css">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -59,7 +61,20 @@
         </nav>
     </header>
 
-    <section id="certificates" class="section" style="min-height: 100vh;">
+    <section id="certificates" class="section" style="min-height: 100vh; position: relative; overflow: hidden;">
+        
+        <!-- 3D ELEMENT: MEDAL -->
+        <div class="interactive-3d-wrapper" id="interactive-3d-cert" style="top: 20%; right: 5%;">
+            <div class="medal-3d">
+                <div class="medal-ribbon left"></div>
+                <div class="medal-ribbon right"></div>
+                <div class="medal-ring"></div>
+                <div class="medal-star">★</div>
+            </div>
+            <div class="drag-hint">Drag Me!</div>
+        </div>
+        <!-- END 3D ELEMENT -->
+
         <p class="section-label">MY ACHIEVEMENTS</p>
         <h2 class="slide-title">Certificates <span class="script">Awards</span></h2>
         <div id="all-certificates-container" class="cert-grid">
