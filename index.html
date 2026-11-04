@@ -4,12 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portfolio | Home</title>
+    
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Portofolio M Ghazi Fawwaz El Aqiel - Graphic Designer, Web Developer, & UI/UX Enthusiast.">
+    <meta property="og:title" content="Ghazi | Graphic Design Portfolio">
+    <meta property="og:description" content="I craft digital experiences, visual identities, and interactive web designs.">
+    <meta property="og:image" content="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
+    <meta property="og:url" content="https://portofolio-beta-peach-33.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
     <link rel="stylesheet" href="portofolio.css">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat+Brush&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- BACKGROUNDS -->
     <div class="premium-bg-container">
         <div class="bg-grid-futuristic"></div>
         <div class="bg-glow-orb orb-orange"></div>
@@ -30,6 +41,7 @@
         </div>
     </div>
 
+    <!-- PRELOADER -->
     <div id="preloader">
         <div class="preloader-content">
             <div class="ring-outer"></div>
@@ -42,6 +54,7 @@
         <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
     </div>
 
+    <!-- NAVBAR -->
     <header>
         <nav class="navbar glass-panel">
             <a href="index.html" class="logo">
@@ -59,6 +72,7 @@
         </nav>
     </header>
 
+    <!-- ===== SECTION HOME ===== -->
     <section id="home" class="hero">
         
         <!-- SCENE 3D OTOMATIS -->
@@ -86,7 +100,7 @@
             </div>
         </div>
 
-        <!-- ELEMEN 3D INTERAKTIF: GLOBE (TANPA TEKS) -->
+        <!-- ELEMEN 3D INTERAKTIF: GLOBE -->
         <div class="interactive-3d-wrapper" id="interactive-3d">
             <div class="globe">
                 <div class="globe-ring"></div>
@@ -134,39 +148,70 @@
         </div>
     </section>
 
-    <!-- Sisa section About, Skills, Contact tetap sama -->
+    <!-- ===== SECTION ABOUT (HUD TERMINAL) ===== -->
     <section id="about" class="section about">
         <div class="glass-panel about-container">
             <div class="slide-head"><span>Ghazi</span><span>Portfolio</span></div>
+            
             <div class="about-grid">
                 <div class="about-text">
                     <p class="section-label">GET TO KNOW ME</p>
                     <h2 class="slide-title">Hello I'm <span class="script">Ghazi</span></h2>
-                    <div class="about-content">
-                        <p>
-                            I'm a 9th-grade student at <span class="highlight">IDN Boarding School Pamijahan, Bogor</span>, with a strong passion for <span class="highlight">technology, design, and mobile app development</span>. I enjoy exploring new technologies, learning new skills, and turning creative ideas into functional and visually appealing digital projects. 
-                            <br><br>
-                            I'm currently developing my skills in <span class="highlight">Flutter, Figma, Canva, and Kodular</span>, while learning more about UI/UX design and application development. I believe that every project is an opportunity to learn, grow, and improve.
-                        </p>
+                    
+                    <!-- Terminal Box -->
+                    <div class="terminal-box">
+                        <div class="terminal-header">
+                            <div class="term-dots">
+                                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                            </div>
+                            <span class="term-title">user_profile.txt</span>
+                        </div>
+                        <div class="terminal-body">
+                            <p>
+                                <span class="term-prompt">></span> I'm a 9th-grade student at <span class="highlight">IDN Boarding School Pamijahan, Bogor</span>, with a strong passion for <span class="highlight">technology, design, and mobile app development</span>. I enjoy exploring new technologies, learning new skills, and turning creative ideas into functional and visually appealing digital projects. 
+                                <br><br>
+                                <span class="term-prompt">></span> I'm currently developing my skills in <span class="highlight">Flutter, Figma, Canva, and Kodular</span>, while learning more about UI/UX design and application development. I believe that every project is an opportunity to learn, grow, and improve.<span class="blinking-cursor">_</span>
+                            </p>
+                        </div>
                     </div>
                     
+                    <!-- Stat Modules -->
                     <div class="about-stats">
-                        <div class="stat-box"><h4>9th</h4><span>Grade</span></div>
-                        <div class="stat-box"><h4>IDN</h4><span>Boarding</span></div>
-                        <div class="stat-box"><h4>5+</h4><span>Skills</span></div>
+                        <div class="stat-box">
+                            <div class="stat-glow"></div>
+                            <h4>9<span class="stat-small">th</span></h4>
+                            <span>Grade Level</span>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-glow"></div>
+                            <h4>IDN</h4>
+                            <span>Boarding</span>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-glow"></div>
+                            <h4>5+</h4>
+                            <span>Core Skills</span>
+                        </div>
                     </div>
                 </div>
                 
+                <!-- Gambar Profil dengan Efek Scanline -->
                 <div class="hero-image-wrapper">
                     <div class="glow-backdrop"></div>
                     <div class="hero-image floating-img">
+                        <div class="scanline"></div>
                         <img src="images/profile.png" alt="Profile picture">
+                        <div class="corner-accent top-left"></div>
+                        <div class="corner-accent top-right"></div>
+                        <div class="corner-accent bottom-left"></div>
+                        <div class="corner-accent bottom-right"></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- ===== SECTION SKILLS ===== -->
     <section id="skills" class="section skills">
         <p class="section-label text-center">MY EXPERTISE</p>
         <h2 class="slide-title text-center">Skills &amp; Tools</h2>
@@ -183,6 +228,7 @@
         </div>
     </section>
 
+    <!-- ===== SECTION CONTACT ===== -->
     <section id="contact" class="section contact">
         <div class="glow-orb"></div>
         <p class="section-label">LET'S COLLABORATE</p>
@@ -191,12 +237,16 @@
         <a href="mailto:fawwazghazi13@gmail.com" class="btn primary magnetic" id="contact-email-btn" style="padding: 18px 45px; font-size: 1.1rem;">Send Me an Email ↗</a>
     </section>
 
+    <!-- FOOTER -->
     <footer>
         <p>© <span id="year"></span> M Ghazi Fawwaz. Crafted with passion.</p>
     </footer>
 
+    <!-- GSAP Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Script Utama -->
     <script type="module" src="portofolio.js"></script>
 </body>
 </html>
