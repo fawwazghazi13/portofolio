@@ -277,12 +277,13 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
 @keyframes floatObj { 0% { transform: translateY(0px); } 100% { transform: translateY(-30px); } }
 
 /* ==========================================
-   ELEMEN 3D INTERAKTIF (GLOBE) - POSISI BARU
+   ELEMEN 3D INTERAKTIF (GLOBE) - POSISI TENGAH BAWAH
    ========================================== */
 .interactive-3d-wrapper {
     position: absolute;
-    bottom: 15%; /* Posisi aman di kanan bawah */
-    right: 10%;
+    bottom: 8%; /* Posisi di tengah bawah */
+    left: 50%;
+    transform: translateX(-50%);
     width: 160px;
     height: 160px;
     perspective: 1000px;
@@ -294,6 +295,9 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
 
 .globe { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
 .globe-ring { position: absolute; inset: 0; border: 1.5px solid rgba(0, 229, 255, 0.4); border-radius: 50%; box-shadow: 0 0 15px rgba(0, 229, 255, 0.15), inset 0 0 15px rgba(0, 229, 255, 0.1); }
+
+/* Menyembunyikan tulisan Drag Me! di halaman home */
+.interactive-3d-wrapper .drag-hint { display: none; }
 
 /* 404 */
 .error-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; position: relative; z-index: 2; }
@@ -313,7 +317,7 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     .glow-backdrop { width: 100%; height: 100%; }
     .floating-element { display: none; }
     .scene-3d { display: none; }
-    .interactive-3d-wrapper { display: none; }
+    .interactive-3d-wrapper { display: none; } 
 }
 @media (max-width: 768px) {
     .menu-toggle { display: block; }
