@@ -87,6 +87,39 @@ function initTiltEffect() {
     }
 }
 
+// FUNGSI KHUSUS 3D DATA STACK (DRAG)
+function initNewInteractive3DProject() {
+    const wrapper = document.getElementById('interactive-3d-project');
+    if (!wrapper) return;
+    const obj = wrapper.querySelector('.stack-3d');
+    
+    let isDragging = false;
+    let prevX = 0, prevY = 0;
+    let currentRotationX = 0, currentRotationY = 0;
+
+    wrapper.addEventListener('mousedown', (e) => {
+        isDragging = true; prevX = e.clientX; prevY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        let deltaX = e.clientX - prevX;
+        let deltaY = e.clientY - prevY;
+        currentRotationY += deltaX * 0.6;
+        currentRotationX -= deltaY * 0.6;
+        gsap.set(obj, { rotationX: currentRotationX, rotationY: currentRotationY });
+        prevX = e.clientX; prevY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            gsap.to(obj, { rotationX: currentRotationX + 10, rotationY: currentRotationY + 10, duration: 1.5, ease: "power3.out" });
+            currentRotationX += 10; currentRotationY += 10;
+        }
+    });
+}
+
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
         if (document.querySelector('.cursor-dot')) return;
@@ -102,12 +135,14 @@ function initPremiumFeatures() {
             pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
-        document.querySelectorAll('a, button, .btn, .modern-project-card, .video-item-card').forEach(el => {
+        document.querySelectorAll('a, button, .btn, .modern-project-card, .video-item-card, #interactive-3d-project').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
     }
+    
     initTiltEffect();
+    initNewInteractive3DProject(); // Panggil fungsi 3D Drag di sini
 }
 
 window.addEventListener('load', async () => {
@@ -135,7 +170,6 @@ window.addEventListener('load', async () => {
                     document.getElementById('preloader').style.display = 'none';
                     initPremiumFeatures();
                     gsap.registerPlugin(ScrollTrigger);
-                    // Panggil Tilt Effect setelah cards di-render
                     initTiltEffect();
                 }
             });
@@ -148,7 +182,6 @@ window.addEventListener('load', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Filter Logic
     const filterBtns = document.querySelectorAll('.filter-btn');
     filterBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -156,11 +189,10 @@ document.addEventListener('DOMContentLoaded', () => {
             e.currentTarget.classList.add('active');
             currentFilter = e.currentTarget.dataset.filter;
             
-            // Animasi keluar-masuk singkat saat filter diklik
             gsap.to('#all-projects-container', { opacity: 0, duration: 0.2, onComplete: () => {
                 renderFilteredProjects();
                 gsap.to('#all-projects-container', { opacity: 1, duration: 0.4 });
-                initTiltEffect(); // Re-attach tilt effect to new DOM elements
+                initTiltEffect(); 
             }});
         });
     });
