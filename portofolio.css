@@ -156,7 +156,6 @@ header { position: fixed !important; top: 20px !important; left: 0; width: 100%;
 .skills-container { display: flex; flex-direction: column; gap: 20px; position: relative; z-index: 1; }
 .skill-card { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); padding: 20px; border-radius: 8px; position: relative; transition: all 0.3s ease; overflow: hidden; }
 .skill-card:hover { border-color: rgba(245, 163, 26, 0.5); box-shadow: 0 0 20px rgba(245, 163, 26, 0.1); transform: translateX(5px); background: rgba(20, 20, 20, 0.8); }
-
 .skill-hud-corner { position: absolute; top: -1px; left: -1px; width: 10px; height: 10px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); opacity: 0.5; transition: opacity 0.3s; }
 .skill-card:hover .skill-hud-corner { opacity: 1; }
 .skill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -170,20 +169,96 @@ header { position: fixed !important; top: 20px !important; left: 0; width: 100%;
 .skill-progress-fill::after { content: ''; position: absolute; right: 0; top: 0; width: 4px; height: 100%; background: #fff; box-shadow: 0 0 15px #fff, 0 0 30px var(--accent); }
 .skill-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin: 0; }
 
-/* Software Grid (Holographic Data Chip) */
-.software-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; position: relative; z-index: 1; }
-.sw { background: rgba(15, 15, 15, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px 15px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: crosshair; border-radius: 8px; }
-.sw::before, .sw::after { content: ''; position: absolute; width: 12px; height: 12px; border: 2px solid transparent; transition: all 0.3s; z-index: 2; }
-.sw::before { top: 0; left: 0; border-top-color: rgba(255,255,255,0.2); border-left-color: rgba(255,255,255,0.2); }
-.sw::after { bottom: 0; right: 0; border-bottom-color: rgba(255,255,255,0.2); border-right-color: rgba(255,255,255,0.2); }
-.sw:hover { background: rgba(255, 255, 255, 0.03); border-color: currentColor; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px currentColor; transform: translateY(-5px); }
-.sw:hover::before { border-top-color: currentColor; border-left-color: currentColor; width: 100%; height: 100%; opacity: 0.15; border-radius: 8px; }
-.sw:hover::after { border-bottom-color: currentColor; border-right-color: currentColor; width: 100%; height: 100%; opacity: 0.15; border-radius: 8px; }
-.sw span:first-of-type { font-size: 1.3rem; font-weight: 700; font-family: var(--font-body); margin-bottom: 10px; letter-spacing: 0.5px; z-index: 3; }
-.sw-status { font-family: monospace; font-size: 0.6rem; color: currentColor; opacity: 0.7; letter-spacing: 2px; background: rgba(0,0,0,0.6); padding: 3px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); z-index: 3; }
-.sw-scanner { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: currentColor; box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1; }
+/* ==========================================
+   SOFTWARE GRID (HOLOGRAPHIC NANO-CHIP) - UPGRADED
+   ========================================== */
+.software-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px; 
+    position: relative; 
+    z-index: 1; 
+}
+
+.sw { 
+    background: linear-gradient(145deg, rgba(20, 20, 20, 0.8), rgba(5, 5, 5, 0.9)); 
+    border: 1px solid rgba(255, 255, 255, 0.05); 
+    padding: 30px 15px 20px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    position: relative; 
+    overflow: hidden; 
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: crosshair; 
+    border-radius: 10px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4);
+}
+
+/* Garis Sirkuit Hiasan di Belakang */
+.sw::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 10px 10px;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+/* Sudut HUD (Tech Brackets) */
+.sw .corner { position: absolute; width: 15px; height: 15px; border: 2px solid transparent; transition: all 0.3s; z-index: 2; }
+.sw .c-tl { top: 8px; left: 8px; border-top-color: rgba(255,255,255,0.1); border-left-color: rgba(255,255,255,0.1); }
+.sw .c-br { bottom: 8px; right: 8px; border-bottom-color: rgba(255,255,255,0.1); border-right-color: rgba(255,255,255,0.1); }
+
+/* Hover Effects */
+.sw:hover { 
+    background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(10, 10, 10, 0.9));
+    border-color: currentColor; 
+    box-shadow: 0 0 25px currentColor, inset 0 0 30px rgba(255,255,255,0.05);
+    transform: translateY(-5px) scale(1.02); 
+}
+.sw:hover .c-tl { border-top-color: currentColor; border-left-color: currentColor; width: 25px; height: 25px; }
+.sw:hover .c-br { border-bottom-color: currentColor; border-right-color: currentColor; width: 25px; height: 25px; }
+
+/* Teks Nama Software */
+.sw span:first-of-type { 
+    font-size: 1.4rem; 
+    font-weight: 700; 
+    font-family: var(--font-body); 
+    margin-bottom: 12px; 
+    letter-spacing: 0.5px;
+    z-index: 3;
+    transition: transform 0.3s;
+}
+.sw:hover span:first-of-type { transform: scale(1.1); }
+
+/* Label ONLINE (Status Indicator) */
+.sw-status { 
+    font-family: monospace; 
+    font-size: 0.65rem; 
+    color: currentColor; 
+    opacity: 0.8; 
+    letter-spacing: 2px; 
+    background: rgba(0,0,0,0.8);
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+/* Titik Hijau Berkedip di sebelah tulisan ONLINE */
+.sw-status::before { content: ''; display: inline-block; width: 6px; height: 6px; background: #27c93f; border-radius: 50%; box-shadow: 0 0 8px #27c93f; animation: blinkStatus 1.5s infinite alternate; }
+@keyframes blinkStatus { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+
+/* Scanner Laser (Garis menyapu ke bawah) */
+.sw-scanner { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: currentColor; box-shadow: 0 0 15px currentColor, 0 0 30px currentColor; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1; }
 .sw:hover .sw-scanner { opacity: 1; animation: scanSw 1.5s ease-in-out infinite; }
 @keyframes scanSw { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
 
 /* CONTACT */
 .contact { text-align: center; padding: 150px 24px; position: relative; overflow: hidden; }
