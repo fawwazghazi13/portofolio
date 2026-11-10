@@ -431,68 +431,60 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
 }
 
 /* ==========================================
-   UPGRADE UI PROJECTS & CERTIFICATES (LIVELY & HUD)
+   EFEK BARU: CYBERPUNK FLOOR & HEXAGONS
    ========================================== */
 
-/* Radar Sweep Background */
-.radar-sweep {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 150vw; height: 150vw; border-radius: 50%;
-    background: conic-gradient(from 0deg, transparent 0deg, transparent 340deg, rgba(245, 163, 26, 0.1) 350deg, rgba(245, 163, 26, 0.4) 360deg);
-    animation: spinRadar 8s linear infinite; pointer-events: none; z-index: 1;
+/* 1. Lantai Grid 3D (Infinite Floor) */
+.grid-floor {
+    position: absolute;
+    bottom: -50%;
+    left: -50%;
+    width: 200%;
+    height: 100vh;
+    background-image: 
+        linear-gradient(rgba(245, 163, 26, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245, 163, 26, 0.15) 1px, transparent 1px);
+    background-size: 50px 50px;
+    transform: perspective(500px) rotateX(60deg);
+    animation: moveFloor 5s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.6;
 }
-@keyframes spinRadar { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes moveFloor {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 50px; }
+}
 
-/* HUD Container Frame */
-.hud-frame {
-    position: relative; padding: 40px 20px; border: 1px solid rgba(245, 163, 26, 0.1); border-radius: 12px;
-    background: rgba(10, 10, 10, 0.3); backdrop-filter: blur(5px);
+/* 2. Pola Hexagon di Background */
+.hex-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill-opacity='0' stroke='rgba(255,255,255,0.03)' stroke-width='1.5'/%3E%3C/svg%3E");
+    z-index: 0;
+    pointer-events: none;
 }
-.hud-frame::before, .hud-frame::after {
-    content: ''; position: absolute; width: 30px; height: 30px; border: 2px solid var(--accent); pointer-events: none;
-}
-.hud-frame::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
-.hud-frame::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 
-/* Glitch Effect untuk Judul Halaman */
-.page-title-glitch { position: relative; display: inline-block; }
-.page-title-glitch::before, .page-title-glitch::after {
-    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--bg); opacity: 0.8;
+/* 3. Teks Kode Melayang */
+.floating-code {
+    position: absolute;
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: rgba(0, 229, 255, 0.4);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+    z-index: 1;
+    pointer-events: none;
+    animation: floatCode 15s linear infinite;
 }
-.page-title-glitch::before { left: 2px; text-shadow: -2px 0 #ff003c; clip: rect(24px, 550px, 90px, 0); animation: glitch-anim 3s infinite linear alternate-reverse; }
-.page-title-glitch::after { left: -2px; text-shadow: 2px 0 #00e5ff; clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2s linear alternate-reverse infinite; }
+.fc-1 { bottom: 10%; left: 15%; animation-delay: 0s; }
+.fc-2 { bottom: 30%; right: 20%; animation-delay: 3s; color: rgba(245, 163, 26, 0.4); text-shadow: 0 0 10px rgba(245, 163, 26, 0.2); }
+.fc-3 { bottom: 5%; left: 60%; animation-delay: 6s; }
+.fc-4 { bottom: 50%; left: 5%; animation-delay: 2s; }
+.fc-5 { bottom: 15%; right: 10%; animation-delay: 8s; color: rgba(245, 163, 26, 0.4); }
 
-/* Upgrade Kartu Project/Sertifikat */
-.modern-project-card, .cert-card {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    position: relative; overflow: hidden;
-}
-/* Garis bidik sudut kartu */
-.modern-project-card::before, .cert-card::before {
-    content: ''; position: absolute; top: 10px; left: 10px; width: 15px; height: 15px;
-    border-top: 2px solid var(--accent); border-left: 2px solid var(--accent);
-    opacity: 0; transition: opacity 0.3s; z-index: 10;
-}
-.modern-project-card::after, .cert-card::after {
-    content: ''; position: absolute; bottom: 10px; right: 10px; width: 15px; height: 15px;
-    border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent);
-    opacity: 0; transition: opacity 0.3s; z-index: 10;
-}
-.modern-project-card:hover::before, .modern-project-card:hover::after,
-.cert-card:hover::before, .cert-card:hover::after { opacity: 1; }
-
-/* Efek Scanline di dalam kartu saat di hover */
-.card-scanline {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to bottom, transparent 50%, rgba(245, 163, 26, 0.1) 51%, transparent 52%);
-    background-size: 100% 4px; opacity: 0; transition: opacity 0.3s; z-index: 5; pointer-events: none;
-}
-.modern-project-card:hover .card-scanline, .cert-card:hover .card-scanline { opacity: 1; animation: scanMove 10s linear infinite; }
-@keyframes scanMove { 0% { background-position: 0 0; } 100% { background-position: 0 100vh; } }
-
-/* Teks HUD kecil di pojok kartu */
-.card-hud-text {
-    position: absolute; top: 15px; right: 15px; font-family: monospace; font-size: 0.65rem;
-    color: var(--accent); opacity: 0.5; z-index: 10; pointer-events: none;
+@keyframes floatCode {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-150px) translateX(20px); opacity: 0; }
 }
