@@ -4,6 +4,50 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-
 let allProjects = [];
 let currentFilter = 'all';
 
+// ==========================================
+// UI SOUND EFFECTS (WEB AUDIO API)
+// ==========================================
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+
+function playHoverSound() {
+    if(!audioCtx || audioCtx.state === 'suspended') return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+}
+
+function playClickSound() {
+    if(!audioCtx || audioCtx.state === 'suspended') return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+}
+
+function attachSounds() {
+    document.querySelectorAll('a, button, .modern-project-card, .video-item-card, .filter-btn').forEach(el => {
+        el.removeEventListener('mouseenter', playHoverSound);
+        el.removeEventListener('click', playClickSound);
+        el.addEventListener('mouseenter', playHoverSound);
+        el.addEventListener('click', playClickSound);
+    });
+}
+
+// ==========================================
+// FUNGSI UTAMA
+// ==========================================
 async function loadAllProjects() {
     const container = document.getElementById('all-projects-container');
     if (!container) return;
@@ -48,11 +92,15 @@ function renderFilteredProjects() {
             showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Showreel</span></h3><div class="video-marquee-wrapper"><div class="video-marquee-track">${duplicatedCards}</div></div>`;
         } else {
             let tilesHtml = '';
-            grouped[cat].forEach((p) => { tilesHtml += `<a href="project.html?id=${p.id}" class="modern-project-card" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}<div class="modern-project-overlay"></div><div class="modern-project-info"><h4>${p.title}</h4><span>${p.tags}</span></div></a>`; });
+            grouped[cat].forEach((p) => { 
+                tilesHtml += `<a href="project.html?id=${p.id}" class="modern-project-card" title="${p.title}">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}<div class="modern-project-overlay"></div><div class="card-scanline"></div><div class="card-hud-text">[ ID: ${p.id.slice(-4)} ]</div><div class="modern-project-info"><h4>${p.title}</h4><span>${p.tags}</span></div></a>`; 
+            });
             showcase.innerHTML = `<div class="slide-head"><span>Portfolio</span><span>${catNames[cat] || cat}</span></div><h3 class="showcase-title">${catNames[cat]} <span class="script">Projects</span></h3><div class="modern-project-grid">${tilesHtml}</div>`;
         }
         container.appendChild(showcase);
     }
+    
+    attachSounds();
 }
 
 function getYouTubeId(url) { if (!url) return ''; if (url.includes('watch?v=')) return url.split('v=')[1].split('&')[0]; if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0]; return ''; }
@@ -87,30 +135,21 @@ function initTiltEffect() {
     }
 }
 
-// FUNGSI KHUSUS 3D DATA STACK (DRAG)
 function initNewInteractive3DProject() {
     const wrapper = document.getElementById('interactive-3d-project');
     if (!wrapper) return;
     const obj = wrapper.querySelector('.stack-3d');
-    
-    let isDragging = false;
-    let prevX = 0, prevY = 0;
+    let isDragging = false; let prevX = 0, prevY = 0;
     let currentRotationX = 0, currentRotationY = 0;
 
-    wrapper.addEventListener('mousedown', (e) => {
-        isDragging = true; prevX = e.clientX; prevY = e.clientY;
-    });
-
+    wrapper.addEventListener('mousedown', (e) => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
     window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-        let deltaX = e.clientX - prevX;
-        let deltaY = e.clientY - prevY;
-        currentRotationY += deltaX * 0.6;
-        currentRotationX -= deltaY * 0.6;
+        let deltaX = e.clientX - prevX; let deltaY = e.clientY - prevY;
+        currentRotationY += deltaX * 0.6; currentRotationX -= deltaY * 0.6;
         gsap.set(obj, { rotationX: currentRotationX, rotationY: currentRotationY });
         prevX = e.clientX; prevY = e.clientY;
     });
-
     window.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
@@ -142,7 +181,7 @@ function initPremiumFeatures() {
     }
     
     initTiltEffect();
-    initNewInteractive3DProject(); // Panggil fungsi 3D Drag di sini
+    initNewInteractive3DProject();
 }
 
 window.addEventListener('load', async () => {
@@ -151,16 +190,12 @@ window.addEventListener('load', async () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
     
-    gsap.set(['.slide-title', '.section-label', '#all-projects-container'], { opacity: 0, y: 30 });
+    gsap.set(['.slide-title', '.section-label', '.hud-frame'], { opacity: 0, y: 30 });
 
-    let tlProgress = gsap.to(progress, { 
-        val: 80, duration: 1.2, ease: "power2.out", 
-        onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; } 
-    });
-
-    await loadAllProjects(); 
-
+    let tlProgress = gsap.to(progress, { val: 80, duration: 1.2, ease: "power2.out", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; } });
+    await loadAllProjects();
     tlProgress.kill();
+
     gsap.to(progress, { 
         val: 100, duration: 0.5, ease: "power2.in", 
         onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; }, 
@@ -171,17 +206,20 @@ window.addEventListener('load', async () => {
                     initPremiumFeatures();
                     gsap.registerPlugin(ScrollTrigger);
                     initTiltEffect();
+                    attachSounds();
                 }
             });
 
             tl.to('#preloader', { opacity: 0, scale: 1.1, filter: "blur(10px)", duration: 0.8, ease: "power2.inOut" })
-              .to('.slide-title, #all-projects-container', { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6")
+              .to('.slide-title, .hud-frame', { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6")
               .to('.section-label', { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.8");
         }
     });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', () => { if (audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
+
     const filterBtns = document.querySelectorAll('.filter-btn');
     filterBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
