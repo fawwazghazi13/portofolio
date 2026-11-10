@@ -1,6 +1,50 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// ==========================================
+// UI SOUND EFFECTS (WEB AUDIO API)
+// ==========================================
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+
+function playHoverSound() {
+    if(!audioCtx || audioCtx.state === 'suspended') return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+}
+
+function playClickSound() {
+    if(!audioCtx || audioCtx.state === 'suspended') return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+}
+
+function attachSounds() {
+    document.querySelectorAll('a, button, .cert-card').forEach(el => {
+        el.removeEventListener('mouseenter', playHoverSound);
+        el.removeEventListener('click', playClickSound);
+        el.addEventListener('mouseenter', playHoverSound);
+        el.addEventListener('click', playClickSound);
+    });
+}
+
+// ==========================================
+// FUNGSI UTAMA
+// ==========================================
 async function loadAllCertificates() {
     const container = document.getElementById('all-certificates-container');
     if (!container) return;
@@ -18,6 +62,8 @@ async function loadAllCertificates() {
                         ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.title}">` : '<div style="background:#222;width:100%;height:100%;"></div>'}
                         <div class="cert-overlay"></div>
                     </div>
+                    <div class="card-scanline"></div>
+                    <div class="card-hud-text">[ ID: ${item.id.slice(-4)} ]</div>
                     <div class="cert-info">
                         <h3>${item.title}</h3>
                         <div class="cert-issuer-row"><span>${item.issuer}</span><span>${item.date}</span></div>
@@ -31,6 +77,8 @@ async function loadAllCertificates() {
         console.error(err);
         container.innerHTML = '<h3 style="text-align:center; color:red; grid-column: 1 / -1;">Gagal memuat sertifikat.</h3>';
     }
+    
+    attachSounds();
 }
 
 function initScrollProgress() {
@@ -63,30 +111,21 @@ function initTiltEffect() {
     }
 }
 
-// FUNGSI KHUSUS 3D MEDAL (DRAG)
 function initNewInteractive3DCert() {
     const wrapper = document.getElementById('interactive-3d-cert');
     if (!wrapper) return;
     const obj = wrapper.querySelector('.medal-3d');
-    
-    let isDragging = false;
-    let prevX = 0, prevY = 0;
+    let isDragging = false; let prevX = 0, prevY = 0;
     let currentRotationX = 0, currentRotationY = 0;
 
-    wrapper.addEventListener('mousedown', (e) => {
-        isDragging = true; prevX = e.clientX; prevY = e.clientY;
-    });
-
+    wrapper.addEventListener('mousedown', (e) => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
     window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-        let deltaX = e.clientX - prevX;
-        let deltaY = e.clientY - prevY;
-        currentRotationY += deltaX * 0.6;
-        currentRotationX -= deltaY * 0.6;
+        let deltaX = e.clientX - prevX; let deltaY = e.clientY - prevY;
+        currentRotationY += deltaX * 0.6; currentRotationX -= deltaY * 0.6;
         gsap.set(obj, { rotationX: currentRotationX, rotationY: currentRotationY });
         prevX = e.clientX; prevY = e.clientY;
     });
-
     window.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
@@ -118,7 +157,7 @@ function initPremiumFeatures() {
     }
     
     initTiltEffect();
-    initNewInteractive3DCert(); // Panggil fungsi 3D Drag di sini
+    initNewInteractive3DCert();
 }
 
 window.addEventListener('load', async () => {
@@ -127,7 +166,7 @@ window.addEventListener('load', async () => {
     let progress = { val: 0 };
     const preloaderText = document.querySelector('.preloader-text'); const preloaderBar = document.querySelector('.preloader-bar-fill');
     
-    gsap.set(['.slide-title', '.section-label', '#all-certificates-container'], { opacity: 0, y: 30 });
+    gsap.set(['.slide-title', '.section-label', '.hud-frame'], { opacity: 0, y: 30 });
 
     let tlProgress = gsap.to(progress, { val: 80, duration: 1.2, ease: "power2.out", onUpdate: () => { if(preloaderText) preloaderText.innerText = Math.round(progress.val) + '%'; if(preloaderBar) preloaderBar.style.width = progress.val + '%'; } });
     await loadAllCertificates();
@@ -142,16 +181,20 @@ window.addEventListener('load', async () => {
                     document.getElementById('preloader').style.display = 'none';
                     initPremiumFeatures();
                     initTiltEffect();
+                    attachSounds();
                 }
             });
+
             tl.to('#preloader', { opacity: 0, scale: 1.1, filter: "blur(10px)", duration: 0.8, ease: "power2.inOut" })
-              .to('.slide-title, #all-certificates-container', { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6")
+              .to('.slide-title, .hud-frame', { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6")
               .to('.section-label', { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, "-=0.8");
         }
     });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', () => { if (audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
+
     const menuToggle = document.getElementById('menuToggle'); const navLinks = document.querySelector('.nav-links');
     if (menuToggle) menuToggle.addEventListener('click', () => { navLinks.classList.toggle('active'); menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
     const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
