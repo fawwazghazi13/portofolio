@@ -64,7 +64,6 @@ async function loadPortfolioContent() {
             const container = document.querySelector('.skills-container');
             if (container) {
                 container.innerHTML = items.map((s, index) => {
-                    // Generate angka acak untuk progress bar (misal 75-95%)
                     const level = 75 + ((index * 7) % 20); 
                     return `
                     <li class="skill-card">
