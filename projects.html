@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Projects | Portofolio</title>
-    
-    <!-- SEO & Open Graph -->
     <meta name="description" content="Portofolio M Ghazi Fawwaz El Aqiel - Graphic Designer, Web Developer, & UI/UX Enthusiast.">
     <meta property="og:title" content="Ghazi | Graphic Design Portfolio">
     <meta property="og:description" content="I craft digital experiences, visual identities, and interactive web designs.">
     <meta property="og:image" content="https://i.pinimg.com/1200x/37/d2/c1/37d2c142a9b10254f9fcddb2b4d6b6f0.jpg">
-    <meta property="og:url" content="https://portofolio-beta-peach-33.vercel.app/">
+    <meta property="og:url" content="https://ghazi-portofolio.vercel.app/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
 
@@ -20,11 +18,11 @@
 </head>
 <body style="padding-top: 80px;">
 
-    <!-- BACKGROUND -->
     <div class="page-bg-container">
         <div class="bg-grid"></div>
         <div class="bg-orb-orange"></div>
         <div class="bg-orb-purple"></div>
+        <div class="radar-sweep"></div> <!-- RADAR SWEEP -->
         <div class="bg-marquee" style="opacity: 0.02; transform: translateY(-50%) rotate(-5deg); top: 50%; z-index: 1;">
             <div class="marquee-content" style="font-size: 20vw;">
                 <span>PROJECTS • CREATIVE • WORK • </span>
@@ -33,7 +31,6 @@
         </div>
     </div>
 
-    <!-- PRELOADER -->
     <div id="preloader">
         <div class="preloader-content">
             <div class="ring-outer"></div>
@@ -65,7 +62,6 @@
 
     <section id="projects" class="section projects" style="min-height: 100vh; position: relative; overflow: hidden;">
         
-        <!-- 3D ELEMENT: DATA STACK (FIXED DI POJOK) -->
         <div class="interactive-3d-wrapper" id="interactive-3d-project" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
             <div class="stack-3d">
                 <div class="stack-layer layer-3"></div>
@@ -74,22 +70,23 @@
             </div>
             <div class="drag-hint">Drag Me!</div>
         </div>
-        <!-- END 3D ELEMENT -->
 
-        <p class="section-label">MY RECENT WORK</p>
-        <h2 class="slide-title">Featured Projects</h2>
-        
-        <div class="filter-container">
-            <button class="filter-btn active" data-filter="all">All Work</button>
-            <button class="filter-btn" data-filter="web">Web & UI</button>
-            <button class="filter-btn" data-filter="illustration">Illustrations</button>
-            <button class="filter-btn" data-filter="social">Social Media</button>
-            <button class="filter-btn" data-filter="print">Print</button>
-            <button class="filter-btn" data-filter="video">Videos</button>
-        </div>
+        <div class="hud-frame">
+            <p class="section-label">MY RECENT WORK</p>
+            <h2 class="slide-title page-title-glitch" data-text="FEATURED PROJECTS">Featured Projects</h2>
+            
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">All Work</button>
+                <button class="filter-btn" data-filter="web">Web & UI</button>
+                <button class="filter-btn" data-filter="illustration">Illustrations</button>
+                <button class="filter-btn" data-filter="social">Social Media</button>
+                <button class="filter-btn" data-filter="print">Print</button>
+                <button class="filter-btn" data-filter="video">Videos</button>
+            </div>
 
-        <div id="all-projects-container">
-            <h3 style="text-align:center; color:var(--muted);">Memuat Projects...</h3>
+            <div id="all-projects-container">
+                <h3 style="text-align:center; color:var(--muted);">Memuat Projects...</h3>
+            </div>
         </div>
     </section>
 
