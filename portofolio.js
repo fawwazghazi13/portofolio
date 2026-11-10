@@ -1,60 +1,105 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// ==========================================
+// UI SOUND EFFECTS (WEB AUDIO API)
+// ==========================================
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+
+function playHoverSound() {
+    if(!audioCtx || audioCtx.state === 'suspended') return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime); 
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+}
+
+function playClickSound() {
+    if(!audioCtx || audioCtx.state === 'suspended') return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+}
+
+function attachSounds() {
+    document.querySelectorAll('a, button, .btn, .nav-links a, .sw, .stat-box').forEach(el => {
+        el.removeEventListener('mouseenter', playHoverSound);
+        el.removeEventListener('click', playClickSound);
+        el.addEventListener('mouseenter', playHoverSound);
+        el.addEventListener('click', playClickSound);
+    });
+}
+
+// ==========================================
+// LOAD DATA DARI FIREBASE
+// ==========================================
 async function loadPortfolioContent() {
     try {
+        // 1. Profile & About
         const aboutSnap = await getDoc(doc(db, 'portfolio', 'about'));
         if (aboutSnap.exists()) {
             const d = aboutSnap.data();
-            console.log("Data dari Firebase:", d); // Untuk ngecek di F12 Console
-
-            // 1. GANTI GAMBAR PROFIL (Ditaruh paling atas agar tidak crash duluan)
             if (d.profileImage) {
                 const imgElement = document.querySelector('.hero-image img');
-                if (imgElement) {
-                    imgElement.src = d.profileImage;
-                    console.log("✅ Gambar berhasil diganti ke:", d.profileImage);
-                }
+                if (imgElement) imgElement.src = d.profileImage;
             }
-
-            // 2. UPDATE TEKS LAINNYA (Dengan pengaman if)
-            if (d.greeting) {
-                const elGreeting = document.querySelector('.greeting');
-                if (elGreeting) elGreeting.textContent = d.greeting;
-            }
-            if (d.description) {
-                const elDesc = document.querySelector('.description');
-                if (elDesc) elDesc.textContent = d.description;
-            }
-            
-            // Catatan: Teks About sekarang ada di dalam Terminal Box HTML.
-            // Jika kamu ingin tetap mengambil teks from Firebase, aktifkan baris di bawah:
-            /*
-            if (d.aboutText) {
-                const elAbout = document.querySelector('.terminal-body p');
-                if (elAbout) elAbout.innerHTML = `<span class="term-prompt">></span> ` + d.aboutText + `<span class="blinking-cursor">_</span>`;
-            }
-            */
         }
 
+        // 2. Skills (HUD Style)
         const skillsSnap = await getDoc(doc(db, 'portfolio', 'skills'));
         if (skillsSnap.exists()) {
             const items = skillsSnap.data().items || [];
             const container = document.querySelector('.skills-container');
             if (container) {
-                container.innerHTML = items.map(s => `<li class="skill-card"><h4>${s.title}</h4><p>${s.description}</p></li>`).join('');
+                container.innerHTML = items.map((s, index) => {
+                    // Generate angka acak untuk progress bar (misal 75-95%)
+                    const level = 75 + ((index * 7) % 20); 
+                    return `
+                    <li class="skill-card">
+                        <div class="skill-hud-corner"></div>
+                        <div class="skill-header">
+                            <h4><span class="term-prompt">></span> ${s.title}</h4>
+                            <span class="skill-level">Lv. ${level}%</span>
+                        </div>
+                        <div class="skill-progress-bg">
+                            <div class="skill-progress-fill" style="width: ${level}%;"></div>
+                        </div>
+                        <p>${s.description}</p>
+                    </li>
+                    `;
+                }).join('');
             }
         }
-        
+
+        // 3. Software (Scanner Style)
         const swSnap = await getDoc(doc(db, 'portfolio', 'software'));
         if (swSnap.exists()) {
             const items = swSnap.data().items || [];
             const grid = document.querySelector('.software-grid');
             if (grid) {
-                grid.innerHTML = items.map(s => `<div class="sw" title="${s.name}"><span style="color:${s.color}; text-shadow: 0 0 15px ${s.color};">${s.label}</span></div>`).join('');
+                grid.innerHTML = items.map(s => `
+                    <div class="sw" title="${s.name}">
+                        <div class="sw-scanner"></div>
+                        <span style="color:${s.color}; text-shadow: 0 0 15px ${s.color};">${s.label}</span>
+                        <span class="sw-status">ONLINE</span>
+                    </div>
+                `).join('');
             }
         }
-        
+
+        // 4. Contact
         const contactSnap = await getDoc(doc(db, 'portfolio', 'contact'));
         if (contactSnap.exists()) {
             const d = contactSnap.data();
@@ -63,11 +108,12 @@ async function loadPortfolioContent() {
                 emailBtn.href = `mailto:${d.email}?subject=Halo, saya tertarik dengan portofolio Anda`;
             }
         }
-    } catch (err) { 
-        console.error('Gagal memuat:', err); 
-    }
+    } catch (err) { console.error('Gagal memuat:', err); }
 }
 
+// ==========================================
+// FITUR PREMIUM (CURSOR & MAGNETIC)
+// ==========================================
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
         if (document.querySelector('.cursor-dot')) return;
@@ -75,18 +121,15 @@ function initPremiumFeatures() {
         const cursorOutline = document.createElement('div'); cursorOutline.classList.add('cursor-outline');
         document.body.appendChild(cursorDot); document.body.appendChild(cursorOutline);
         const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; const mouse = { x: pos.x, y: pos.y };
-        
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX; mouse.y = e.clientY;
             cursorDot.style.transform = `translate(${mouse.x}px, ${mouse.y}px) translate(-50%, -50%)`;
         });
-        
         gsap.ticker.add(() => {
             pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
-        
-        document.querySelectorAll('a, button, .btn, #interactive-3d').forEach(el => {
+        document.querySelectorAll('a, button, .btn, .sw, #interactive-3d').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
@@ -114,8 +157,12 @@ function initPremiumFeatures() {
     });
 
     initNewInteractive3D();
+    attachSounds();
 }
 
+// ==========================================
+// FITUR 3D DRAG (GLOBE)
+// ==========================================
 function initNewInteractive3D() {
     const wrapper = document.getElementById('interactive-3d');
     if (!wrapper) return;
@@ -140,6 +187,9 @@ function initNewInteractive3D() {
     });
 }
 
+// ==========================================
+// TEXT SCRAMBLE (EFEK DECODE TEKS)
+// ==========================================
 class TextScramble {
     constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
     setText(newText) {
@@ -168,7 +218,11 @@ class TextScramble {
     }
 }
 
+// ==========================================
+// PRELOADER & ANIMASI AWAL
+// ==========================================
 window.addEventListener('load', () => {
+    // Scroll Progress
     const progressBar = document.createElement('div');
     progressBar.classList.add('scroll-progress');
     document.body.appendChild(progressBar);
@@ -218,16 +272,24 @@ window.addEventListener('load', () => {
     });
 });
 
+// ==========================================
+// INISIALISASI UMUM
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', () => { if (audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
+    
     loadPortfolioContent();
+    
     const menuToggle = document.getElementById('menuToggle'); 
     const navLinks = document.querySelector('.nav-links');
     if (menuToggle) menuToggle.addEventListener('click', () => { 
         navLinks.classList.toggle('active'); 
         menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; 
     });
+    
     const year = document.getElementById('year'); 
     if (year) year.textContent = new Date().getFullYear();
+    
     const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([target="_blank"])');
     links.forEach(link => {
         link.addEventListener('click', (e) => {
