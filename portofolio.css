@@ -12,16 +12,53 @@
     --font-script: 'Caveat Brush', cursive; 
     --font-body: 'Poppins', sans-serif;
     --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    
+    /* Variabel untuk Mouse Tracking Spotlight */
+    --mouse-x: 50%;
+    --mouse-y: 50%;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; position: relative; }
-body::before { content: ''; position: fixed; inset: 0; background-image: var(--noise); opacity: 0.05; pointer-events: none; z-index: 1; }
+
+/* NOISE OVERLAY ANIMATION */
+body::before { 
+    content: ''; 
+    position: fixed; 
+    inset: 0; 
+    background-image: var(--noise); 
+    opacity: 0.04; 
+    pointer-events: none; 
+    z-index: 1; 
+    animation: noiseAnim 0.2s steps(2) infinite; 
+}
+@keyframes noiseAnim {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-2%, 2%); }
+    50% { transform: translate(2%, -2%); }
+    75% { transform: translate(-2%, -2%); }
+    100% { transform: translate(2%, 2%); }
+}
+
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 img { max-width: 100%; display: block; }
 .text-center { text-align: center; }
+
+/* CUSTOM NEON SCROLLBAR */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); border-left: 1px solid rgba(255, 255, 255, 0.05); }
+::-webkit-scrollbar-thumb { 
+    background: var(--accent); 
+    border-radius: 10px; 
+    border: 2px solid var(--bg); 
+    box-shadow: 0 0 10px var(--accent); 
+}
+::-webkit-scrollbar-thumb:hover { 
+    background: #fff; 
+    box-shadow: 0 0 15px #fff, 0 0 25px var(--accent); 
+}
 
 /* SCROLL PROGRESS BAR */
 .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 1000000; box-shadow: 0 0 10px var(--accent); transition: width 0.1s ease; }
@@ -35,7 +72,19 @@ img { max-width: 100%; display: block; }
 .orb-cyan { width: 50vw; height: 50vw; background: #00e5ff; bottom: -10%; right: -10%; animation: floatOrb2 12s infinite alternate-reverse ease-in-out; }
 @keyframes floatOrb1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(100px, 50px) scale(1.1); } }
 @keyframes floatOrb2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-100px, -50px) scale(1.2); } }
-.bg-spotlight { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100vw; height: 100vh; background: radial-gradient(ellipse at top, rgba(245, 163, 26, 0.08) 0%, transparent 60%); z-index: 2; pointer-events: none; }
+
+/* MOUSE TRACKING SPOTLIGHT */
+.bg-spotlight { 
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100vw; 
+    height: 100vh; 
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(245, 163, 26, 0.12) 0%, transparent 40%); 
+    z-index: 2; 
+    pointer-events: none; 
+    transition: background 0.1s ease-out;
+}
+
 .particle { position: absolute; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); z-index: 3; opacity: 0; }
 .p1 { width: 3px; height: 3px; left: 20%; bottom: -10px; animation: floatUp 8s infinite linear; }
 .p2 { width: 4px; height: 4px; left: 80%; bottom: -10px; animation: floatUp 12s infinite linear 2s; background: #00e5ff; box-shadow: 0 0 10px #00e5ff; }
@@ -77,8 +126,56 @@ header { position: fixed !important; top: 20px !important; left: 0; width: 100%;
 .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
 .menu-toggle { display: none; background: none; border: none; color: var(--text); font-size: 1.4rem; cursor: pointer; }
 .script { font-family: var(--font-script); color: var(--accent); text-transform: none; letter-spacing: 0; }
-.section-label { font-family: var(--font-script); color: var(--accent); font-size: 1.3rem; margin-bottom: 10px; }
+
+/* HUD DECORATION UNTUK SECTION LABEL */
+.section-label { 
+    font-family: var(--font-script); 
+    color: var(--accent); 
+    font-size: 1.3rem; 
+    margin-bottom: 10px; 
+    position: relative;
+    display: inline-block;
+}
+.section-label::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--accent);
+    border-right: none;
+    background: rgba(245, 163, 26, 0.1);
+    box-shadow: -5px 0 15px rgba(245, 163, 26, 0.3);
+}
+.section-label::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    box-shadow: 0 0 10px var(--accent);
+}
+
 .slide-title { font-family: var(--font-heading); font-weight: 400; text-transform: uppercase; line-height: 1; margin-bottom: 40px; font-size: clamp(2.5rem, 6vw, 4rem); }
+
+/* TEXT GRADIENT NEON (FIXED WARNING) */
+.text-gradient-neon {
+    background: linear-gradient(90deg, #fff, var(--accent), #00e5ff, #fff);
+    background-size: 300% 100%;
+    background-clip: text;
+    color: transparent; 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 5s linear infinite;
+}
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
 
 /* HERO SECTION */
 .hero { min-height: 100vh; padding: 140px 24px 60px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; z-index: 2; }
@@ -86,10 +183,7 @@ header { position: fixed !important; top: 20px !important; left: 0; width: 100%;
 .slide-head span:first-child { color: var(--accent); font-family: var(--font-script); font-size: 1.1rem; }
 .greeting { font-size: 0.8rem; letter-spacing: 5px; color: var(--accent); font-weight: 600; margin-bottom: 20px; text-shadow: 0 0 20px var(--accent-glow); }
 .cover-title { font-size: clamp(4rem, 15vw, 11rem); letter-spacing: 2px; margin-bottom: 0.4em; font-family: var(--font-heading); line-height: 0.9; position: relative; }
-
-/* PERBAIKAN POSISI GRAPHIC DESIGN */
 .cover-title .script { position: absolute; left: 50%; bottom: -0.2em; font-size: 0.35em; white-space: nowrap; transform: translateX(-50%) rotate(-7deg); text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); }
-
 .hero h2 { font-family: var(--font-body) !important; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; font-size: clamp(0.9rem, 2vw, 1.2rem); color: var(--text); margin: 25px 0 15px; }
 .floating-element { position: absolute; z-index: 1; font-family: monospace; font-weight: bold; color: rgba(245, 163, 26, 0.4); text-shadow: 0 0 20px rgba(245, 163, 26, 0.2); animation: floatShape 6s infinite alternate ease-in-out; pointer-events: none; }
 .fe-1 { top: 30%; left: 15%; font-size: 3rem; animation-delay: 0s; }
@@ -217,8 +311,20 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
 .modern-project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-top: 30px; perspective: 1000px; }
 .modern-project-card { position: relative; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; background: #111; border: 1px solid rgba(255, 255, 255, 0.08); transition: transform 0.1s ease-out, box-shadow 0.4s ease, border-color 0.4s ease; display: block; transform-style: preserve-3d; }
 .modern-project-card:hover { border-color: var(--accent); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 163, 26, 0.15); z-index: 10; }
-.modern-project-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-.modern-project-card:hover img { transform: scale(1.08); }
+
+/* CLIP-PATH IMAGE REVEAL */
+.modern-project-card img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%);
+    transition: transform 0.6s ease, clip-path 0.4s ease; 
+}
+.modern-project-card:hover img { 
+    transform: scale(1.08); 
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); 
+}
+
 .modern-project-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%); opacity: 0.8; transition: opacity 0.3s ease; }
 .modern-project-card:hover .modern-project-overlay { opacity: 1; }
 .modern-project-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 24px; transform: translateY(10px); transition: transform 0.3s ease; transform-style: preserve-3d; }
@@ -286,7 +392,6 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     position: relative; 
     display: inline-block; 
     color: var(--text);
-    /* Teks utama sedikit bergetar (jitter) secara konstan */
     animation: glitch-skew 4s infinite linear alternate-reverse;
 }
 
@@ -303,14 +408,11 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     background: transparent; 
     color: transparent; 
     pointer-events: none;
-    /* Blend mode screen membuat warna menyatu seperti CRT monitor */
     mix-blend-mode: screen; 
     opacity: 0.85;
-    /* Menggunakan steps() agar animasinya patah-patah (digital) bukan smooth */
     animation-timing-function: steps(2, end) !important;
 }
 
-/* Layer Cyan (Kiri) */
 .glitch-effect::before,
 .page-title-glitch::before { 
     left: 3px; 
@@ -318,7 +420,6 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     animation: glitch-anim-1 2s infinite linear alternate-reverse; 
 }
 
-/* Layer Merah/Magenta (Kanan) */
 .glitch-effect::after,
 .page-title-glitch::after { 
     left: -3px; 
@@ -326,7 +427,6 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     animation: glitch-anim-2 2.5s infinite linear alternate-reverse; 
 }
 
-/* Animasi Jitter Teks Utama */
 @keyframes glitch-skew {
     0% { transform: skew(0deg); }
     10% { transform: skew(0deg); }
@@ -339,7 +439,6 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     100% { transform: skew(0deg); }
 }
 
-/* Animasi Layer 1 (Cyan) */
 @keyframes glitch-anim-1 { 
     0% { clip-path: inset(10% 0 85% 0); transform: translate(0); }
     10% { clip-path: inset(80% 0 5% 0); transform: translate(-3px, 2px); }
@@ -354,7 +453,6 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     100% { clip-path: inset(45% 0 35% 0); transform: translate(-2px, -2px); }
 } 
 
-/* Animasi Layer 2 (Merah) */
 @keyframes glitch-anim-2 { 
     0% { clip-path: inset(60% 0 20% 0); transform: translate(0); }
     15% { clip-path: inset(10% 0 80% 0); transform: translate(3px, -2px); }
@@ -366,19 +464,18 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     100% { clip-path: inset(50% 0 30% 0); transform: translate(3px, 0); }
 }
 
-/* HOVER EFFECT (Makin parah & kacau) */
 .glitch-effect:hover::before,
 .page-title-glitch:hover::before,
 .glitch-effect:hover::after,
 .page-title-glitch:hover::after {
-    animation-duration: 0.2s !important; /* Jadi sangat cepat */
+    animation-duration: 0.2s !important; 
     opacity: 1;
-    mix-blend-mode: exclusion; /* Warna terbalik secara agresif */
+    mix-blend-mode: exclusion; 
 }
 
 .glitch-effect:hover,
 .page-title-glitch:hover {
-    animation-duration: 0.1s !important; /* Teks utama ikut bergetar kencang */
+    animation-duration: 0.1s !important; 
 }
 
 /* DOODLES */
@@ -467,6 +564,7 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     .nav-links.active { max-height: 400px; padding: 20px 0; }
     .nav-links a { display: block; padding: 15px; text-align: center; }
     .cover-title .script { position: static; display: block; transform: none; margin-top: 10px; font-size: 0.4em; }
+    .section-label::before { display: none; }
 }
 
 /* ==========================================
