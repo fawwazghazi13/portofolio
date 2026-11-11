@@ -34,7 +34,7 @@ function playClickSound() {
 }
 
 function attachSounds() {
-    document.querySelectorAll('a, button, .btn, .nav-links a, .sw, .stat-box').forEach(el => {
+    document.querySelectorAll('a, button, .btn, .nav-links a, .sw, .stat-box, .social-card').forEach(el => {
         el.removeEventListener('mouseenter', playHoverSound);
         el.removeEventListener('click', playClickSound);
         el.addEventListener('mouseenter', playHoverSound);
@@ -97,16 +97,6 @@ async function loadPortfolioContent() {
                 `).join('');
             }
         }
-
-        // 4. Contact
-        const contactSnap = await getDoc(doc(db, 'portfolio', 'contact'));
-        if (contactSnap.exists()) {
-            const d = contactSnap.data();
-            const emailBtn = document.getElementById('contact-email-btn');
-            if (emailBtn && d.email) {
-                emailBtn.href = `mailto:${d.email}?subject=Halo, saya tertarik dengan portofolio Anda`;
-            }
-        }
     } catch (err) { console.error('Gagal memuat:', err); }
 }
 
@@ -128,14 +118,14 @@ function initPremiumFeatures() {
             pos.x += (mouse.x - pos.x) * 0.25; pos.y += (mouse.y - pos.y) * 0.25;
             cursorOutline.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
         });
-        document.querySelectorAll('a, button, .btn, .sw, #interactive-3d').forEach(el => {
+        document.querySelectorAll('a, button, .btn, .sw, #interactive-3d, .social-card').forEach(el => {
             el.addEventListener('mouseenter', () => cursorOutline.classList.add('hovered'));
             el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hovered'));
         });
     }
     
     // Magnetic Buttons
-    document.querySelectorAll('.btn.magnetic').forEach(btn => {
+    document.querySelectorAll('.btn.magnetic, .social-card.magnetic').forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
             const rect = btn.getBoundingClientRect(); const x = e.clientX - rect.left - rect.width / 2; const y = e.clientY - rect.top - rect.height / 2;
             gsap.to(btn, { x: x * 0.4, y: y * 0.4, duration: 0.4, ease: "power2.out" });
@@ -157,14 +147,13 @@ function initPremiumFeatures() {
         gsap.to('.parallax-3d', { rotationY: x, rotationX: -y, duration: 1.5, ease: "power2.out" });
     });
 
-    // --- FITUR BARU: MOUSE TRACKING SPOTLIGHT ---
+    // Mouse Tracking Spotlight
     window.addEventListener('mousemove', (e) => {
         const x = (e.clientX / window.innerWidth) * 100;
         const y = (e.clientY / window.innerHeight) * 100;
         document.documentElement.style.setProperty('--mouse-x', `${x}%`);
         document.documentElement.style.setProperty('--mouse-y', `${y}%`);
     });
-    // --------------------------------------------
 
     initNewInteractive3D();
     attachSounds();
@@ -232,7 +221,6 @@ class TextScramble {
 // PRELOADER & ANIMASI AWAL
 // ==========================================
 window.addEventListener('load', () => {
-    // Scroll Progress
     const progressBar = document.createElement('div');
     progressBar.classList.add('scroll-progress');
     document.body.appendChild(progressBar);
@@ -283,6 +271,31 @@ window.addEventListener('load', () => {
 });
 
 // ==========================================
+// FITUR BARU: COPY EMAIL TO CLIPBOARD + TOAST
+// ==========================================
+function showToast(message) {
+    let toast = document.getElementById('custom-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'custom-toast';
+        toast.className = 'custom-toast';
+        document.body.appendChild(toast);
+    }
+    
+    toast.innerHTML = `<span class="term-prompt">></span> ${message}`;
+    
+    // Reset animation
+    toast.classList.remove('show');
+    void toast.offsetWidth; // Trigger reflow to restart animation
+    toast.classList.add('show');
+
+    clearTimeout(toast.hideTimeout);
+    toast.hideTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// ==========================================
 // INISIALISASI UMUM
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -299,6 +312,24 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const year = document.getElementById('year'); 
     if (year) year.textContent = new Date().getFullYear();
+
+    // Logika untuk Email Card
+    const emailBtn = document.getElementById('contact-email-btn');
+    if (emailBtn) {
+        emailBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = "fawwazghazi13@gmail.com";
+            
+            // Copy ke clipboard
+            navigator.clipboard.writeText(email).then(() => {
+                showToast("Email copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Jika gagal, buka mailto sebagai fallback
+                window.location.href = `mailto:${email}`;
+            });
+        });
+    }
     
     const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([target="_blank"])');
     links.forEach(link => {
