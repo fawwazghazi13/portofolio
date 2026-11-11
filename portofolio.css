@@ -578,3 +578,28 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
 .fc-4 { bottom: 50%; left: 5%; animation-delay: 2s; }
 .fc-5 { bottom: 15%; right: 10%; animation-delay: 8s; color: rgba(245, 163, 26, 0.4); }
 @keyframes floatCode { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-150px) translateX(20px); opacity: 0; } }
+
+/* CUSTOM TOAST NOTIFICATION (UNTUK FITUR COPY EMAIL) */
+.custom-toast {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 10, 10, 0.95);
+    border: 1px solid var(--accent);
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    box-shadow: 0 0 30px rgba(245, 163, 26, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9999999;
+    pointer-events: none;
+    opacity: 0;
+    text-align: center;
+}
+.custom-toast.show {
+    bottom: 40px;
+    opacity: 1;
+}
