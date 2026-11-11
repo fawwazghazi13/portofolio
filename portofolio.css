@@ -279,15 +279,15 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
 }
 
 /* ==========================================
-   EFEK GLITCH UPGRADE (CYBERPUNK AGGRESSIVE)
+   EFEK GLITCH ULTIMATE (PREMIUM CYBERPUNK)
    ========================================== */
 .glitch-effect, 
 .page-title-glitch { 
     position: relative; 
     display: inline-block; 
     color: var(--text);
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
+    /* Teks utama sedikit bergetar (jitter) secara konstan */
+    animation: glitch-skew 4s infinite linear alternate-reverse;
 }
 
 .glitch-effect::before, 
@@ -303,60 +303,82 @@ footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.8r
     background: transparent; 
     color: transparent; 
     pointer-events: none;
+    /* Blend mode screen membuat warna menyatu seperti CRT monitor */
     mix-blend-mode: screen; 
-    opacity: 0.9;
+    opacity: 0.85;
+    /* Menggunakan steps() agar animasinya patah-patah (digital) bukan smooth */
+    animation-timing-function: steps(2, end) !important;
 }
 
-/* Efek Warna Merah (Geser Kiri & Distorsi) */
+/* Layer Cyan (Kiri) */
 .glitch-effect::before,
 .page-title-glitch::before { 
     left: 3px; 
-    text-shadow: -4px 0 #ff003c, 0 0 10px #ff003c; 
-    animation: glitch-anim-1 2.5s infinite linear alternate-reverse; 
+    text-shadow: -2px 0 #00e5ff, 2px 0 #00e5ff; 
+    animation: glitch-anim-1 2s infinite linear alternate-reverse; 
 }
 
-/* Efek Warna Cyan (Geser Kanan & Distorsi) */
+/* Layer Merah/Magenta (Kanan) */
 .glitch-effect::after,
 .page-title-glitch::after { 
     left: -3px; 
-    text-shadow: 4px 0 #00e5ff, 0 0 10px #00e5ff; 
-    animation: glitch-anim-2 2s infinite linear alternate-reverse; 
+    text-shadow: -2px 0 #ff003c, 2px 0 #ff003c; 
+    animation: glitch-anim-2 2.5s infinite linear alternate-reverse; 
 }
 
-/* Animasi Glitch Baru (Lebih Acak dan Tajam) */
+/* Animasi Jitter Teks Utama */
+@keyframes glitch-skew {
+    0% { transform: skew(0deg); }
+    10% { transform: skew(0deg); }
+    11% { transform: skew(2deg); }
+    12% { transform: skew(-1deg); }
+    13% { transform: skew(0deg); }
+    50% { transform: skew(0deg); }
+    51% { transform: skew(-3deg); }
+    52% { transform: skew(0deg); }
+    100% { transform: skew(0deg); }
+}
+
+/* Animasi Layer 1 (Cyan) */
 @keyframes glitch-anim-1 { 
     0% { clip-path: inset(10% 0 85% 0); transform: translate(0); }
-    10% { clip-path: inset(80% 0 5% 0); transform: translate(-3px, 2px) skewX(5deg); }
-    20% { clip-path: inset(40% 0 40% 0); transform: translate(2px, -1px) skewX(-5deg); }
+    10% { clip-path: inset(80% 0 5% 0); transform: translate(-3px, 2px); }
+    20% { clip-path: inset(40% 0 40% 0); transform: translate(2px, -1px); }
     30% { clip-path: inset(70% 0 10% 0); transform: translate(-1px, 3px); }
-    40% { clip-path: inset(20% 0 60% 0); transform: translate(3px, -2px) skewX(10deg); }
+    40% { clip-path: inset(20% 0 60% 0); transform: translate(3px, -2px); }
     50% { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 1px); }
-    60% { clip-path: inset(90% 0 5% 0); transform: translate(1px, -3px) skewX(-10deg); }
+    60% { clip-path: inset(90% 0 5% 0); transform: translate(1px, -3px); }
     70% { clip-path: inset(30% 0 50% 0); transform: translate(-3px, 2px); }
-    80% { clip-path: inset(60% 0 20% 0); transform: translate(2px, -1px) skewX(5deg); }
+    80% { clip-path: inset(60% 0 20% 0); transform: translate(2px, -1px); }
     90% { clip-path: inset(15% 0 75% 0); transform: translate(0); }
     100% { clip-path: inset(45% 0 35% 0); transform: translate(-2px, -2px); }
 } 
 
+/* Animasi Layer 2 (Merah) */
 @keyframes glitch-anim-2 { 
     0% { clip-path: inset(60% 0 20% 0); transform: translate(0); }
-    15% { clip-path: inset(10% 0 80% 0); transform: translate(3px, -2px) skewX(-5deg); }
-    30% { clip-path: inset(80% 0 5% 0); transform: translate(-2px, 1px) skewX(10deg); }
+    15% { clip-path: inset(10% 0 80% 0); transform: translate(3px, -2px); }
+    30% { clip-path: inset(80% 0 5% 0); transform: translate(-2px, 1px); }
     45% { clip-path: inset(30% 0 50% 0); transform: translate(1px, 3px); }
-    60% { clip-path: inset(40% 0 40% 0); transform: translate(-3px, -1px) skewX(-10deg); }
+    60% { clip-path: inset(40% 0 40% 0); transform: translate(-3px, -1px); }
     75% { clip-path: inset(70% 0 10% 0); transform: translate(2px, 2px); }
-    90% { clip-path: inset(20% 0 70% 0); transform: translate(-1px, -3px) skewX(5deg); }
+    90% { clip-path: inset(20% 0 70% 0); transform: translate(-1px, -3px); }
     100% { clip-path: inset(50% 0 30% 0); transform: translate(3px, 0); }
 }
 
-/* Efek saat di-hover (Makin parah dan cepat) */
+/* HOVER EFFECT (Makin parah & kacau) */
 .glitch-effect:hover::before,
 .page-title-glitch:hover::before,
 .glitch-effect:hover::after,
 .page-title-glitch:hover::after {
-    animation-duration: 0.3s; 
+    animation-duration: 0.2s !important; /* Jadi sangat cepat */
     opacity: 1;
-    mix-blend-mode: exclusion; 
+    mix-blend-mode: exclusion; /* Warna terbalik secara agresif */
+}
+
+.glitch-effect:hover,
+.page-title-glitch:hover {
+    animation-duration: 0.1s !important; /* Teks utama ikut bergetar kencang */
 }
 
 /* DOODLES */
