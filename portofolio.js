@@ -111,7 +111,7 @@ async function loadPortfolioContent() {
 }
 
 // ==========================================
-// FITUR PREMIUM (CURSOR & MAGNETIC)
+// FITUR PREMIUM (CURSOR, MAGNETIC, & SPOTLIGHT)
 // ==========================================
 function initPremiumFeatures() {
     if (window.matchMedia("(pointer: fine)").matches) {
@@ -134,6 +134,7 @@ function initPremiumFeatures() {
         });
     }
     
+    // Magnetic Buttons
     document.querySelectorAll('.btn.magnetic').forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
             const rect = btn.getBoundingClientRect(); const x = e.clientX - rect.left - rect.width / 2; const y = e.clientY - rect.top - rect.height / 2;
@@ -142,6 +143,7 @@ function initPremiumFeatures() {
         btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" }));
     });
 
+    // Parallax Effect
     window.addEventListener('mousemove', (e) => {
         const x = (window.innerWidth / 2 - e.pageX) / 50;
         const y = (window.innerHeight / 2 - e.pageY) / 50;
@@ -154,6 +156,15 @@ function initPremiumFeatures() {
         const y = (window.innerHeight / 2 - e.pageY) / 30;
         gsap.to('.parallax-3d', { rotationY: x, rotationX: -y, duration: 1.5, ease: "power2.out" });
     });
+
+    // --- FITUR BARU: MOUSE TRACKING SPOTLIGHT ---
+    window.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+        document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+    });
+    // --------------------------------------------
 
     initNewInteractive3D();
     attachSounds();
